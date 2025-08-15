@@ -1,5 +1,7 @@
-﻿using System;
+﻿using LangLang.RoleWindows;
+using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -72,15 +74,51 @@ namespace LangLang
             // Check credentials against temporary variables
             if (email == studentEmail && password == studentPassword)
             {
-                // Navigate to Student Dashboard
+                StudentWindow studentWindow = new StudentWindow();
+                bool isFullScreen = WindowState == WindowState.Maximized;
+                studentWindow.Top = Top;
+                studentWindow.Left = Left;
+                studentWindow.Width = Width;
+                studentWindow.Height = Height;
+                if (isFullScreen)
+                {
+                    studentWindow.WindowState = WindowState.Maximized;
+                }
+                studentWindow.Show();
+
+                Close();
             }
             else if (email == teacherEmail && password == teacherPassword)
             {
-                // Navigate to Teacher Dashboard
+                ProfessorWindow professorWindow = new ProfessorWindow();
+                bool isFullScreen = WindowState == WindowState.Maximized;
+                professorWindow.Top = Top;
+                professorWindow.Left = Left;
+                professorWindow.Width = Width;
+                professorWindow.Height = Height;
+                if (isFullScreen)
+                {
+                    professorWindow.WindowState = WindowState.Maximized;
+                }
+                professorWindow.Show();
+
+                Close();
             }
             else if (email == principalEmail && password == principalPassword)
             {
-                // Navigate to Principal Dashboard
+                PrincipalWindow PrincipalWindow = new PrincipalWindow();
+                bool isFullScreen = WindowState == WindowState.Maximized;
+                PrincipalWindow.Top = Top;
+                PrincipalWindow.Left = Left;
+                PrincipalWindow.Width = Width;
+                PrincipalWindow.Height = Height;
+                if (isFullScreen)
+                {
+                    PrincipalWindow.WindowState = WindowState.Maximized;
+                }
+                PrincipalWindow.Show();
+
+                Close();
             }
             else
             {
