@@ -1,12 +1,232 @@
 ﻿<Window x:Class="LangLang.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:LangLang"
-        mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Title="Login" Height="450" Width="800" Icon="/GUIResources/icon.ico">
+
+    <Window.Resources>
+        <!-- Button animation -->
+        <Style x:Key="FancyButtonStyle" TargetType="Button">
+            <Setter Property="FontFamily" Value="Script MT Bold"/>
+            <Setter Property="Foreground" Value="#FF0B0B0B"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="RenderTransformOrigin" Value="0.5,0.5"/>
+            <Setter Property="RenderTransform">
+                <Setter.Value>
+                    <ScaleTransform ScaleX="1" ScaleY="1"/>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Trigger.EnterActions>
+                        <BeginStoryboard>
+                            <Storyboard>
+                                <DoubleAnimation Storyboard.TargetProperty="RenderTransform.(ScaleTransform.ScaleX)" To="1.05" Duration="0:0:0.1"/>
+                                <DoubleAnimation Storyboard.TargetProperty="RenderTransform.(ScaleTransform.ScaleY)" To="1.05" Duration="0:0:0.1"/>
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </Trigger.EnterActions>
+                    <Trigger.ExitActions>
+                        <BeginStoryboard>
+                            <Storyboard>
+                                <DoubleAnimation Storyboard.TargetProperty="RenderTransform.(ScaleTransform.ScaleX)" To="1" Duration="0:0:0.1"/>
+                                <DoubleAnimation Storyboard.TargetProperty="RenderTransform.(ScaleTransform.ScaleY)" To="1" Duration="0:0:0.1"/>
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </Trigger.ExitActions>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+    </Window.Resources>
+
     <Grid>
+        <!-- Background -->
+        <Grid.Background>
+            <ImageBrush ImageSource="GUIResources/loginBackground.jpg" Stretch="Fill"/>
+        </Grid.Background>
+        
+        <!-- Main panel -->
+        <Grid x:Name="MainPanel" Visibility="Visible">
+            <!-- 3 rows -->
+            <Grid.RowDefinitions>
+                <RowDefinition Height="1.5*"/>
+                <!-- Welcome -->
+                <RowDefinition Height="1*"/>
+                <!-- Login -->
+                <RowDefinition Height="1*"/>
+                <!-- Register -->
+            </Grid.RowDefinitions>
+
+            <!-- Welcome -->
+            <Viewbox Grid.Row="0" Stretch="Uniform" VerticalAlignment="Center" HorizontalAlignment="Center">
+                <Label Content="Welcome" 
+                   FontFamily="Brush Script MT"
+                   VerticalAlignment="Center"
+                   HorizontalContentAlignment="Center"
+                   VerticalContentAlignment="Center" FontSize="50">
+                    <Label.Foreground>
+                        <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                            <GradientStop Color="#FFFFD400" Offset="0.799"/>
+                            <GradientStop Color="#FFB78B00" Offset="1"/>
+                        </LinearGradientBrush>
+                    </Label.Foreground>
+                    <Label.Background>
+                        <ImageBrush ImageSource="/GUIResources/welcomeBackground.png"/>
+                    </Label.Background>
+                </Label>
+            </Viewbox>
+
+            <!-- Login button -->
+            <Viewbox Grid.Row="1" Stretch="Uniform" HorizontalAlignment="Center" VerticalAlignment="Center">
+                <Grid Width="274" Height="136">
+                    <Button Style="{StaticResource FancyButtonStyle}" Content="Login" 
+                FontFamily="Script MT Bold" 
+                FontSize="50" 
+                Foreground="#FF0B0B0B" 
+                BorderThickness="0"
+                Click="OpenLoginPanel">
+                        <Button.Background>
+                            <ImageBrush ImageSource="/GUIResources/LoginButtonBackground.png"/>
+                        </Button.Background>
+                    </Button>
+                </Grid>
+            </Viewbox>
+
+            <!-- Register button -->
+            <Viewbox Grid.Row="2" Stretch="Uniform" HorizontalAlignment="Center" VerticalAlignment="Center">
+                <Grid Width="274" Height="136">
+                    <Button Style="{StaticResource FancyButtonStyle}" Content="Register" 
+                FontFamily="Script MT Bold" 
+                FontSize="50" 
+                Foreground="#FF0B0B0B" 
+                BorderThickness="0"
+                Click="OpenRegisterPanel">
+                        <Button.Background>
+                            <ImageBrush ImageSource="/GUIResources/LoginButtonBackground.png"/>
+                        </Button.Background>
+                    </Button>
+                </Grid>
+            </Viewbox>
+        </Grid>
+
+        <!-- Login panel -->
+        <Grid x:Name="LoginPanel" Visibility="Collapsed">
+            <Viewbox Stretch="Uniform" HorizontalAlignment="Center" VerticalAlignment="Center">
+                <StackPanel Width="300">
+
+                    <!-- Email -->
+                    <Label Content="Email:" FontSize="20" Foreground="White" HorizontalContentAlignment="Left" FontFamily="Script MT Bold"/>
+                    <TextBox x:Name="EmailBoxLogin" Height="30" FontSize="14" VerticalContentAlignment="Center"/>
+
+                    <!-- Password -->
+                    <Label Content="Password:" FontSize="20" Foreground="White" HorizontalContentAlignment="Left" Margin="0,10,0,0" FontFamily="Script MT Bold"/>
+                    <PasswordBox x:Name="PasswordBoxLogin" Height="30" FontSize="14" VerticalContentAlignment="Center"/>
+
+                    <!-- Login button-->
+                    <Grid HorizontalAlignment="Center" Margin="0,20,0,0">
+                        <Button Style="{StaticResource FancyButtonStyle}" Content="Login" Width="125" Height="70" FontSize="23" FontFamily="Script MT Bold" BorderThickness="0" Click="TryLogin" Margin="85,0,-60,0">
+                            <Button.Background>
+                                <ImageBrush ImageSource="/GUIResources/LoginButtonBackground.png"/>
+                            </Button.Background>
+                        </Button>
+                        
+                        <!-- Back button -->
+                        <Button Style="{StaticResource FancyButtonStyle}" Content="Back" Width="125" Height="70" FontSize="23" FontFamily="Script MT Bold" BorderThickness="0" Click="CloseLoginPanel" Margin="-85,0,60,0">
+                            <Button.Background>
+                                <ImageBrush ImageSource="/GUIResources/LoginButtonBackground.png"/>
+                            </Button.Background>
+                        </Button>
+                    </Grid>
+
+                </StackPanel>
+            </Viewbox>
+        </Grid>
+
+        <!-- Register panel -->
+        <Grid x:Name="RegisterPanel" Visibility="Collapsed">
+            <Viewbox Stretch="Uniform" HorizontalAlignment="Center" VerticalAlignment="Center">
+                <Grid Width="600" Margin="10,10,10,0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <!-- First Name -->
+                    <Label Content="First Name:" FontSize="16" Foreground="White" Grid.Row="0" Grid.Column="0" FontFamily="Script MT Bold"/>
+                    <TextBox x:Name="FirstNameBox" Height="30" FontSize="14" Grid.Row="1" Grid.Column="0" Margin="0,0,10,0" VerticalContentAlignment="Center"/>
+
+                    <!-- Last Name -->
+                    <Label Content="Last Name:" FontSize="16" Foreground="White" Grid.Row="0" Grid.Column="1" Margin="10,0,0,0" FontFamily="Script MT Bold"/>
+                    <TextBox x:Name="LastNameBox" Height="30" FontSize="14" Grid.Row="1" Grid.Column="1" Margin="10,0,0,0" VerticalContentAlignment="Center"/>
+
+                    <!-- Gender -->
+                    <Label Content="Gender:" FontSize="16" Foreground="White" Grid.Row="2" Grid.Column="0" FontFamily="Script MT Bold"/>
+                    <StackPanel Orientation="Horizontal" Grid.Row="3" Grid.Column="0">
+                        <RadioButton x:Name="MaleRadioButton" Content="Male" IsChecked="True" FontFamily="Script MT Bold"/>
+                        <RadioButton x:Name="FemaleRadioButton" Content="Female" FontFamily="Script MT Bold"/>
+                    </StackPanel>
+
+                    <!-- Birth Date -->
+                    <Label Content="Birth Date:" FontSize="16" Foreground="White" Grid.Row="2" Grid.Column="1" Margin="10,0,0,0" FontFamily="Script MT Bold"/>
+                    <DatePicker x:Name="BirthDatePicker" Language="sr-RS" Height="30" FontSize="14" Grid.Row="3" Grid.Column="1" Margin="10,0,0,0" VerticalContentAlignment="Center"/>
+
+                    <!-- Phone Number -->
+                    <Label Content="Phone Number:" FontSize="16" Foreground="White" Grid.Row="4" Grid.Column="0" FontFamily="Script MT Bold"/>
+                    <TextBox x:Name="PhoneBox" Height="30" FontSize="14" Grid.Row="5" Grid.Column="0" Margin="0,0,10,0" VerticalContentAlignment="Center"/>
+
+                    <!-- Email -->
+                    <Label Content="Email:" FontSize="16" Foreground="White" Grid.Row="4" Grid.Column="1" Margin="10,0,0,0" FontFamily="Script MT Bold"/>
+                    <TextBox x:Name="EmailBoxRegister" Height="30" FontSize="14" Grid.Row="5" Grid.Column="1" Margin="10,0,0,0" VerticalContentAlignment="Center"/>
+
+                    <!-- Password -->
+                    <Label Content="Password:" FontSize="16" Foreground="White" Grid.Row="6" Grid.Column="0" FontFamily="Script MT Bold"/>
+                    <PasswordBox x:Name="PasswordBoxRegister" Height="30" FontSize="14" Grid.Row="7" Grid.Column="0" Margin="0,0,10,0" VerticalContentAlignment="Center"/>
+
+                    <!-- Education -->
+                    <Label Content="Education:" FontSize="16" Foreground="White" Grid.Row="6" Grid.Column="1" Margin="10,0,0,0" FontFamily="Script MT Bold"/>
+                    <ComboBox x:Name="EducationComboBox" Height="30" FontSize="14" Grid.Row="7" Grid.Column="1" Margin="10,0,0,0" VerticalContentAlignment="Center">
+                        <ComboBoxItem Content="High School"/>
+                        <ComboBoxItem Content="College"/>
+                        <ComboBoxItem Content="Bachelor"/>
+                        <ComboBoxItem Content="Master"/>
+                        <ComboBoxItem Content="PhD"/>
+                    </ComboBox>
+
+                    <!-- Register Button -->
+                    <Button Style="{StaticResource FancyButtonStyle}" Content="Register" Height="50" Width="100" FontSize="16" Grid.Row="8" Grid.Column="0" Grid.ColumnSpan="2" HorizontalAlignment="Center" Margin="0,20,-125,0" FontFamily="Script MT Bold" BorderThickness="0" Click="TryRegister">
+                        <Button.Background>
+                            <ImageBrush ImageSource="/GUIResources/LoginButtonBackground.png"/>
+                        </Button.Background>
+                    </Button>
+
+                    <!-- Back Button -->
+                    <Button Style="{StaticResource FancyButtonStyle}" Content="Back" Height="50" Width="100" FontSize="16" Grid.Row="8" Grid.Column="0" Grid.ColumnSpan="2" HorizontalAlignment="Center" Margin="-125,20,0,0" FontFamily="Script MT Bold" Click="CloseRegisterPanel">
+                        <Button.Background>
+                            <ImageBrush ImageSource="/GUIResources/LoginButtonBackground.png"/>
+                        </Button.Background>
+                    </Button>
+                </Grid>
+            </Viewbox>
+        </Grid>
 
     </Grid>
 </Window>

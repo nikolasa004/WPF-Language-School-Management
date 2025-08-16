@@ -7,4 +7,29 @@
     <UseWPF>true</UseWPF>
   </PropertyGroup>
 
+  <ItemGroup>
+    <None Remove="GUIResources\icon.ico" />
+    <None Remove="GUIResources\loginBackground.jpg" />
+    <None Remove="GUIResources\loginButtonBackground.png" />
+    <None Remove="GUIResources\welcomeBackground.jpg" />
+    <None Remove="GUIResources\welcomeBackground.png" />
+    <None Remove="LoginButtonBackground.png" />
+    <None Remove="welcomeBackground.jpg" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="GUIResources\icon.ico">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="GUIResources\loginBackground.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="GUIResources\loginButtonBackground.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="GUIResources\welcomeBackground.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
 </Project>
