@@ -36,31 +36,31 @@ namespace LangLang
             InitializeComponent();
         }
 
-        private void OpenLoginPanel(object sender, RoutedEventArgs e)
+        private void OpenLoginPanel_Click(object sender, RoutedEventArgs e)
         {
             MainPanel.Visibility = Visibility.Collapsed;
             LoginPanel.Visibility = Visibility.Visible;
         }
 
-        private void OpenRegisterPanel(object sender, RoutedEventArgs e)
+        private void OpenRegisterPanel_Click(object sender, RoutedEventArgs e)
         {
             RegisterPanel.Visibility = Visibility.Visible;
             MainPanel.Visibility = Visibility.Collapsed;
         }
 
-        private void CloseLoginPanel(object sender, RoutedEventArgs e)
+        private void CloseLoginPanel_Click(object sender, RoutedEventArgs e)
         {
             LoginPanel.Visibility = Visibility.Collapsed;
             MainPanel.Visibility = Visibility.Visible;
         }
 
-        private void CloseRegisterPanel(object sender, RoutedEventArgs e)
+        private void CloseRegisterPanel_Click(object sender, RoutedEventArgs e)
         {
             RegisterPanel.Visibility = Visibility.Collapsed;
             MainPanel.Visibility = Visibility.Visible;
         }
 
-        private void TryLogin(object sender, RoutedEventArgs e)
+        private void TryLogin_Click(object sender, RoutedEventArgs e)
         {
             string email = EmailBoxLogin.Text.Trim();
             string password = PasswordBoxLogin.Password.Trim();
@@ -126,7 +126,7 @@ namespace LangLang
             }
         }
 
-        private void TryRegister(object sender, RoutedEventArgs e)
+        private void TryRegister_Click(object sender, RoutedEventArgs e)
         {
             string errorMessage = "";
 
