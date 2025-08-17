@@ -1,16 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using LangLang.Controller;
+using LangLang.DTO;
+using LangLang.Model;
+using System;
+using System.Globalization;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 
 namespace LangLang.RoleWindows
 {
@@ -19,9 +13,27 @@ namespace LangLang.RoleWindows
     /// </summary>
     public partial class StudentWindow : Window
     {
-        public StudentWindow()
+        public StudentDTO Student { get; set; }
+        private StudentsController studentsController;
+
+        public StudentWindow(Student student,StudentsController studentsController)
         {
             InitializeComponent();
+            NameLabel.Content = student.FirstName;
+            SurnameLabel.Content = student.LastName;
+            GenderLabel.Content = student.Gender;
+            DateTime birthDate = DateTime.ParseExact(student.DateOfBirth, "yyyy-MM-dd", CultureInfo.InvariantCulture);
+            string birthDateString = birthDate.ToString("dd.MM.yyyy");
+            BirthDateLabel.Content = birthDateString;
+            PhoneLabel.Content = student.PhoneNumber;
+            EmailLabel.Content = student.Email;
+            EducationLabel.Content = student.EducationLevel.ToString();
+            CurrentCourseLabel.Content = "Not enrolled in any course";
+            PenaltyPointsLabel.Content = student.PenaltyPoints.ToString();
+            JoinedDateLabel.Content = student.DateOfRegistration;
+
+            Student = new StudentDTO(student);
+            this.studentsController = studentsController;
         }
 
         private void CoursesButton_Click(object sender, RoutedEventArgs e)
