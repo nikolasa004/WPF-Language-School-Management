@@ -66,7 +66,7 @@ namespace LangLang
 
             if (string.IsNullOrEmpty(email) || string.IsNullOrEmpty(password))
             {
-                MessageBox.Show("Please enter both email and password.");
+                MessageBox.Show("Please enter both email and password.", "Empty input",MessageBoxButton.OK,MessageBoxImage.Warning);
                 return;
             }
 
@@ -97,7 +97,7 @@ namespace LangLang
             }
 
             if (errorOccurred)
-                MessageBox.Show("Invalid email or password. Please try again.");
+                MessageBox.Show("Invalid email or password. Please try again.", "Login error",MessageBoxButton.OK,MessageBoxImage.Error);
         }
         private void OpenNewWindow(Window newWindow)
         {
@@ -117,7 +117,6 @@ namespace LangLang
             Close();
         }
 
-
         private void TryRegister_Click(object sender, RoutedEventArgs e)
         {
             if (Student.IsValid)
@@ -125,11 +124,14 @@ namespace LangLang
                 Student student=Student.ToStudent();
                 if (studentsController.GetStudentById(student.Email)!=null)
                 {
-                    MessageBox.Show("An account with this email already exists. Please log in or use a different email to create an account.");
+                    MessageBox.Show("An account with this email already exists. Please log in or use a different email to create an account.", "Email already exists",MessageBoxButton.OK,MessageBoxImage.Warning);
                     return;
                 }
-                Student.DateOfRegistration = DateTime.Now.ToString("yyyy-MM-dd");
+                student.DateOfRegistration = DateTime.Now.ToString("yyyy-MM-dd");
                 studentsController.Add(student);
+
+                MessageBox.Show("Registration successful! You can now log in.", "Registration successful", MessageBoxButton.OK, MessageBoxImage.Information);
+
                 CloseRegisterPanel_Click(sender, e);
             }
         }
