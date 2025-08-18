@@ -3,12 +3,265 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:LangLang.RoleWindows"
+        xmlns:conv="clr-namespace:LangLang.Converters"
+        xmlns:local="clr-namespace:LangLang.Model.Enums"
+        xmlns:sys="clr-namespace:System;assembly=mscorlib"
         mc:Ignorable="d"
         Title="StudentWindow" 
         Height="450" Width="800"
         Icon="/GUIResources/icon.ico">
+
+    <Window.Resources>
+        <conv:DateToStringConverter x:Key="DateToStringConverter"/>
+        <conv:EnumToBooleanConverter x:Key="EnumToBooleanConverter"/>
+
+        <ObjectDataProvider MethodName="GetValues" ObjectType="{x:Type sys:Enum}" x:Key="EducationValues">
+            <ObjectDataProvider.MethodParameters>
+                <x:Type TypeName="local:EducationLevel"/>
+            </ObjectDataProvider.MethodParameters>
+        </ObjectDataProvider>
+
+        <ControlTemplate x:Key="ValidationTemplate">
+            <StackPanel>
+                <!-- Placeholder for the TextBox itself -->
+                <AdornedElementPlaceholder x:Name="textBox" />
+                <TextBlock Text="{Binding [0].ErrorContent}" Foreground="Red" FontFamily="Script MT Bold" HorizontalAlignment="Right" Background="#80000000"/>
+            </StackPanel>
+        </ControlTemplate>
+    </Window.Resources>
+
+
     <Grid>
+        <!-- Background -->
+        <Grid.Background>
+            <ImageBrush ImageSource="/GUIResources/loginBackground.jpg" Stretch="Fill"/>
+        </Grid.Background>
         
+        <!-- Main panel -->
+        <Grid x:Name="MainPanel" Visibility="Visible">
+            <Viewbox Stretch="Uniform">
+                <Grid Width="600" Margin="5">
+                    <Grid.RowDefinitions>
+                        <!-- Top bar -->
+                        <RowDefinition Height="Auto"/>
+                        <!-- Student info -->
+                        <RowDefinition Height="*"/>
+                        <!-- Bottom buttons -->
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <!-- Top bar -->
+                    <Grid Grid.Row="0" Height="40">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+
+                        <!-- Navigation buttons -->
+                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="10,0,0,0">
+
+                            <!-- Courses Button -->
+                            <Button x:Name="CoursesButton" Content="Courses" Style="{StaticResource FancyButtonStyle}" FontSize="20" Width="100" Height="35" Click="CoursesButton_Click">
+                                <Button.Background>
+                                    <ImageBrush ImageSource="/GUIResources/topBarButtonBackground.png"/>
+                                </Button.Background>
+                                <Button.ContextMenu>
+                                    <ContextMenu x:Name="CoursesContextMenu" Placement="Bottom" PlacementTarget="{Binding RelativeSource={RelativeSource Self}}">
+                                        <ContextMenu.ItemContainerStyle>
+                                            <Style TargetType="MenuItem">
+                                                <Setter Property="Foreground" Value="White"/>
+                                                <Setter Property="Background" Value="Gold"/>
+                                                <Setter Property="FontFamily" Value="Script MT Bold"/>
+                                                <Setter Property="FontSize" Value="20"/>
+                                            </Style>
+                                        </ContextMenu.ItemContainerStyle>
+
+                                        <MenuItem Header="Show available courses">
+                                            <MenuItem.Icon>
+                                                <Image Source="/GUIResources/star.png" Width="16" Height="16"/>
+                                            </MenuItem.Icon>
+                                        </MenuItem>
+                                        <MenuItem Header="Show course enrollment requests">
+                                            <MenuItem.Icon>
+                                                <Image Source="/GUIResources/star.png" Width="16" Height="16"/>
+                                            </MenuItem.Icon>
+                                        </MenuItem>
+                                        <MenuItem Header="Show finished courses">
+                                            <MenuItem.Icon>
+                                                <Image Source="/GUIResources/star.png" Width="16" Height="16"/>
+                                            </MenuItem.Icon>
+                                        </MenuItem>
+                                        <MenuItem Header="Show active course">
+                                            <MenuItem.Icon>
+                                                <Image Source="/GUIResources/star.png" Width="16" Height="16"/>
+                                            </MenuItem.Icon>
+                                        </MenuItem>
+                                    </ContextMenu>
+                                </Button.ContextMenu>
+                            </Button>
+
+                            <!-- Exams Button -->
+                            <Button x:Name="ExamsButton" Content="Exams" Style="{StaticResource FancyButtonStyle}" FontSize="20" Width="100" Height="35" Click="ExamsButton_Click">
+                                <Button.Background>
+                                    <ImageBrush ImageSource="/GUIResources/topBarButtonBackground.png"/>
+                                </Button.Background>
+                                <Button.ContextMenu>
+                                    <ContextMenu x:Name="ExamsContextMenu" Placement="Bottom" PlacementTarget="{Binding RelativeSource={RelativeSource Self}}">
+                                        <ContextMenu.ItemContainerStyle>
+                                            <Style TargetType="MenuItem">
+                                                <Setter Property="Foreground" Value="White"/>
+                                                <Setter Property="Background" Value="Gold"/>
+                                                <Setter Property="FontFamily" Value="Script MT Bold"/>
+                                                <Setter Property="FontSize" Value="20"/>
+                                            </Style>
+                                        </ContextMenu.ItemContainerStyle>
+
+                                        <MenuItem Header="Show available exams">
+                                            <MenuItem.Icon>
+                                                <Image Source="/GUIResources/star.png" Width="16" Height="16"/>
+                                            </MenuItem.Icon>
+                                        </MenuItem>
+                                        <MenuItem Header="Show exam registration requests">
+                                            <MenuItem.Icon>
+                                                <Image Source="/GUIResources/star.png" Width="16" Height="16"/>
+                                            </MenuItem.Icon>
+                                        </MenuItem>
+                                        <MenuItem Header="Show finished exams">
+                                            <MenuItem.Icon>
+                                                <Image Source="/GUIResources/star.png" Width="16" Height="16"/>
+                                            </MenuItem.Icon>
+                                        </MenuItem>
+                                        <MenuItem Header="Show active exam">
+                                            <MenuItem.Icon>
+                                                <Image Source="/GUIResources/star.png" Width="16" Height="16"/>
+                                            </MenuItem.Icon>
+                                        </MenuItem>
+                                    </ContextMenu>
+                                </Button.ContextMenu>
+                            </Button>
+
+                        </StackPanel>
+
+
+                        <!-- Inbox button -->
+                        <Button Content="" Style="{StaticResource FancyButtonStyle}" Width="40" Height="40" HorizontalAlignment="Right" Grid.Column="1">
+                            <Button.Background>
+                                <ImageBrush ImageSource="/GUIResources/inbox.png"/>
+                            </Button.Background>
+                        </Button>
+                    </Grid>
+
+                    <!-- Student info in two columns -->
+                    <Grid Grid.Row="1" Margin="0,20,0,0" Background="#80000000">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+
+                        <StackPanel Grid.Column="0" VerticalAlignment="Top">
+                            <Label x:Name="NameLabel" Content="Name: John" FontSize="20" Foreground="White" FontFamily="Script MT Bold"/>
+                            <Label x:Name="SurnameLabel" Content="Surname: Doe" FontSize="20" Foreground="White" FontFamily="Script MT Bold"/>
+                            <Label x:Name="GenderLabel" Content="Gender: Male" FontSize="20" Foreground="White" FontFamily="Script MT Bold"/>
+                            <Label x:Name="BirthDateLabel" Content="Birth Date: 01.01.2000" FontSize="20" Foreground="White" FontFamily="Script MT Bold"/>
+                            <Label x:Name="PhoneLabel" Content="Phone: 1234567890" FontSize="20" Foreground="White" FontFamily="Script MT Bold"/>
+                        </StackPanel>
+
+                        <StackPanel Grid.Column="1" VerticalAlignment="Top">
+                            <Label x:Name="EmailLabel" Content="Email: john@example.com" FontSize="20" Foreground="White" FontFamily="Script MT Bold"/>
+                            <Label x:Name="EducationLabel" Content="Education: Bachelor" FontSize="20" Foreground="White" FontFamily="Script MT Bold"/>
+                            <Label x:Name="CurrentCourseLabel" Content="Current Course: Math 101" FontSize="20" Foreground="White" FontFamily="Script MT Bold"/>
+                            <Label x:Name="PenaltyPointsLabel" Content="Penalty Points: 0" FontSize="20" Foreground="White" FontFamily="Script MT Bold"/>
+                            <Label x:Name="JoinedDateLabel" Content="Joined Date: 01.09.2023" FontSize="20" Foreground="White" FontFamily="Script MT Bold"/>
+                        </StackPanel>
+                    </Grid>
+
+                    <!-- Bottom buttons -->
+                    <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,20,0,0">
+                        <Button Content="Edit Profile" Style="{StaticResource FancyButtonStyle}" Width="120" Height="70" Margin="10,0" FontSize="20" Click="Edit_Click">
+                            <Button.Background>
+                                <ImageBrush ImageSource="/GUIResources/loginButtonBackground.png"/>
+                            </Button.Background>
+                        </Button>
+                        <Button Content="Delete Profile" Style="{StaticResource FancyButtonStyle}" Width="120" Height="70" Margin="10,0" FontSize="20" Click="Delete_Click">
+                            <Button.Background>
+                                <ImageBrush ImageSource="/GUIResources/loginButtonBackground.png"/>
+                            </Button.Background>
+                        </Button>
+                    </StackPanel>
+                </Grid>
+            </Viewbox>
+        </Grid>
+
+        <!-- Edit panel -->
+        <Grid x:Name="EditPanel" Visibility="Collapsed">
+            <Viewbox Stretch="Uniform" HorizontalAlignment="Center" VerticalAlignment="Center">
+                <Grid Width="600" Margin="10,10,10,0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <!-- First Name -->
+                    <Label Content="First Name:" FontSize="16" Foreground="White" Grid.Row="0" Grid.Column="0" FontFamily="Script MT Bold" />
+                    <TextBox x:Name="FirstNameBox" Height="30" FontSize="14" Grid.Row="1" Grid.Column="0" Margin="0,0,10,0" VerticalContentAlignment="Center" Text="{Binding Path=UpdateStudent.FirstName, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}" Validation.ErrorTemplate="{StaticResource ValidationTemplate}"/>
+
+                    <!-- Last Name -->
+                    <Label Content="Last Name:" FontSize="16" Foreground="White" Grid.Row="0" Grid.Column="1" Margin="10,0,0,0" FontFamily="Script MT Bold"/>
+                    <TextBox x:Name="LastNameBox" Height="30" FontSize="14" Grid.Row="1" Grid.Column="1" Margin="10,0,0,0" VerticalContentAlignment="Center" Text="{Binding Path=UpdateStudent.LastName, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}" Validation.ErrorTemplate="{StaticResource ValidationTemplate}"/>
+
+                    <!-- Gender -->
+                    <Label Content="Gender:" FontSize="16" Foreground="White" Grid.Row="2" Grid.Column="0" FontFamily="Script MT Bold"/>
+                    <StackPanel Orientation="Horizontal" Grid.Row="3" Grid.Column="0">
+                        <RadioButton x:Name="MaleRadioButton" Content="Male" FontFamily="Script MT Bold" IsChecked="{Binding Path=UpdateStudent.Gender, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter=Male, Mode=TwoWay}" />
+                        <RadioButton x:Name="FemaleRadioButton" Content="Female" FontFamily="Script MT Bold" IsChecked="{Binding Path=UpdateStudent.Gender, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter=Female, Mode=TwoWay}" />
+                    </StackPanel>
+
+                    <!-- Birth Date -->
+                    <Label Content="Birth Date:" FontSize="16" Foreground="White" Grid.Row="2" Grid.Column="1" Margin="10,0,0,0" FontFamily="Script MT Bold"/>
+                    <DatePicker x:Name="BirthDatePicker" Language="sr-RS" Height="30" FontSize="14" Grid.Row="3" Grid.Column="1" Margin="10,0,0,0" VerticalContentAlignment="Center" SelectedDate="{Binding Path=UpdateStudent.DateOfBirth, Converter={StaticResource DateToStringConverter}, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}" Validation.ErrorTemplate="{StaticResource ValidationTemplate}"/>
+
+                    <!-- Phone Number -->
+                    <Label Content="Phone Number:" FontSize="16" Foreground="White" Grid.Row="4" Grid.Column="0" FontFamily="Script MT Bold"/>
+                    <TextBox x:Name="PhoneBox" Height="30" FontSize="14" Grid.Row="5" Grid.Column="0" Margin="0,0,10,0" VerticalContentAlignment="Center" Text="{Binding Path=UpdateStudent.PhoneNumber, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}" Validation.ErrorTemplate="{StaticResource ValidationTemplate}"/>
+
+                    <!-- Email -->
+                    <Label Content="Email:" FontSize="16" Foreground="White" Grid.Row="4" Grid.Column="1" Margin="10,0,0,0" FontFamily="Script MT Bold"/>
+                    <TextBox x:Name="EmailBox" Height="30" FontSize="14" Grid.Row="5" Grid.Column="1" Margin="10,0,0,0" VerticalContentAlignment="Center" Text="{Binding Path=UpdateStudent.Email, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}" Validation.ErrorTemplate="{StaticResource ValidationTemplate}" IsEnabled="False"/>
+
+                    <!-- Password -->
+                    <Label Content="Password:" FontSize="16" Foreground="White" Grid.Row="6" Grid.Column="0" FontFamily="Script MT Bold"/>
+                    <TextBox x:Name="PasswordTextBox" Height="30" FontSize="14" Grid.Row="7" Grid.Column="0" Margin="0,0,10,0" VerticalContentAlignment="Center" Text="{Binding Path=UpdateStudent.Password, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}" Validation.ErrorTemplate="{StaticResource ValidationTemplate}"/>
+
+                    <!-- Education -->
+                    <Label Content="Education:" FontSize="16" Foreground="White" Grid.Row="6" Grid.Column="1" Margin="10,0,0,0" FontFamily="Script MT Bold"/>
+                    <ComboBox x:Name="EducationComboBox" Height="30" FontSize="14" Grid.Row="7" Grid.Column="1" Margin="10,0,0,0" VerticalContentAlignment="Center" SelectedItem="{Binding UpdateStudent.EducationLevel, Mode=TwoWay}" ItemsSource="{Binding Source={StaticResource EducationValues}}"/>
+
+                    <!-- Update Button -->
+                    <Button Style="{StaticResource FancyButtonStyle}" Content="Update" Height="50" Width="100" FontSize="16" Grid.Row="8" Grid.Column="0" Grid.ColumnSpan="2" HorizontalAlignment="Center" Margin="0,20,-125,0" FontFamily="Script MT Bold" BorderThickness="0" Click="SaveEditChanges_Click">
+                        <Button.Background>
+                            <ImageBrush ImageSource="/GUIResources/LoginButtonBackground.png"/>
+                        </Button.Background>
+                    </Button>
+
+                    <!-- Back Button -->
+                    <Button Style="{StaticResource FancyButtonStyle}" Content="Back" Height="50" Width="100" FontSize="16" Grid.Row="8" Grid.Column="0" Grid.ColumnSpan="2" HorizontalAlignment="Center" Margin="-125,20,0,0" FontFamily="Script MT Bold" Click="CloseEditPanel_Click">
+                        <Button.Background>
+                            <ImageBrush ImageSource="/GUIResources/LoginButtonBackground.png"/>
+                        </Button.Background>
+                    </Button>
+                </Grid>
+            </Viewbox>
+        </Grid>
     </Grid>
 </Window>

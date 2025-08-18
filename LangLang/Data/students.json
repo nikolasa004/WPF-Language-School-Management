@@ -1,0 +1,14 @@
+[
+  {
+    "PenaltyPoints": 0,
+    "FirstName": "Student",
+    "LastName": "Studentic",
+    "Gender": 0,
+    "DateOfBirth": "1920-06-24",
+    "PhoneNumber": "12345678",
+    "Email": "student@gmail.com",
+    "Password": "123",
+    "EducationLevel": 4,
+    "DateOfRegistration": "2025-08-17"
+  }
+]

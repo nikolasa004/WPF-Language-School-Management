@@ -6,14 +6,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
+using LangLang.Controller;
+using LangLang.DTO;
+using LangLang.Model;
 
 namespace LangLang
 {
@@ -22,10 +17,11 @@ namespace LangLang
     /// </summary>
     public partial class MainWindow : Window
     {
-        //temporary variables for user credentials
-        private string studentEmail = "student@gmail.com";
-        private string studentPassword = "student123";
+        public StudentDTO Student { get; set; }
 
+        private StudentsController studentsController;
+
+        //temporary variables for user credentials
         private string teacherEmail = "teacher@gmail.com";
         private string teacherPassword = "teacher123";
 
@@ -34,187 +30,109 @@ namespace LangLang
         public MainWindow()
         {
             InitializeComponent();
+            DataContext = this;
+            Student = new StudentDTO();
+            studentsController = new StudentsController();
         }
 
-        private void OpenLoginPanel(object sender, RoutedEventArgs e)
+        private void OpenLoginPanel_Click(object sender, RoutedEventArgs e)
         {
             MainPanel.Visibility = Visibility.Collapsed;
             LoginPanel.Visibility = Visibility.Visible;
         }
 
-        private void OpenRegisterPanel(object sender, RoutedEventArgs e)
+        private void OpenRegisterPanel_Click(object sender, RoutedEventArgs e)
         {
             RegisterPanel.Visibility = Visibility.Visible;
             MainPanel.Visibility = Visibility.Collapsed;
         }
 
-        private void CloseLoginPanel(object sender, RoutedEventArgs e)
+        private void CloseLoginPanel_Click(object sender, RoutedEventArgs e)
         {
             LoginPanel.Visibility = Visibility.Collapsed;
             MainPanel.Visibility = Visibility.Visible;
         }
 
-        private void CloseRegisterPanel(object sender, RoutedEventArgs e)
+        private void CloseRegisterPanel_Click(object sender, RoutedEventArgs e)
         {
             RegisterPanel.Visibility = Visibility.Collapsed;
             MainPanel.Visibility = Visibility.Visible;
         }
 
-        private void TryLogin(object sender, RoutedEventArgs e)
+        private void TryLogin_Click(object sender, RoutedEventArgs e)
         {
             string email = EmailBoxLogin.Text.Trim();
             string password = PasswordBoxLogin.Password.Trim();
 
             if (string.IsNullOrEmpty(email) || string.IsNullOrEmpty(password))
             {
-                MessageBox.Show("Please enter both email and password.");
+                MessageBox.Show("Please enter both email and password.", "Empty input",MessageBoxButton.OK,MessageBoxImage.Warning);
                 return;
             }
 
-            // Check credentials against temporary variables
-            if (email == studentEmail && password == studentPassword)
+            // Check credentials against temporary variables(students work now)
+            bool errorOccurred = false;
+            if (studentsController.GetStudentById(email) is var student && student!=null)
             {
-                StudentWindow studentWindow = new StudentWindow();
-                bool isFullScreen = WindowState == WindowState.Maximized;
-                studentWindow.Top = Top;
-                studentWindow.Left = Left;
-                studentWindow.Width = Width;
-                studentWindow.Height = Height;
-                if (isFullScreen)
+                if (student.Password == password)
                 {
-                    studentWindow.WindowState = WindowState.Maximized;
+                    OpenNewWindow(new StudentWindow(student,studentsController));
                 }
-                studentWindow.Show();
-
-                Close();
+                else
+                {
+                    errorOccurred = true;
+                }
             }
             else if (email == teacherEmail && password == teacherPassword)
             {
-                ProfessorWindow professorWindow = new ProfessorWindow();
-                bool isFullScreen = WindowState == WindowState.Maximized;
-                professorWindow.Top = Top;
-                professorWindow.Left = Left;
-                professorWindow.Width = Width;
-                professorWindow.Height = Height;
-                if (isFullScreen)
-                {
-                    professorWindow.WindowState = WindowState.Maximized;
-                }
-                professorWindow.Show();
-
-                Close();
+                OpenNewWindow(new ProfessorWindow());
             }
             else if (email == principalEmail && password == principalPassword)
             {
-                PrincipalWindow PrincipalWindow = new PrincipalWindow();
-                bool isFullScreen = WindowState == WindowState.Maximized;
-                PrincipalWindow.Top = Top;
-                PrincipalWindow.Left = Left;
-                PrincipalWindow.Width = Width;
-                PrincipalWindow.Height = Height;
-                if (isFullScreen)
-                {
-                    PrincipalWindow.WindowState = WindowState.Maximized;
-                }
-                PrincipalWindow.Show();
-
-                Close();
+                OpenNewWindow(new PrincipalWindow());
             }
             else
             {
-                MessageBox.Show("Invalid email or password. Please try again.");
+                errorOccurred = true;
             }
+
+            if (errorOccurred)
+                MessageBox.Show("Invalid email or password. Please try again.", "Login error",MessageBoxButton.OK,MessageBoxImage.Error);
+        }
+        private void OpenNewWindow(Window newWindow)
+        {
+            bool isFullScreen = WindowState == WindowState.Maximized;
+
+            newWindow.Top = Top;
+            newWindow.Left = Left;
+            newWindow.Width = Width;
+            newWindow.Height = Height;
+
+            if (isFullScreen)
+            {
+                newWindow.WindowState = WindowState.Maximized;
+            }
+
+            newWindow.Show();
+            Close();
         }
 
-        private void TryRegister(object sender, RoutedEventArgs e)
+        private void TryRegister_Click(object sender, RoutedEventArgs e)
         {
-            string errorMessage = "";
-
-            string name = FirstNameBox.Text.Trim();
-            if (string.IsNullOrEmpty(name))
+            if (Student.IsValid)
             {
-                errorMessage += "Please enter your first name.\n";
-            }
-            else if (name.Any(c => !char.IsLetter(c)))
-            {
-                errorMessage += "First name can only contain letters.\n";
-            }
-
-            string surname = LastNameBox.Text.Trim();
-            if (string.IsNullOrEmpty(surname))
-            {
-                errorMessage += "Please enter your last name.\n";
-            }
-            else if (surname.Any(c => !char.IsLetter(c)))
-            {
-                errorMessage += "Last name can only contain letters.\n";
-            }
-
-            bool isMale = MaleRadioButton.IsChecked == true;
-
-            DateTime birthDate;
-            if (BirthDatePicker.SelectedDate.HasValue)
-            {
-                birthDate = BirthDatePicker.SelectedDate.Value;
-                if (birthDate > DateTime.Now)
+                Student student=Student.ToStudent();
+                if (studentsController.GetStudentById(student.Email)!=null)
                 {
-                    errorMessage += "Birth date cannot be in the future.\n";
+                    MessageBox.Show("An account with this email already exists. Please log in or use a different email to create an account.", "Email already exists",MessageBoxButton.OK,MessageBoxImage.Warning);
+                    return;
                 }
-                else if (birthDate < DateTime.Now.AddYears(-120))
-                {
-                    errorMessage += "Birth date cannot be more than 120 years ago.\n";
-                }
-                else if (birthDate > DateTime.Now.AddYears(-18))
-                {
-                    errorMessage += "You must be at least 18 years old to register.\n";
-                }
-            }
-            else
-            {
-                errorMessage += "Please select your birth date.\n";
-            }
+                student.DateOfRegistration = DateTime.Now.ToString("yyyy-MM-dd");
+                studentsController.Add(student);
 
-            string phoneNumber = PhoneBox.Text.Trim();
-            if (string.IsNullOrEmpty(phoneNumber))
-            {
-                errorMessage += "Please enter your phone number.\n";
-            }
-            else if (phoneNumber.Any(c => !char.IsDigit(c) && c != '+'))
-            {
-                errorMessage += "Phone number can only contain digits and '+' sign.\n";
-            }
+                MessageBox.Show("Registration successful! You can now log in.", "Registration successful", MessageBoxButton.OK, MessageBoxImage.Information);
 
-            string email = EmailBoxRegister.Text.Trim();
-            if (string.IsNullOrEmpty(email))
-            {
-                errorMessage += "Please enter your email.\n";
-            }
-            else if (!email.Contains("@") || !email.Contains("."))
-            {
-                errorMessage += "Please enter a valid email address.\n";
-            }
-
-            string password = PasswordBoxRegister.Password.Trim();
-            if (string.IsNullOrEmpty(password))
-            {
-                errorMessage += "Please enter your password.\n";
-            }
-
-            string educationLevel = EducationComboBox.Text.Trim();
-            if (string.IsNullOrEmpty(educationLevel))
-            {
-                errorMessage += "Please select your education level.\n";
-            }
-
-            if (errorMessage != "")
-            {
-                MessageBox.Show("Registration failed:\n" + errorMessage);
-                return;
-            }
-            else
-            {
-                MessageBox.Show("You have successfully registered!\n" + "Welcome " + name + " " + surname + "!");
-                //Here new user data should be saved to the file
+                CloseRegisterPanel_Click(sender, e);
             }
         }
     }
