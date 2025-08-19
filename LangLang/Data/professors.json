@@ -1,0 +1,17 @@
+[
+    {
+        "FirstName": "Profesor",
+        "LastName": "Profesoric",
+        "Gender": 0,
+        "DateOfBirth": "1980-03-15",
+        "PhoneNumber": "987654321",
+        "Email": "profesor@gmail.com",
+        "Password": "123",
+        "EducationLevel": 4,
+        "DateOfRegistration": "2025-08-18",
+        "Languages": {
+            "English": 3,
+            "German": 2
+        }
+    }
+]

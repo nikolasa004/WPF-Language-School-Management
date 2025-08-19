@@ -3,10 +3,295 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:LangLang.RoleWindows"
+        xmlns:conv="clr-namespace:LangLang.Converters"
+        xmlns:local="clr-namespace:LangLang.Model.Enums"
+        xmlns:sys="clr-namespace:System;assembly=mscorlib"
         mc:Ignorable="d"
-        Title="ProfessorWindow" Height="450" Width="800" Icon="/GUIResources/icon.ico">
+        Title="ProfessorWindow" 
+        Height="450" Width="800"
+        Icon="/GUIResources/icon.ico">
+
+    <Window.Resources>
+        <conv:DateToStringConverter x:Key="DateToStringConverter"/>
+        <conv:EnumToBooleanConverter x:Key="EnumToBooleanConverter"/>
+
+        <ObjectDataProvider MethodName="GetValues" ObjectType="{x:Type sys:Enum}" x:Key="EducationValues">
+            <ObjectDataProvider.MethodParameters>
+                <x:Type TypeName="local:EducationLevel"/>
+            </ObjectDataProvider.MethodParameters>
+        </ObjectDataProvider>
+
+        <ControlTemplate x:Key="ValidationTemplate">
+            <StackPanel>
+                <AdornedElementPlaceholder x:Name="textBox" />
+                <TextBlock Text="{Binding [0].ErrorContent}" Foreground="Red" FontFamily="Script MT Bold" HorizontalAlignment="Right" Background="#80000000"/>
+            </StackPanel>
+        </ControlTemplate>
+    </Window.Resources>
+
     <Grid>
-        
+        <Grid.Background>
+            <ImageBrush ImageSource="/GUIResources/loginBackground.jpg" Stretch="Fill"/>
+        </Grid.Background>
+
+        <!-- Main panel -->
+        <Grid x:Name="MainPanel" Visibility="Visible">
+            <Viewbox Stretch="Uniform">
+                <Grid Width="600" Margin="5">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <!-- Top bar -->
+                        <RowDefinition Height="*"/>
+                        <!-- Professor info -->
+                        <RowDefinition Height="Auto"/>
+                        <!-- Bottom buttons -->
+                    </Grid.RowDefinitions>
+
+                    <!-- Top bar -->
+                    <Grid Grid.Row="0" Height="40">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+
+                        <!-- Navigation buttons -->
+                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="10,0,0,0">
+
+                            <!-- Courses Button -->
+                            <Button x:Name="CoursesButton" Content="Courses" Style="{StaticResource FancyButtonStyle}" FontSize="20" Width="100" Height="35" Click="CoursesButton_Click">
+                                <Button.Background>
+                                    <ImageBrush ImageSource="/GUIResources/topBarButtonBackground.png"/>
+                                </Button.Background>
+                                <Button.ContextMenu>
+                                    <ContextMenu x:Name="CoursesContextMenu" Placement="Bottom" PlacementTarget="{Binding RelativeSource={RelativeSource Self}}">
+                                        <ContextMenu.ItemContainerStyle>
+                                            <Style TargetType="MenuItem">
+                                                <Setter Property="Foreground" Value="White"/>
+                                                <Setter Property="Background" Value="Gold"/>
+                                                <Setter Property="FontFamily" Value="Script MT Bold"/>
+                                                <Setter Property="FontSize" Value="20"/>
+                                            </Style>
+                                        </ContextMenu.ItemContainerStyle>
+
+                                        <MenuItem Header="Show your courses">
+                                            <MenuItem.Icon>
+                                                <Image Source="/GUIResources/star.png" Width="16" Height="16"/>
+                                            </MenuItem.Icon>
+                                        </MenuItem>
+                                        <MenuItem Header="Find your courses">
+                                            <MenuItem.Icon>
+                                                <Image Source="/GUIResources/star.png" Width="16" Height="16"/>
+                                            </MenuItem.Icon>
+                                        </MenuItem>
+                                        <MenuItem Header="Sort and paginate your courses">
+                                            <MenuItem.Icon>
+                                                <Image Source="/GUIResources/star.png" Width="16" Height="16"/>
+                                            </MenuItem.Icon>
+                                        </MenuItem>
+                                        <MenuItem Header="Start a course">
+                                            <MenuItem.Icon>
+                                                <Image Source="/GUIResources/star.png" Width="16" Height="16"/>
+                                            </MenuItem.Icon>
+                                        </MenuItem>
+                                        <MenuItem Header="Ongoing courses">
+                                            <MenuItem.Icon>
+                                                <Image Source="/GUIResources/star.png" Width="16" Height="16"/>
+                                            </MenuItem.Icon>
+                                        </MenuItem>
+                                        <MenuItem Header="End course">
+                                            <MenuItem.Icon>
+                                                <Image Source="/GUIResources/star.png" Width="16" Height="16"/>
+                                            </MenuItem.Icon>
+                                        </MenuItem>
+                                    </ContextMenu>
+                                </Button.ContextMenu>
+                            </Button>
+
+                            <!-- Exams Button -->
+                            <Button x:Name="ExamsButton" Content="Exams" Style="{StaticResource FancyButtonStyle}" FontSize="20" Width="100" Height="35" Click="ExamsButton_Click">
+                                <Button.Background>
+                                    <ImageBrush ImageSource="/GUIResources/topBarButtonBackground.png"/>
+                                </Button.Background>
+                                <Button.ContextMenu>
+                                    <ContextMenu x:Name="ExamsContextMenu" Placement="Bottom" PlacementTarget="{Binding RelativeSource={RelativeSource Self}}">
+                                        <ContextMenu.ItemContainerStyle>
+                                            <Style TargetType="MenuItem">
+                                                <Setter Property="Foreground" Value="White"/>
+                                                <Setter Property="Background" Value="Gold"/>
+                                                <Setter Property="FontFamily" Value="Script MT Bold"/>
+                                                <Setter Property="FontSize" Value="20"/>
+                                            </Style>
+                                        </ContextMenu.ItemContainerStyle>
+
+                                        <MenuItem Header="Show your exams">
+                                            <MenuItem.Icon>
+                                                <Image Source="/GUIResources/star.png" Width="16" Height="16"/>
+                                            </MenuItem.Icon>
+                                        </MenuItem>
+                                        <MenuItem Header="Find your exams">
+                                            <MenuItem.Icon>
+                                                <Image Source="/GUIResources/star.png" Width="16" Height="16"/>
+                                            </MenuItem.Icon>
+                                        </MenuItem>
+                                        <MenuItem Header="Sort and paginate your exams">
+                                            <MenuItem.Icon>
+                                                <Image Source="/GUIResources/star.png" Width="16" Height="16"/>
+                                            </MenuItem.Icon>
+                                        </MenuItem>
+                                        <MenuItem Header="Start an exam">
+                                            <MenuItem.Icon>
+                                                <Image Source="/GUIResources/star.png" Width="16" Height="16"/>
+                                            </MenuItem.Icon>
+                                        </MenuItem>
+                                        <MenuItem Header="Ongoing exams">
+                                            <MenuItem.Icon>
+                                                <Image Source="/GUIResources/star.png" Width="16" Height="16"/>
+                                            </MenuItem.Icon>
+                                        </MenuItem>
+                                        <MenuItem Header="End the exam">
+                                            <MenuItem.Icon>
+                                                <Image Source="/GUIResources/star.png" Width="16" Height="16"/>
+                                            </MenuItem.Icon>
+                                        </MenuItem>
+                                    </ContextMenu>
+                                </Button.ContextMenu>
+                            </Button>
+                        </StackPanel>
+
+                        <!-- Inbox button or whatever else on the right -->
+                        <Button Content="" Style="{StaticResource FancyButtonStyle}" Width="40" Height="40" HorizontalAlignment="Right" Grid.Column="1">
+                            <Button.Background>
+                                <ImageBrush ImageSource="/GUIResources/inbox.png"/>
+                            </Button.Background>
+                        </Button>
+                    </Grid>
+
+                    <!-- Professor info -->
+                    <Grid Grid.Row="1" Margin="0,20,0,0" Background="#80000000">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+
+                        <StackPanel Grid.Column="0" VerticalAlignment="Top">
+                            <Label x:Name="NameLabel" Content="Name: John" FontSize="20" Foreground="White" FontFamily="Script MT Bold"/>
+                            <Label x:Name="SurnameLabel" Content="Surname: Doe" FontSize="20" Foreground="White" FontFamily="Script MT Bold"/>
+                            <Label x:Name="GenderLabel" Content="Gender: Male" FontSize="20" Foreground="White" FontFamily="Script MT Bold"/>
+                            <Label x:Name="BirthDateLabel" Content="Birth Date: 01.01.1970" FontSize="20" Foreground="White" FontFamily="Script MT Bold"/>
+                            <Label x:Name="PhoneLabel" Content="Phone: 1234567890" FontSize="20" Foreground="White" FontFamily="Script MT Bold"/>
+                        </StackPanel>
+
+                        <StackPanel Grid.Column="1" VerticalAlignment="Top">
+                            <Label x:Name="EmailLabel" Content="Email: john@example.com" FontSize="20" Foreground="White" FontFamily="Script MT Bold"/>
+                            <Label x:Name="EducationLabel" Content="Education: Master" FontSize="20" Foreground="White" FontFamily="Script MT Bold"/>
+                            <TextBlock x:Name="LanguagesLabel" Text="Languages: English - Advanced, Spanish - Intermediate, French - Beginner" 
+               FontSize="20" Foreground="White" FontFamily="Script MT Bold" TextWrapping="Wrap"/>
+                            <Label x:Name="JoinedDateLabel" Content="Joined Date: 01.09.2000" FontSize="20" Foreground="White" FontFamily="Script MT Bold"/>
+                        </StackPanel>
+                    </Grid>
+
+                    <!-- Bottom buttons -->
+                    <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,20,0,0">
+                        <Button Content="Add Course" Style="{StaticResource FancyButtonStyle}" Width="150" Height="70" Margin="10,0" FontSize="20" Click="AddCourse_Click">
+                            <Button.Background>
+                                <ImageBrush ImageSource="/GUIResources/loginButtonBackground.png"/>
+                            </Button.Background>
+                        </Button>
+                        <Button Content="Add Exam" Style="{StaticResource FancyButtonStyle}" Width="150" Height="70" Margin="10,0" FontSize="20" Click="AddExam_Click">
+                            <Button.Background>
+                                <ImageBrush ImageSource="/GUIResources/loginButtonBackground.png"/>
+                            </Button.Background>
+                        </Button>
+                    </StackPanel>
+                </Grid>
+            </Viewbox>
+        </Grid>
+        <!-- Add Course panel -->
+        <Grid x:Name="AddCoursePanel" Visibility="Collapsed">
+            <Viewbox Stretch="Uniform" HorizontalAlignment="Center" VerticalAlignment="Center">
+                <Grid Width="600" Margin="10,10,10,0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <!-- Language -->
+                    <Label Content="Language:" FontSize="16" Foreground="White" Grid.Row="0" Grid.Column="0" FontFamily="Script MT Bold"/>
+                    <ComboBox x:Name="CourseLanguageComboBox" Height="30" FontSize="14" Grid.Row="1" Grid.Column="0" VerticalContentAlignment="Center">
+                        <ComboBoxItem Content="English"/>
+                        <ComboBoxItem Content="German"/>
+                        <ComboBoxItem Content="French"/>
+                        <ComboBoxItem Content="Spanish"/>
+                        <ComboBoxItem Content="Italian"/>
+                        <ComboBoxItem Content="Russian"/>
+                        <ComboBoxItem Content="Chinese"/>
+                        <ComboBoxItem Content="Japanese"/>
+                        <ComboBoxItem Content="Serbian"/>
+                    </ComboBox>
+
+                    <!-- Level -->
+                    <Label Content="Level:" FontSize="16" Foreground="White" Grid.Row="0" Grid.Column="1" FontFamily="Script MT Bold"/>
+                    <ComboBox x:Name="CourseLevelComboBox" Height="30" FontSize="14" Grid.Row="1" Grid.Column="1" VerticalContentAlignment="Center">
+                        <ComboBoxItem Content="A1 - Beginner"/>
+                        <ComboBoxItem Content="A2 - Elementary"/>
+                        <ComboBoxItem Content="B1 - Intermediate"/>
+                        <ComboBoxItem Content="B2 - Upper Intermediate"/>
+                        <ComboBoxItem Content="C1 - Advanced"/>
+                        <ComboBoxItem Content="C2 - Proficient"/>
+                    </ComboBox>
+
+                    <!-- Duration in weeks -->
+                    <Label Content="Duration (weeks):" FontSize="16" Foreground="White" Grid.Row="2" Grid.Column="0" FontFamily="Script MT Bold"/>
+                    <TextBox x:Name="CourseDurationBox" Height="30" FontSize="14" Grid.Row="3" Grid.Column="0" VerticalContentAlignment="Center"
+                     Validation.ErrorTemplate="{StaticResource ValidationTemplate}"/>
+
+                    <!-- Days of week -->
+                    <Label Content="Days of week:" FontSize="16" Foreground="White" Grid.Row="2" Grid.Column="1" FontFamily="Script MT Bold"/>
+                    <TextBox x:Name="CourseDaysBox" Height="30" FontSize="14" Grid.Row="3" Grid.Column="1" VerticalContentAlignment="Center"
+                     ToolTip="Comma separated, e.g., Monday, Wednesday" Validation.ErrorTemplate="{StaticResource ValidationTemplate}"/>
+
+                    <!-- Start date -->
+                    <Label Content="Start Date:" FontSize="16" Foreground="White" Grid.Row="4" Grid.Column="0" FontFamily="Script MT Bold"/>
+                    <DatePicker x:Name="CourseStartDatePicker" Height="30" FontSize="14" Grid.Row="5" Grid.Column="0" VerticalContentAlignment="Center"
+                        Validation.ErrorTemplate="{StaticResource ValidationTemplate}"/>
+
+                    <!-- Online / Offline -->
+                    <Label Content="Mode:" FontSize="16" Foreground="White" Grid.Row="4" Grid.Column="1" FontFamily="Script MT Bold"/>
+                    <StackPanel Orientation="Horizontal" Grid.Row="5" Grid.Column="1">
+                        <RadioButton x:Name="OnlineRadioButton" Content="Online" FontFamily="Script MT Bold"/>
+                        <RadioButton x:Name="OfflineRadioButton" Content="Offline" FontFamily="Script MT Bold"/>
+                    </StackPanel>
+
+                    <!-- Max students (if offline) -->
+                    <Label Content="Max Students:" FontSize="16" Foreground="White" Grid.Row="6" Grid.Column="0" FontFamily="Script MT Bold"/>
+                    <TextBox x:Name="CourseMaxStudentsBox" Height="30" FontSize="14" Grid.Row="7" Grid.Column="0" VerticalContentAlignment="Center"
+                     Validation.ErrorTemplate="{StaticResource ValidationTemplate}" ToolTip="Only required for offline courses"/>
+
+                    <!-- Buttons -->
+                    <Button Style="{StaticResource FancyButtonStyle}" Content="Save" Height="50" Width="100" FontSize="16" Grid.Row="8" Grid.Column="0" Grid.ColumnSpan="2" HorizontalAlignment="Center" Margin="0,20,0,0" Click="SaveCourse_Click">
+                        <Button.Background>
+                            <ImageBrush ImageSource="/GUIResources/LoginButtonBackground.png"/>
+                        </Button.Background>
+                    </Button>
+                    <Button Style="{StaticResource FancyButtonStyle}" Content="Cancel" Height="50" Width="100" FontSize="16" Grid.Row="8" Grid.Column="0" Grid.ColumnSpan="2" HorizontalAlignment="Center" Margin="0,80,0,0" Click="CloseAddCoursePanel_Click">
+                        <Button.Background>
+                            <ImageBrush ImageSource="/GUIResources/LoginButtonBackground.png"/>
+                        </Button.Background>
+                    </Button>
+                </Grid>
+            </Viewbox>
+        </Grid>
     </Grid>
 </Window>
+
