@@ -21,9 +21,13 @@ namespace LangLang
 
         private StudentsController studentsController;
 
+        public ProfessorDTO Professor { get; set; }
+
+        private ProfessorsController professorsController;
+
         //temporary variables for user credentials
-        private string teacherEmail = "teacher@gmail.com";
-        private string teacherPassword = "teacher123";
+       // private string teacherEmail = "teacher@gmail.com";
+       // private string teacherPassword = "teacher123";
 
         private string principalEmail = "principal@gmail.com";
         private string principalPassword = "principal123";
@@ -33,6 +37,8 @@ namespace LangLang
             DataContext = this;
             Student = new StudentDTO();
             studentsController = new StudentsController();
+            Professor = new ProfessorDTO();
+            professorsController = new ProfessorsController();
         }
 
         private void OpenLoginPanel_Click(object sender, RoutedEventArgs e)
@@ -83,9 +89,16 @@ namespace LangLang
                     errorOccurred = true;
                 }
             }
-            else if (email == teacherEmail && password == teacherPassword)
+            else if (professorsController.GetProfessorById(email) is var professor && professor != null)
             {
-                OpenNewWindow(new ProfessorWindow());
+                if (professor.Password == password)
+                {
+                    OpenNewWindow(new ProfessorWindow(professor, professorsController));
+                }
+                else
+                {
+                    errorOccurred = true;
+                }
             }
             else if (email == principalEmail && password == principalPassword)
             {
