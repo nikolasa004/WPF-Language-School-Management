@@ -13,5 +13,20 @@
             "English": 3,
             "German": 2
         }
+    },
+    {
+        "FirstName": "Profesor2",
+        "LastName": "Profesoric2",
+        "Gender": 0,
+        "DateOfBirth": "1982-03-15",
+        "PhoneNumber": "987654322",
+        "Email": "profesor2@gmail.com",
+        "Password": "123",
+        "EducationLevel": 4,
+        "DateOfRegistration": "2025-02-18",
+        "Languages": {
+            "English": 3,
+            "German": 2
+        }
     }
 ]
