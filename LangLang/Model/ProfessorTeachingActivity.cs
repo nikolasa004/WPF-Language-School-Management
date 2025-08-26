@@ -10,7 +10,7 @@ namespace LangLang.Model
     public class ProfessorTeachingActivity
     {
         public int Id { get; set; }
-        public required string ProfessorId { get; set; }
+        public string ProfessorId { get; set; }
 
         public Language Language { get; set; }
         public LanguageLevel Level { get; set; }
