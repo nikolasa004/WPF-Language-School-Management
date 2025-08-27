@@ -156,24 +156,12 @@
                         </StackPanel>
                     </Grid>
 
-                    <!-- Bottom buttons -->
-                    <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,20,0,0">
-                        <Button Content="Add Course" Style="{StaticResource FancyButtonStyle}" Width="150" Height="70" Margin="10,0" FontSize="20" Click="AddCourse_Click">
-                            <Button.Background>
-                                <ImageBrush ImageSource="/GUIResources/loginButtonBackground.png"/>
-                            </Button.Background>
-                        </Button>
-                        <Button Content="Add Exam" Style="{StaticResource FancyButtonStyle}" Width="150" Height="70" Margin="10,0" FontSize="20" Click="AddExam_Click">
-                            <Button.Background>
-                                <ImageBrush ImageSource="/GUIResources/loginButtonBackground.png"/>
-                            </Button.Background>
-                        </Button>
-                    </StackPanel>
+                    <!-- OLD BUTTONS-->
                 </Grid>
             </Viewbox>
         </Grid>
 
-        <!-- EXAMS PANEL -->
+       
         <Grid x:Name="ExamsPanel" Visibility="Collapsed" Background="Transparent">
             <!-- TOP (Auto) / MIDDLE (*) / BOTTOM (Auto) -->
             <Grid.RowDefinitions>
