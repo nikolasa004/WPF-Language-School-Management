@@ -1,12 +1,14 @@
 ﻿using LangLang.Controller;
 using LangLang.DTO;
 using LangLang.Model;
+using LangLang.Model.Enums;
+using LangLang.RoleWindows.StudentViewModules;
 using System;
+using System.Diagnostics;
 using System.Globalization;
 using System.Windows;
 using System.Windows.Controls;
-using LangLang.Model.Enums;
-using System.Diagnostics;
+using System.Windows.Input;
 
 namespace LangLang.RoleWindows
 {
@@ -19,6 +21,9 @@ namespace LangLang.RoleWindows
         public StudentDTO UpdateStudent { get; set; }
         private StudentsController studentsController;
 
+        private StudentViewExams studentViewExams;
+        private StudentViewCourses studentViewCourses;
+
         public StudentWindow(Student student,StudentsController studentsController)
         {
             InitializeComponent();
@@ -29,6 +34,9 @@ namespace LangLang.RoleWindows
             this.studentsController = studentsController;
 
             InformationUpdate();
+
+            studentViewExams = new StudentViewExams(ExamLanguageCombo, ExamLevelCombo, ExamFromDate, ExamToDate, ExamsGrid);
+            studentViewCourses = new StudentViewCourses(CourseLanguageCombo, CourseLevelCombo, CourseOnlineCombo, CourseWeeksBox, CourseFromDate, CourseToDate, CoursesGrid);
         }
 
         private void InformationUpdate()
@@ -126,6 +134,84 @@ namespace LangLang.RoleWindows
                 MessageBox.Show("Your account has been deleted successfully.");
                 Close();
             }
+        }
+
+        // Exam Terms Panel
+        private void ShowAllExams_Click(object sender, RoutedEventArgs e)
+        {
+            MainPanel.Visibility = Visibility.Collapsed;
+            ExamsPanel.Visibility = Visibility.Visible;
+        }
+
+        private void CloseExamsPanel_Click(object sender, RoutedEventArgs e)
+        {
+            MainPanel.Visibility = Visibility.Visible;
+            ExamsPanel.Visibility = Visibility.Collapsed;
+        }
+
+        private void ExamsSearch_Click(object sender, RoutedEventArgs e)
+        {
+            studentViewExams.SearchExams(sender, e);
+        }
+
+        private void PrevPageExams_Click(object sender, RoutedEventArgs e)
+        {
+            studentViewExams.PrevPage(sender, e);
+        }
+
+        private void NextPageExams_Click(object sender, RoutedEventArgs e)
+        {
+            studentViewExams.NextPage(sender, e);
+        }
+
+        private void PageSizeComboExams_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if(studentViewExams==null) return;
+            studentViewExams.PageSizeChanged(sender, e);
+        }
+
+        private void ExamsGrid_Sorting(object sender, DataGridSortingEventArgs e)
+        {
+            studentViewExams.ExamsGridSorting(sender, e);
+        }
+
+        // Course Terms Panel
+        private void ShowAllCourses_Click(object sender, RoutedEventArgs e)
+        {
+            MainPanel.Visibility = Visibility.Collapsed;
+            CoursesPanel.Visibility = Visibility.Visible;
+        }
+
+        private void CloseCoursesPanel_Click(object sender, RoutedEventArgs e)
+        {
+            MainPanel.Visibility = Visibility.Visible;
+            CoursesPanel.Visibility = Visibility.Collapsed;
+        }
+
+        private void CoursesSearch_Click(object sender, RoutedEventArgs e)
+        {
+            studentViewCourses.SearchCourses(sender, e);
+        }
+
+        private void PrevPageCourses_Click(object sender, RoutedEventArgs e)
+        {
+            studentViewCourses.PrevPage(sender, e);
+        }
+
+        private void NextPageCourses_Click(object sender, RoutedEventArgs e)
+        {
+            studentViewCourses.NextPage(sender, e);
+        }
+
+        private void PageSizeComboCourses_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (studentViewCourses == null) return;
+            studentViewCourses.PageSizeChanged(sender, e);
+        }
+
+        private void CoursesGrid_Sorting(object sender, DataGridSortingEventArgs e)
+        {
+            studentViewCourses.CoursesGridSorting(sender, e);
         }
     }
 }

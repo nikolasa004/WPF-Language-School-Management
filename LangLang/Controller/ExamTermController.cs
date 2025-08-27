@@ -48,6 +48,32 @@ namespace LangLang.Controller
             }
             return items.OrderBy(t => TryGetStartDateTime(t)).ToList();
         }
+        public List<ExamTerm> SearchExamTerms(List<ExamTerm> input ,Model.Enums.Language? language,Model.Enums.LanguageLevel? level, DateTime? fromDate, DateTime? toDate)
+        {
+            var items = input.AsEnumerable();
+            if (language is not null) items = items.Where(t => t.Language == language);
+            if (level is not null) items = items.Where(t => t.Level == level);
+            if (fromDate.HasValue ^ toDate.HasValue)
+            {
+                var exact = (fromDate ?? toDate)!.Value.Date;
+                fromDate = exact;
+                toDate = exact;
+            }
+            if (fromDate.HasValue && toDate.HasValue)
+            {
+                var from = fromDate.Value.Date;
+                var to = toDate.Value.Date;
+                if (from > to) (from, to) = (to, from);
+                items = items.Where(t =>
+                {
+                    var start = TryGetStartDateTime(t);
+                    if (!start.HasValue) return false;
+                    var d = start.Value.Date;
+                    return d >= from && d <= to;
+                });
+            }
+            return items.OrderBy(t => TryGetStartDateTime(t)).ToList();
+        }
         public ExamTerm Create(ExamTerm term)
         {
             term.IsLive = true;
@@ -71,6 +97,7 @@ namespace LangLang.Controller
             return _dao.RemoveExamTerm(id);
         }
         public ExamTerm? GetById(int id) => _dao.GetExamTermById(id);
+        public List<ExamTerm> GetAll() => _dao.GetAllExamTerms();
         private static void EnsureValidBasics(ExamTerm t)
         {
             if (t.MaxAttendees is null || t.MaxAttendees <= 0)
