@@ -618,16 +618,19 @@ namespace LangLang.RoleWindows
             MessageBox.Show("Save course clicked (not implemented yet).");
         }
 
-        private void CloseAddCoursePanel_Click(object sender, RoutedEventArgs e)
-        {
-            MainPanel.Visibility = Visibility.Visible;
-            AddCoursePanel.Visibility = Visibility.Collapsed;
-        }
+            private void CloseAddCoursePanel_Click(object sender, RoutedEventArgs e)
+            {
+        MainPanel.Visibility = Visibility.Visible;
+                AddCoursePanel.Visibility = Visibility.Collapsed;
+             }
 
-        private void AddCourse_Click(object sender, RoutedEventArgs e)
-        {
-            MainPanel.Visibility = Visibility.Collapsed;
-            AddCoursePanel.Visibility = Visibility.Visible;
-        }
+            private void AddCourse_Click(object sender, RoutedEventArgs e)
+             {
+                MainPanel.Visibility = Visibility.Collapsed;
+                AddCoursePanel.Visibility = Visibility.Visible;
+             }
+
+     
+
     }
 }
