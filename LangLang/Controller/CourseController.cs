@@ -52,6 +52,38 @@ namespace LangLang.Controller
             return items.OrderBy(c => TryGetFirstStartDate(c)).ToList();
         }
 
+        public List<Course> SearchCourses(List<Course> input, Model.Enums.Language? language, Model.Enums.LanguageLevel? level, bool? isLive, int weeks, DateTime? fromDate, DateTime? toDate)
+        {
+            var items = input.AsEnumerable();
+            if (language is not null) items = items.Where(t => t.Language == language);
+            if (level is not null) items = items.Where(t => t.Level == level);
+            if (fromDate.HasValue ^ toDate.HasValue)
+            {
+                var exact = (fromDate ?? toDate)!.Value.Date;
+                fromDate = exact;
+                toDate = exact;
+            }
+            if (fromDate.HasValue && toDate.HasValue)
+            {
+                var from = fromDate.Value.Date;
+                var to = toDate.Value.Date;
+                if (from > to) (from, to) = (to, from);
+                items = items.Where(t =>
+                {
+                    var start = TryGetFirstStartDate(t);
+                    if (!start.HasValue) return false;
+                    var d = start.Value.Date;
+                    return d >= from && d <= to;
+                });
+            }
+            if (isLive!= null)
+                items = items.Where(t => t.IsLive == isLive);
+            if (weeks > 0)
+                items = items.Where(t => t.DurationWeeks == weeks);
+
+            return items.OrderBy(t => TryGetFirstStartDate(t)).ToList();
+        }
+
         public Course Create(Course course)
         {
             course.IsLive = true;
@@ -82,6 +114,7 @@ namespace LangLang.Controller
         }
 
         public Course? GetById(int id) => _dao.GetCourseById(id);
+        public List<Course> GetAll() => _dao.GetAllCourses();
 
         private static void EnsureValidBasics(Course c)
         {

@@ -45,5 +45,110 @@
                 </Trigger>
             </Style.Triggers>
         </Style>
+
+        <!-- For ComboBoxItem -->
+        <Style x:Key="GoldComboItemStyle" TargetType="ComboBoxItem">
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="Background" Value="Gold"/>
+            <Setter Property="Padding" Value="8,4"/>
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ComboBoxItem">
+                        <Border x:Name="Bd" Background="{TemplateBinding Background}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" Margin="6,2"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Bd" Property="Background" Value="#FFD24D"/>
+                                <Setter Property="Foreground" Value="Black"/>
+                            </Trigger>
+                            <Trigger Property="IsSelected" Value="True">
+                                <Setter TargetName="Bd" Property="Background" Value="#E0B000"/>
+                                <Setter Property="Foreground" Value="Black"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <EventSetter Event="PreviewMouseLeftButtonDown" Handler="ComboBoxItem_MouseDown"/>
+        </Style>
+
+        <!-- For ComboBox -->
+        <Style x:Key="GoldComboStyle" TargetType="ComboBox">
+            <Setter Property="OverridesDefaultStyle" Value="True"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="FontFamily" Value="Script MT Bold"/>
+            <Setter Property="FontSize" Value="16"/>
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="Padding" Value="6,2"/>
+            <Setter Property="BorderBrush" Value="#B8860B"/>
+            <Setter Property="BorderThickness" Value="2"/>
+            <Setter Property="ItemContainerStyle" Value="{StaticResource GoldComboItemStyle}"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ComboBox">
+                        <Grid SnapsToDevicePixels="True">
+                            <Border Background="Gold" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="4">
+                                <DockPanel>
+                                    <ToggleButton x:Name="PART_DropDownToggle" DockPanel.Dock="Right" Focusable="False" IsChecked="{Binding IsDropDownOpen, RelativeSource={RelativeSource TemplatedParent}}" ClickMode="Press" Background="Gold" BorderThickness="0" Width="28">
+                                        <Path Data="M 0 0 L 8 0 L 4 4 Z" Fill="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    </ToggleButton>
+                                    <ContentPresenter Margin="6,0,6,0" Content="{TemplateBinding SelectionBoxItem}" ContentTemplate="{TemplateBinding SelectionBoxItemTemplate}" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" RecognizesAccessKey="True"/>
+
+                                </DockPanel>
+                            </Border>
+
+                            <!-- Dropdown -->
+                            <Popup x:Name="PART_Popup" Placement="Bottom" IsOpen="{TemplateBinding IsDropDownOpen}" AllowsTransparency="True" Focusable="False" PopupAnimation="Slide">
+                                <Border Background="Gold" Margin="0,2,0,0" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="2" CornerRadius="4">
+                                    <ScrollViewer CanContentScroll="True" SnapsToDevicePixels="True">
+                                        <StackPanel IsItemsHost="True"/>
+                                    </ScrollViewer>
+                                </Border>
+                            </Popup>
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- For DatePicker -->
+        <Style x:Key="GoldDatePickerStyle" TargetType="DatePicker">
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="FontFamily" Value="Script MT Bold"/>
+            <Setter Property="FontSize" Value="16"/>
+            <Setter Property="Background" Value="Gold"/>
+            <Setter Property="BorderBrush" Value="#B8860B"/>
+            <Setter Property="BorderThickness" Value="2"/>
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+            <Setter Property="Language" Value="sr-RS"/>
+        </Style>
+        <Style TargetType="DatePickerTextBox">
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="Background" Value="#33000000"/>
+            <Setter Property="BorderBrush" Value="#B8860B"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="FontFamily" Value="Script MT Bold"/>
+            <Setter Property="FontSize" Value="16"/>
+            <Setter Property="Padding" Value="6,2"/>
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+        </Style>
+
+        <!-- For DataGrid -->
+        <Style x:Key="DGHeaderStyle" TargetType="DataGridColumnHeader">
+            <Setter Property="Background" Value="#88000000"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="FontFamily" Value="Script MT Bold"/>
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+            <Setter Property="Padding" Value="6,4"/>
+        </Style>
+        <Style x:Key="DGCellStyle" TargetType="DataGridCell">
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="FontFamily" Value="Script MT Bold"/>
+            <Setter Property="BorderBrush" Value="#00000000"/>
+            <Setter Property="Padding" Value="6,2"/>
+        </Style>
     </Application.Resources>
 </Application>

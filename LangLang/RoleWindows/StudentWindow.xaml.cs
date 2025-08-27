@@ -20,7 +20,9 @@ namespace LangLang.RoleWindows
         public StudentDTO Student { get; set; }
         public StudentDTO UpdateStudent { get; set; }
         private StudentsController studentsController;
+
         private StudentViewExams studentViewExams;
+        private StudentViewCourses studentViewCourses;
 
         public StudentWindow(Student student,StudentsController studentsController)
         {
@@ -34,6 +36,7 @@ namespace LangLang.RoleWindows
             InformationUpdate();
 
             studentViewExams = new StudentViewExams(ExamLanguageCombo, ExamLevelCombo, ExamFromDate, ExamToDate, ExamsGrid);
+            studentViewCourses = new StudentViewCourses(CourseLanguageCombo, CourseLevelCombo, CourseOnlineCombo, CourseWeeksBox, CourseFromDate, CourseToDate, CoursesGrid);
         }
 
         private void InformationUpdate()
@@ -146,27 +149,22 @@ namespace LangLang.RoleWindows
             ExamsPanel.Visibility = Visibility.Collapsed;
         }
 
-        private void ComboBoxItem_MouseDown(object sender, MouseButtonEventArgs e)
-        {
-            studentViewExams.ComboBoxDeselect(sender, e);
-        }
-
         private void ExamsSearch_Click(object sender, RoutedEventArgs e)
         {
             studentViewExams.SearchExams(sender, e);
         }
 
-        private void PrevPage_Click(object sender, RoutedEventArgs e)
+        private void PrevPageExams_Click(object sender, RoutedEventArgs e)
         {
             studentViewExams.PrevPage(sender, e);
         }
 
-        private void NextPage_Click(object sender, RoutedEventArgs e)
+        private void NextPageExams_Click(object sender, RoutedEventArgs e)
         {
             studentViewExams.NextPage(sender, e);
         }
 
-        private void PageSizeCombo_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private void PageSizeComboExams_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if(studentViewExams==null) return;
             studentViewExams.PageSizeChanged(sender, e);
@@ -175,6 +173,45 @@ namespace LangLang.RoleWindows
         private void ExamsGrid_Sorting(object sender, DataGridSortingEventArgs e)
         {
             studentViewExams.ExamsGridSorting(sender, e);
+        }
+
+        // Course Terms Panel
+        private void ShowAllCourses_Click(object sender, RoutedEventArgs e)
+        {
+            MainPanel.Visibility = Visibility.Collapsed;
+            CoursesPanel.Visibility = Visibility.Visible;
+        }
+
+        private void CloseCoursesPanel_Click(object sender, RoutedEventArgs e)
+        {
+            MainPanel.Visibility = Visibility.Visible;
+            CoursesPanel.Visibility = Visibility.Collapsed;
+        }
+
+        private void CoursesSearch_Click(object sender, RoutedEventArgs e)
+        {
+            studentViewCourses.SearchCourses(sender, e);
+        }
+
+        private void PrevPageCourses_Click(object sender, RoutedEventArgs e)
+        {
+            studentViewCourses.PrevPage(sender, e);
+        }
+
+        private void NextPageCourses_Click(object sender, RoutedEventArgs e)
+        {
+            studentViewCourses.NextPage(sender, e);
+        }
+
+        private void PageSizeComboCourses_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (studentViewCourses == null) return;
+            studentViewCourses.PageSizeChanged(sender, e);
+        }
+
+        private void CoursesGrid_Sorting(object sender, DataGridSortingEventArgs e)
+        {
+            studentViewCourses.CoursesGridSorting(sender, e);
         }
     }
 }

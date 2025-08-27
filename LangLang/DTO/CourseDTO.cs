@@ -130,6 +130,20 @@ namespace LangLang.DTO
             }
         }
 
+        private string daysFormatted = string.Empty;
+        public string DaysFormatted
+        {
+            get => daysFormatted;
+            set
+            {
+                if (value != daysFormatted)
+                {
+                    daysFormatted = value;
+                    OnPropertyChanged(nameof(DaysFormatted));
+                }
+            }
+        }
+
         public CourseDTO()
         {
             Id = 0;
@@ -159,6 +173,8 @@ namespace LangLang.DTO
             DurationWeeks = course.DurationWeeks;
             Days = course.Days ?? new List<DayOfWeek>();
             Duration = 90;
+
+            DaysFormatted = Days.Count > 0 ? string.Join(", ", Days) : "N/A";
         }
 
         public Course ToCourse()

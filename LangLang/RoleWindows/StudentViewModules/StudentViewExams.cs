@@ -9,7 +9,7 @@ using System.Globalization;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Input;
+using LangLang.DTO;
 
 namespace LangLang.RoleWindows.StudentViewModules
 {
@@ -17,10 +17,10 @@ namespace LangLang.RoleWindows.StudentViewModules
     {
         private readonly ExamTermsController _examController;
 
-        private List<ExamTerm> _availableExams;
-        private List<ExamTerm> _filtered;   // after filters
-        private List<ExamTerm> _sorted;     // after sorting
-        private readonly ObservableCollection<ExamTerm> _page = new();
+        private List<ExamTermDTO> _availableExams;
+        private List<ExamTermDTO> _filtered;   // after filters
+        private List<ExamTermDTO> _sorted;     // after sorting
+        private readonly ObservableCollection<ExamTermDTO> _page = new();
 
         private int _pageSize = 10;
         private int _currentPage = 1;
@@ -66,35 +66,20 @@ namespace LangLang.RoleWindows.StudentViewModules
             ExamLevelCombo.SelectedIndex = -1;
         }
 
-        public void ComboBoxDeselect(object sender, MouseButtonEventArgs e)
-        {
-            var item = (ComboBoxItem)sender;
-            var combo = ItemsControl.ItemsControlFromItemContainer(item) as ComboBox;
-            if (combo == null) return;
-
-            var clickedDataItem = combo.ItemContainerGenerator.ItemFromContainer(item);
-
-            if (Equals(combo.SelectedItem, clickedDataItem))
-            {
-                combo.SelectedIndex = -1;
-                combo.IsDropDownOpen = false;
-                e.Handled = true;
-            }
-        }
-
-        private List<ExamTerm> GetAvailableExams(List<ExamTerm> allExams)
+        private List<ExamTermDTO> GetAvailableExams(List<ExamTerm> allExams)
         {
             var now = DateTime.Now;
-            List<ExamTerm> available = new();
+            List<ExamTermDTO> available = new();
             foreach (var exam in allExams)
             {
                 /////////////////To add
                 //language and level match
                 //exam not full
-                var start = GetStartDateTime(exam);
+                ExamTermDTO examDto = new(exam);
+                var start = GetStartDateTime(examDto);
                 if (start.HasValue && start.Value > now.AddDays(30))
                 {
-                    available.Add(exam);
+                    available.Add(examDto);
                 }
             }
 
@@ -106,7 +91,7 @@ namespace LangLang.RoleWindows.StudentViewModules
             ApplyFiltersSortAndPage(resetPage: true);
         }
 
-        private List<ExamTerm> ApplyCurrentFilters(List<ExamTerm> input)
+        private List<ExamTermDTO> ApplyCurrentFilters(List<ExamTermDTO> input)
         {
             Language? lang = null;
             LanguageLevel? level = null;
@@ -120,22 +105,25 @@ namespace LangLang.RoleWindows.StudentViewModules
             if (from.HasValue && to.HasValue && from.Value > to.Value)
                 (from, to) = (to, from);
 
+            List<ExamTerm> inputRaw = input.Select(dto => dto.ToExamTerm()).ToList();
+            List<ExamTerm> resultRaw = _examController.SearchExamTerms(inputRaw, lang, level, from, to);
+            List<ExamTermDTO> result = resultRaw.Select(et => new ExamTermDTO(et)).ToList();
 
-            return _examController.SearchExamTerms(input,lang, level, from, to);
+            return result;
         }
 
-        private IEnumerable<ExamTerm> ApplySort(IEnumerable<ExamTerm> source, string sortKey, ListSortDirection dir)
+        private IEnumerable<ExamTermDTO> ApplySort(IEnumerable<ExamTermDTO> source, string sortKey, ListSortDirection dir)
         {
 
             var key = NormalizeSortKey(sortKey);
 
-            Func<ExamTerm, object> keySelector = key switch
+            Func<ExamTermDTO, object> keySelector = key switch
             {
                 "Id" => e => e.Id,
                 "Language" => e => e.Language.ToString(),
                 "Level" => e => (int)e.Level,
                 "RoomId" => e => e.RoomId ?? "",
-                "MaxAttendees" => e => e.MaxAttendees ?? 0,
+                "MaxAttendees" => e => e.MaxAttendees, 
                 "StartAt" => e => GetStartDateTime(e) ?? DateTime.MinValue,
                 "Date" => e => GetStartDateTime(e) ?? DateTime.MinValue,
                 _ => e => GetStartDateTime(e) ?? DateTime.MinValue
@@ -164,7 +152,7 @@ namespace LangLang.RoleWindows.StudentViewModules
                 _ => key
             };
         }
-        private static DateTime? GetStartDateTime(ExamTerm e)
+        private static DateTime? GetStartDateTime(ExamTermDTO e)
         {
             if (!DateTime.TryParseExact(e.Date ?? "", "dd.MM.yyyy", new CultureInfo("sr-RS"),
                                         DateTimeStyles.None, out var d) &&
@@ -198,7 +186,7 @@ namespace LangLang.RoleWindows.StudentViewModules
             foreach (var x in slice)
                 _page.Add(x);
 
-            if (ExamLanguageCombo.FindName("PagerText") is TextBlock pager)
+            if (ExamLanguageCombo.FindName("PagerTextExams") is TextBlock pager)
                 pager.Text = $"Page {_currentPage}/{totalPages}  ·  {(_sorted.Count == 1 ? "1 item" : _sorted.Count + " items")}";
         }
 
