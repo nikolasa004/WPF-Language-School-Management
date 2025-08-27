@@ -1,12 +1,14 @@
 ﻿using LangLang.Controller;
 using LangLang.DTO;
 using LangLang.Model;
+using LangLang.Model.Enums;
+using LangLang.RoleWindows.StudentViewModules;
 using System;
+using System.Diagnostics;
 using System.Globalization;
 using System.Windows;
 using System.Windows.Controls;
-using LangLang.Model.Enums;
-using System.Diagnostics;
+using System.Windows.Input;
 
 namespace LangLang.RoleWindows
 {
@@ -18,6 +20,7 @@ namespace LangLang.RoleWindows
         public StudentDTO Student { get; set; }
         public StudentDTO UpdateStudent { get; set; }
         private StudentsController studentsController;
+        private StudentViewExams studentViewExams;
 
         public StudentWindow(Student student,StudentsController studentsController)
         {
@@ -29,6 +32,8 @@ namespace LangLang.RoleWindows
             this.studentsController = studentsController;
 
             InformationUpdate();
+
+            studentViewExams = new StudentViewExams(ExamLanguageCombo, ExamLevelCombo, ExamFromDate, ExamToDate, ExamsGrid);
         }
 
         private void InformationUpdate()
@@ -126,6 +131,50 @@ namespace LangLang.RoleWindows
                 MessageBox.Show("Your account has been deleted successfully.");
                 Close();
             }
+        }
+
+        // Exam Terms Panel
+        private void ShowAllExams_Click(object sender, RoutedEventArgs e)
+        {
+            MainPanel.Visibility = Visibility.Collapsed;
+            ExamsPanel.Visibility = Visibility.Visible;
+        }
+
+        private void CloseExamsPanel_Click(object sender, RoutedEventArgs e)
+        {
+            MainPanel.Visibility = Visibility.Visible;
+            ExamsPanel.Visibility = Visibility.Collapsed;
+        }
+
+        private void ComboBoxItem_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            studentViewExams.ComboBoxDeselect(sender, e);
+        }
+
+        private void ExamsSearch_Click(object sender, RoutedEventArgs e)
+        {
+            studentViewExams.SearchExams(sender, e);
+        }
+
+        private void PrevPage_Click(object sender, RoutedEventArgs e)
+        {
+            studentViewExams.PrevPage(sender, e);
+        }
+
+        private void NextPage_Click(object sender, RoutedEventArgs e)
+        {
+            studentViewExams.NextPage(sender, e);
+        }
+
+        private void PageSizeCombo_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if(studentViewExams==null) return;
+            studentViewExams.PageSizeChanged(sender, e);
+        }
+
+        private void ExamsGrid_Sorting(object sender, DataGridSortingEventArgs e)
+        {
+            studentViewExams.ExamsGridSorting(sender, e);
         }
     }
 }
