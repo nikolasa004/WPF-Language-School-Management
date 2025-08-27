@@ -21,47 +21,47 @@ namespace LangLang.RoleWindows
             DataContext = this;
 
             this.professorsController = professorsController;
-            LoadTeachers();
+            LoadProfessors();
         }
 
-        private void LoadTeachers()
+        private void LoadProfessors()
         {
-            TeachersDataGrid.ItemsSource = professorsController.GetAllProfessors();
+            ProfessorsDataGrid.ItemsSource = professorsController.GetAllProfessors();
         }
 
-        // === Teachers actions ===
-        private void ShowAllTeachers_Click(object sender, RoutedEventArgs e)
+        // === Professors actions ===
+        private void ShowAllProfessors_Click(object sender, RoutedEventArgs e)
         {
-            LoadTeachers();
+            LoadProfessors();
         }
 
-        private void SearchTeachers_Click(object sender, RoutedEventArgs e)
+        private void SearchProfessors_Click(object sender, RoutedEventArgs e)
         {
             // TODO: implement search dialog for teachers
             MessageBox.Show("Search teachers not implemented yet.");
         }
 
-        private void SortTeachers_Click(object sender, RoutedEventArgs e)
+        private void SortProfessors_Click(object sender, RoutedEventArgs e)
         {
             // TODO: implement sorting logic
             MessageBox.Show("Sort teachers not implemented yet.");
         }
 
-        private void AddTeacher_Click(object sender, RoutedEventArgs e)
+        private void AddProfessor_Click(object sender, RoutedEventArgs e)
         {
-            // TODO: open AddTeacher dialog
+            // TODO: open AddProfessor dialog
             MessageBox.Show("Add teacher not implemented yet.");
         }
 
-        private void UpdateTeacher_Click(object sender, RoutedEventArgs e)
+        private void UpdateProfessor_Click(object sender, RoutedEventArgs e)
         {
-            // TODO: open UpdateTeacher dialog
+            // TODO: open UpdateProfessor dialog
             MessageBox.Show("Update teacher not implemented yet.");
         }
 
-        private void DeleteTeacher_Click(object sender, RoutedEventArgs e)
+        private void DeleteProfessor_Click(object sender, RoutedEventArgs e)
         {
-            // TODO: open UpdateTeacher dialog
+            // TODO: open UpdateProfessor dialog
             MessageBox.Show("Delete teacher not implemented yet.");
         }
 
@@ -130,7 +130,7 @@ namespace LangLang.RoleWindows
         {
             MessageBox.Show("Language report not implemented yet.");
         }
-        private void TeachersButton_Click(object sender, RoutedEventArgs e)
+        private void ProfessorsButton_Click(object sender, RoutedEventArgs e)
         {
             Button btn = sender as Button;
             if (btn != null && btn.ContextMenu != null)

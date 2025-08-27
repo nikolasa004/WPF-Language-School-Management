@@ -33,34 +33,16 @@
                         <!-- Navigation buttons -->
                         <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="10,0,0,0">
 
-                            <!-- Teachers Button -->
-                            <Button x:Name="TeachersButton" Content="Teachers" Style="{StaticResource FancyButtonStyle}" FontSize="24" Width="140" Height="45" Click="TeachersButton_Click">
+                            <!-- Professors Button -->
+                            <Button x:Name="ProfessorsButton" Content="Professors" Style="{StaticResource FancyButtonStyle}" FontSize="20" Width="100" Height="35" Click="ProfessorsButton_Click">
                                 <Button.Background>
                                     <ImageBrush ImageSource="/GUIResources/topBarButtonBackground.png"/>
                                 </Button.Background>
-                                <Button.ContextMenu>
-                                    <ContextMenu x:Name="TeachersContextMenu" Placement="Bottom" PlacementTarget="{Binding RelativeSource={RelativeSource Self}}">
-                                        <ContextMenu.ItemContainerStyle>
-                                            <Style TargetType="MenuItem">
-                                                <Setter Property="Foreground" Value="White"/>
-                                                <Setter Property="Background" Value="Gold"/>
-                                                <Setter Property="FontFamily" Value="Script MT Bold"/>
-                                                <Setter Property="FontSize" Value="20"/>
-                                            </Style>
-                                        </ContextMenu.ItemContainerStyle>
-
-                                        <MenuItem Header="Show all teachers" Click="ShowAllTeachers_Click"/>
-                                        <MenuItem Header="Search teachers" Click="SearchTeachers_Click"/>
-                                        <MenuItem Header="Sort teachers" Click="SortTeachers_Click"/>
-                                        <MenuItem Header="Add teacher" Click="AddTeacher_Click"/>
-                                        <MenuItem Header="Update teacher" Click="UpdateTeacher_Click"/>
-                                        <MenuItem Header="Delete teacher" Click="DeleteTeacher_Click"/>
-                                    </ContextMenu>
-                                </Button.ContextMenu>
+                                    
                             </Button>
 
                             <!-- Courses Button -->
-                            <Button x:Name="CoursesButton" Content="Courses" Style="{StaticResource FancyButtonStyle}" FontSize="24" Width="140" Height="45" Click="CoursesButton_Click">
+                            <Button x:Name="CoursesButton" Content="Courses" Style="{StaticResource FancyButtonStyle}" FontSize="20" Width="100" Height="35" Click="CoursesButton_Click">
                                 <Button.Background>
                                     <ImageBrush ImageSource="/GUIResources/topBarButtonBackground.png"/>
                                 </Button.Background>
@@ -80,7 +62,7 @@
                             </Button>
 
                             <!-- Exams Button -->
-                            <Button x:Name="ExamsButton" Content="Exams" Style="{StaticResource FancyButtonStyle}" FontSize="24" Width="140" Height="45" Click="ExamsButton_Click">
+                            <Button x:Name="ExamsButton" Content="Exams" Style="{StaticResource FancyButtonStyle}" FontSize="20" Width="100" Height="35" Click="ExamsButton_Click">
                                 <Button.Background>
                                     <ImageBrush ImageSource="/GUIResources/topBarButtonBackground.png"/>
                                 </Button.Background>
@@ -100,7 +82,7 @@
                             </Button>
 
                             <!-- Reports Button -->
-                            <Button x:Name="ReportsButton" Content="Reports" Style="{StaticResource FancyButtonStyle}" FontSize="24" Width="140" Height="45" Click="ReportsButton_Click">
+                            <Button x:Name="ReportsButton" Content="Reports" Style="{StaticResource FancyButtonStyle}" FontSize="20" Width="100" Height="35" Click="ReportsButton_Click">
                                 <Button.Background>
                                     <ImageBrush ImageSource="/GUIResources/topBarButtonBackground.png"/>
                                 </Button.Background>
@@ -122,23 +104,46 @@
                                 </Button.ContextMenu>
                             </Button>
                         </StackPanel>
+
+                        <!-- Inbox button on the right -->
+                        <Button Content="" Style="{StaticResource FancyButtonStyle}" Width="40" Height="40" HorizontalAlignment="Right" Grid.Column="1">
+                            <Button.Background>
+                                <ImageBrush ImageSource="/GUIResources/inbox.png"/>
+                            </Button.Background>
+                        </Button>
                     </Grid>
 
                     <!-- Content: DataGrid for teachers -->
                     <Grid Grid.Row="1" Margin="0,20,0,0" Background="#80000000">
-                        <DataGrid x:Name="TeachersDataGrid" 
+                        <DataGrid x:Name="ProfessorsDataGrid" 
                             AutoGenerateColumns="False" 
-                              FontSize="14" 
-                              Foreground="Black" 
-                            Background="#50000000">
+                            FontSize="14" 
+                            Foreground="White" 
+                            Background="#66000000"
+                            GridLinesVisibility="None"
+                            HeadersVisibility="Column"
+                            RowBackground="#33000000"
+                            AlternatingRowBackground="#22000000"
+                            BorderBrush="#00000000"
+                            FontFamily="Script MT Bold"
+                            IsReadOnly="True">
 
-                            <!-- This Resources block styles the column headers -->
+
+
                             <DataGrid.Resources>
                                 <Style TargetType="{x:Type DataGridColumnHeader}">
-                                    <Setter Property="Background" Value="LightGoldenrodYellow"/>
-                                    <Setter Property="Foreground" Value="Black"/>
+                                    <Setter Property="Background" Value="#88000000"/>
+                                    <Setter Property="Foreground" Value="White"/>
                                     <Setter Property="FontWeight" Value="Bold"/>
+                                    <Setter Property="FontFamily" Value="Script MT Bold"/>
                                     <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                                    <Setter Property="Padding" Value="6,4"/>
+                                </Style>
+                                <Style TargetType="{x:Type DataGridCell}">
+                                    <Setter Property="Foreground" Value="White"/>
+                                    <Setter Property="FontFamily" Value="Script MT Bold"/>
+                                    <Setter Property="BorderBrush" Value="#00000000"/>
+                                    <Setter Property="Padding" Value="6,2"/>
                                 </Style>
                             </DataGrid.Resources>
 
@@ -148,27 +153,36 @@
                                 <DataGridTextColumn Header="Email" Binding="{Binding Email}" Width="*"/>
                                 <DataGridTextColumn Header="Phone" Binding="{Binding PhoneNumber}" Width="*"/>
                                 <DataGridTextColumn Header="Date Added" Binding="{Binding DateOfRegistration}" Width="*"/>
+                                <DataGridTemplateColumn Header="Actions" Width="180">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                                <Button Content="Edit" Style="{StaticResource FancyButtonStyle}" Width="70" Height="30" Margin="2,0" Click="UpdateProfessor_Click">
+                                                    <Button.Background>
+                                                        <ImageBrush ImageSource="/GUIResources/loginButtonBackground.png"/>
+                                                    </Button.Background>
+                                                </Button>
+                                                <Button Content="Delete" Style="{StaticResource FancyButtonStyle}" Width="70" Height="30" Margin="6,0,0,0" Click="DeleteProfessor_Click">
+                                                    <Button.Background>
+                                                        <ImageBrush ImageSource="/GUIResources/loginButtonBackground.png"/>
+                                                    </Button.Background>
+                                                </Button>
+                                            </StackPanel>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
                             </DataGrid.Columns>
                         </DataGrid>
                     </Grid>
 
                     <!-- Bottom buttons -->
                     <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,20,0,0">
-                        <Button Content="Add Teacher" Style="{StaticResource FancyButtonStyle}" Width="150" Height="50" Margin="10,0" FontSize="18" Click="AddTeacher_Click">
-                            <Button.Background>
-                            <ImageBrush ImageSource="/GUIResources/loginButtonBackground.png"/>
-                            </Button.Background>
-                            </Button>
-                        <Button Content="Update Teacher" Style="{StaticResource FancyButtonStyle}" Width="150" Height="50" Margin="10,0" FontSize="18" Click="UpdateTeacher_Click">
+                        <Button Content="Add Professor" Style="{StaticResource FancyButtonStyle}" Width="120" Height="38" Margin="6,0" FontSize="16" Click="AddProfessor_Click">
                             <Button.Background>
                                 <ImageBrush ImageSource="/GUIResources/loginButtonBackground.png"/>
                             </Button.Background>
                         </Button>
-                        <Button Content="Delete Teacher" Style="{StaticResource FancyButtonStyle}" Width="150" Height="50" Margin="10,0" FontSize="18" Click="DeleteTeacher_Click">
-                            <Button.Background>
-                                <ImageBrush ImageSource="/GUIResources/loginButtonBackground.png"/>
-                            </Button.Background>
-                        </Button>
+                        
                     </StackPanel>
                 </Grid>
             </Viewbox>
