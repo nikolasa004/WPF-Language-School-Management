@@ -17,9 +17,9 @@ namespace LangLang
 
         private AuthenticationController authenticationController;
 
-        //temporary variables for user credentials
         private string principalEmail = "principal@gmail.com";
-        private string principalPassword = "principal123";
+        private string principalPassword = "123";
+
         public MainWindow()
         {
             InitializeComponent();
@@ -63,6 +63,7 @@ namespace LangLang
                 return;
             }
 
+
             var user = authenticationController.Authenticate(email, password);
             if (user != null)
                 OpenUserWindow(user);
@@ -75,7 +76,7 @@ namespace LangLang
             {
                 Student s => new StudentWindow(s, studentsController),
                 Professor p => new ProfessorWindow(p, professorsController),
-                string s when s == "Principal" => new PrincipalWindow(),
+                string s when s == "Principal" => new PrincipalWindow(professorsController),
                 _ => throw new InvalidOperationException("Unknown user type")
             };
 
