@@ -3,10 +3,26 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+        xmlns:conv="clr-namespace:LangLang.Converters"
+        xmlns:local="clr-namespace:LangLang.Model.Enums"
+        xmlns:sys="clr-namespace:System;assembly=mscorlib"
         mc:Ignorable="d"
         Title="PrincipalWindow" 
         Height="600" Width="900"
         Icon="/GUIResources/icon.ico">
+
+    <Window.Resources>
+        <conv:DateToStringConverter x:Key="DateToStringConverter"/>
+        <conv:EnumToBooleanConverter x:Key="EnumToBooleanConverter"/>
+
+        <ControlTemplate x:Key="ValidationTemplate">
+            <StackPanel>
+                <AdornedElementPlaceholder x:Name="textBox" />
+                <TextBlock Text="{Binding [0].ErrorContent}" Foreground="Red" FontFamily="Script MT Bold" HorizontalAlignment="Right" Background="#80000000"/>
+            </StackPanel>
+        </ControlTemplate>
+    </Window.Resources>
 
     <Grid>
         <Grid.Background>
@@ -18,9 +34,12 @@
             <Viewbox Stretch="Uniform">
                 <Grid Width="800" Margin="10">
                     <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto"/>   <!-- Top bar -->
-                        <RowDefinition Height="*"/>     <!-- Content -->
-                        <RowDefinition Height="Auto"/>  <!-- Bottom buttons -->
+                        <RowDefinition Height="Auto"/>
+                        <!-- Top bar -->
+                        <RowDefinition Height="*"/>
+                        <!-- Content -->
+                        <RowDefinition Height="Auto"/>
+                        <!-- Bottom buttons -->
                     </Grid.RowDefinitions>
 
                     <!-- Top bar -->
@@ -38,7 +57,7 @@
                                 <Button.Background>
                                     <ImageBrush ImageSource="/GUIResources/topBarButtonBackground.png"/>
                                 </Button.Background>
-                                    
+
                             </Button>
 
                             <!-- Courses Button -->
@@ -128,8 +147,6 @@
                             FontFamily="Script MT Bold"
                             IsReadOnly="True">
 
-
-
                             <DataGrid.Resources>
                                 <Style TargetType="{x:Type DataGridColumnHeader}">
                                     <Setter Property="Background" Value="#88000000"/>
@@ -182,10 +199,209 @@
                                 <ImageBrush ImageSource="/GUIResources/loginButtonBackground.png"/>
                             </Button.Background>
                         </Button>
-                        
                     </StackPanel>
                 </Grid>
             </Viewbox>
+        </Grid>
+
+        <!-- Add/Edit Professor Overlay -->
+        <Grid x:Name="AddEditProfessorOverlay" Visibility="Collapsed" Background="#80000000" Panel.ZIndex="999">
+            <Grid.Resources>
+                <Style x:Key="GoldComboItemStyle" TargetType="ComboBoxItem">
+                    <Setter Property="OverridesDefaultStyle" Value="True"/>
+                    <Setter Property="Foreground" Value="White"/>
+                    <Setter Property="Background" Value="Gold"/>
+                    <Setter Property="Padding" Value="8,4"/>
+                    <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate TargetType="ComboBoxItem">
+                                <Border x:Name="Bd" Background="{TemplateBinding Background}">
+                                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" Margin="6,2"/>
+                                </Border>
+                                <ControlTemplate.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter TargetName="Bd" Property="Background" Value="#FFD24D"/>
+                                        <Setter Property="Foreground" Value="Black"/>
+                                    </Trigger>
+                                    <Trigger Property="IsSelected" Value="True">
+                                        <Setter TargetName="Bd" Property="Background" Value="#E0B000"/>
+                                        <Setter Property="Foreground" Value="Black"/>
+                                    </Trigger>
+                                </ControlTemplate.Triggers>
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+                </Style>
+
+                <Style x:Key="GoldComboStyle" TargetType="{x:Type ComboBox}">
+                    <Setter Property="OverridesDefaultStyle" Value="True"/>
+                    <Setter Property="Foreground" Value="White"/>
+                    <Setter Property="FontFamily" Value="Script MT Bold"/>
+                    <Setter Property="FontSize" Value="16"/>
+                    <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                    <Setter Property="VerticalContentAlignment" Value="Center"/>
+                    <Setter Property="Padding" Value="6,2"/>
+                    <Setter Property="BorderBrush" Value="#B8860B"/>
+                    <Setter Property="BorderThickness" Value="2"/>
+                    <Setter Property="SnapsToDevicePixels" Value="True"/>
+                    <Setter Property="ItemContainerStyle" Value="{StaticResource GoldComboItemStyle}"/>
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate TargetType="{x:Type ComboBox}">
+                                <Grid SnapsToDevicePixels="True">
+                                    <Border Background="Gold"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            CornerRadius="4">
+                                        <DockPanel>
+                                            <ToggleButton x:Name="PART_DropDownToggle"
+                                          DockPanel.Dock="Right"
+                                          Focusable="False"
+                                          IsChecked="{Binding IsDropDownOpen, RelativeSource={RelativeSource TemplatedParent}}"
+                                          ClickMode="Press"
+                                          Background="Gold"
+                                          BorderThickness="0"
+                                          Width="28">
+                                                <Path Data="M 0 0 L 8 0 L 4 4 Z"
+                                      Fill="White"
+                                      HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                            </ToggleButton>
+                                            <ContentPresenter Margin="6,0,6,0"
+                                              HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                              VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
+                                        </DockPanel>
+                                    </Border>
+
+                                    <Popup x:Name="PART_Popup"
+                           Placement="Bottom"
+                           IsOpen="{TemplateBinding IsDropDownOpen}"
+                           AllowsTransparency="True"
+                           Focusable="False"
+                           PopupAnimation="Slide">
+                                        <Border Background="Gold"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="2"
+                                CornerRadius="4"
+                                Margin="0,2,0,0">
+                                            <ScrollViewer CanContentScroll="True" SnapsToDevicePixels="True">
+                                                <StackPanel IsItemsHost="True"/>
+                                            </ScrollViewer>
+                                        </Border>
+                                    </Popup>
+                                </Grid>
+                                <ControlTemplate.Triggers>
+                                    <Trigger Property="IsEnabled" Value="False">
+                                        <Setter Property="Opacity" Value="0.6"/>
+                                    </Trigger>
+                                </ControlTemplate.Triggers>
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+                </Style>
+
+                <Style x:Key="GoldTextBoxStyle" TargetType="TextBox">
+                    <Setter Property="Foreground" Value="White"/>
+                    <Setter Property="FontFamily" Value="Script MT Bold"/>
+                    <Setter Property="FontSize" Value="16"/>
+                    <Setter Property="Background" Value="Gold"/>
+                    <Setter Property="BorderBrush" Value="#B8860B"/>
+                    <Setter Property="BorderThickness" Value="2"/>
+                    <Setter Property="Padding" Value="6,2"/>
+                    <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                    <Setter Property="VerticalContentAlignment" Value="Center"/>
+                </Style>
+
+                <Style x:Key="GoldDatePickerStyle" TargetType="DatePicker">
+                    <Setter Property="Foreground" Value="White"/>
+                    <Setter Property="FontFamily" Value="Script MT Bold"/>
+                    <Setter Property="FontSize" Value="16"/>
+                    <Setter Property="Background" Value="Gold"/>
+                    <Setter Property="BorderBrush" Value="#B8860B"/>
+                    <Setter Property="BorderThickness" Value="2"/>
+                    <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                </Style>
+            </Grid.Resources>
+
+            <Border CornerRadius="10" Padding="18" Width="640"
+            HorizontalAlignment="Center" VerticalAlignment="Center"
+            BorderBrush="#B8860B" BorderThickness="2">
+                <Border.Background>
+                    <ImageBrush ImageSource="/GUIResources/loginBackground.jpg" Stretch="Fill"/>
+                </Border.Background>
+
+                <Viewbox Stretch="Uniform" HorizontalAlignment="Center" VerticalAlignment="Center">
+                    <Grid Width="600" Margin="10,10,10,0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+
+                        <!-- First Name -->
+                        <Label Content="First Name:" FontSize="16" Foreground="White" Grid.Row="0" Grid.Column="0" FontFamily="Script MT Bold" />
+                        <TextBox x:Name="ProfessorFirstNameBox" Height="30" FontSize="14" Grid.Row="1" Grid.Column="0" Margin="0,0,10,0" VerticalContentAlignment="Center" Style="{StaticResource GoldTextBoxStyle}"/>
+
+                        <!-- Last Name -->
+                        <Label Content="Last Name:" FontSize="16" Foreground="White" Grid.Row="0" Grid.Column="1" Margin="10,0,0,0" FontFamily="Script MT Bold"/>
+                        <TextBox x:Name="ProfessorLastNameBox" Height="30" FontSize="14" Grid.Row="1" Grid.Column="1" Margin="10,0,0,0" VerticalContentAlignment="Center" Style="{StaticResource GoldTextBoxStyle}"/>
+
+                        <!-- Email -->
+                        <Label Content="Email:" FontSize="16" Foreground="White" Grid.Row="2" Grid.Column="0" FontFamily="Script MT Bold"/>
+                        <TextBox x:Name="ProfessorEmailBox" Height="30" FontSize="14" Grid.Row="3" Grid.Column="0" Margin="0,0,10,0" VerticalContentAlignment="Center" Style="{StaticResource GoldTextBoxStyle}"/>
+
+                        <!-- Phone -->
+                        <Label Content="Phone:" FontSize="16" Foreground="White" Grid.Row="2" Grid.Column="1" Margin="10,0,0,0" FontFamily="Script MT Bold"/>
+                        <TextBox x:Name="ProfessorPhoneBox" Height="30" FontSize="14" Grid.Row="3" Grid.Column="1" Margin="10,0,0,0" VerticalContentAlignment="Center" Style="{StaticResource GoldTextBoxStyle}"/>
+
+                        <!-- Gender -->
+                        <Label Content="Gender:" FontSize="16" Foreground="White" Grid.Row="4" Grid.Column="0" FontFamily="Script MT Bold"/>
+                        <StackPanel Orientation="Horizontal" Grid.Row="5" Grid.Column="0">
+                            <RadioButton Content="Male" FontFamily="Script MT Bold"  />
+                            <RadioButton Content="Female" FontFamily="Script MT Bold" />
+                        </StackPanel>
+
+                        <!-- Birth Date -->
+                        <Label Content="Birth Date:" FontSize="16" Foreground="White" Grid.Row="4" Grid.Column="1" Margin="10,0,0,0" FontFamily="Script MT Bold"/>
+                        <DatePicker x:Name="ProfessorBirthDatePicker" Height="30" FontSize="14" Grid.Row="5" Grid.Column="1" Margin="10,0,0,0" VerticalContentAlignment="Center" Style="{StaticResource GoldDatePickerStyle}"/>
+
+                        <!-- Languages -->
+                        <Label Content="Languages:" FontSize="16" Foreground="White" Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="2" Margin="10,0,0,0" FontFamily="Script MT Bold"/>
+                        <TextBox x:Name="ProfessorLanguagesBox" Height="30" FontSize="14" Grid.Row="7" Grid.Column="0" Grid.ColumnSpan="2" Margin="10,0,0,0" VerticalContentAlignment="Center" Style="{StaticResource GoldTextBoxStyle}"
+                      ToolTip="Comma separated languages with levels, e.g., English-Advanced, Spanish-Intermediate"/>
+
+                        
+                        <!-- Buttons -->
+                        <StackPanel Grid.Row="9" Grid.Column="0" Grid.ColumnSpan="2" Orientation="Horizontal" HorizontalAlignment="Center" Margin="10,0,0,0">
+                            <Button Content="Save" Width="100" Height="38" Margin="8"
+                    Click="SaveProfessor_Click"
+                    Style="{StaticResource FancyButtonStyle}">
+                                <Button.Background>
+                                    <ImageBrush ImageSource="/GUIResources/loginButtonBackground.png"/>
+                                </Button.Background>
+                            </Button>
+                            <Button Content="Cancel" Width="100" Height="38" Margin="8"
+                    Click="CancelProfessor_Click"
+                    Style="{StaticResource FancyButtonStyle}">
+                                <Button.Background>
+                                    <ImageBrush ImageSource="/GUIResources/loginButtonBackground.png"/>
+                                </Button.Background>
+                            </Button>
+                        </StackPanel>
+                    </Grid>
+                </Viewbox>
+            </Border>
         </Grid>
     </Grid>
 </Window>

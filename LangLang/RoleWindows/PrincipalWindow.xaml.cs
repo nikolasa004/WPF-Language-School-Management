@@ -14,6 +14,8 @@ namespace LangLang.RoleWindows
     public partial class PrincipalWindow : Window
     {
         private ProfessorsController professorsController;
+        private bool isEditMode = false;
+        private ProfessorDTO currentProfessor = null;
 
         public PrincipalWindow(ProfessorsController professorsController)
         {
@@ -30,6 +32,17 @@ namespace LangLang.RoleWindows
         }
 
         // === Professors actions ===
+        private void ProfessorsButton_Click(object sender, RoutedEventArgs e)
+        {
+            Button btn = sender as Button;
+            if (btn != null && btn.ContextMenu != null)
+            {
+                btn.ContextMenu.PlacementTarget = btn;
+                btn.ContextMenu.Placement = System.Windows.Controls.Primitives.PlacementMode.Bottom;
+                btn.ContextMenu.IsOpen = true;
+            }
+        }
+
         private void ShowAllProfessors_Click(object sender, RoutedEventArgs e)
         {
             LoadProfessors();
@@ -49,20 +62,61 @@ namespace LangLang.RoleWindows
 
         private void AddProfessor_Click(object sender, RoutedEventArgs e)
         {
-            // TODO: open AddProfessor dialog
-            MessageBox.Show("Add teacher not implemented yet.");
+            isEditMode = false;
+            currentProfessor = null;
+
+            ProfessorFirstNameBox.Text = "";
+            ProfessorLastNameBox.Text = "";
+            ProfessorEmailBox.Text = "";
+            ProfessorPhoneBox.Text = "";
+            ProfessorBirthDatePicker.SelectedDate = null;
+            ProfessorLanguagesBox.Text = "";
+
+            AddEditProfessorOverlay.Visibility = Visibility.Visible;
         }
 
         private void UpdateProfessor_Click(object sender, RoutedEventArgs e)
         {
-            // TODO: open UpdateProfessor dialog
-            MessageBox.Show("Update teacher not implemented yet.");
+           
+            isEditMode = false;
+            currentProfessor = null;
+
+            ProfessorFirstNameBox.Text = "";
+            ProfessorLastNameBox.Text = "";
+            ProfessorEmailBox.Text = "";
+            ProfessorPhoneBox.Text = "";
+            ProfessorBirthDatePicker.SelectedDate = null;
+            ProfessorLanguagesBox.Text = "";
+
+            AddEditProfessorOverlay.Visibility = Visibility.Visible;
         }
 
         private void DeleteProfessor_Click(object sender, RoutedEventArgs e)
         {
-            // TODO: open UpdateProfessor dialog
+            // TODO: implement delete functionality
             MessageBox.Show("Delete teacher not implemented yet.");
+        }
+
+        private void SaveProfessor_Click(object sender, RoutedEventArgs e)
+        {
+            // TODO: implement save functionality
+            if (isEditMode)
+            {
+                MessageBox.Show("Save edited teacher not implemented yet.");
+            }
+            else
+            {
+                MessageBox.Show("Save new teacher not implemented yet.");
+            }
+
+            AddEditProfessorOverlay.Visibility = Visibility.Collapsed;
+            MainPanel.Visibility = Visibility.Visible;
+        }
+
+        private void CancelProfessor_Click(object sender, RoutedEventArgs e)
+        {
+            AddEditProfessorOverlay.Visibility = Visibility.Collapsed;
+            MainPanel.Visibility = Visibility.Visible;
         }
 
         // === Courses ===
@@ -129,16 +183,6 @@ namespace LangLang.RoleWindows
         private void ReportLanguages_Click(object sender, RoutedEventArgs e)
         {
             MessageBox.Show("Language report not implemented yet.");
-        }
-        private void ProfessorsButton_Click(object sender, RoutedEventArgs e)
-        {
-            Button btn = sender as Button;
-            if (btn != null && btn.ContextMenu != null)
-            {
-                btn.ContextMenu.PlacementTarget = btn;
-                btn.ContextMenu.Placement = System.Windows.Controls.Primitives.PlacementMode.Bottom;
-                btn.ContextMenu.IsOpen = true;
-            }
         }
     }
 }
