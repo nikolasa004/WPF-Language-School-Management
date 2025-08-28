@@ -17,9 +17,9 @@ namespace LangLang
 
         private AuthenticationController authenticationController;
 
-        //temporary variables for user credentials
         private string principalEmail = "principal@gmail.com";
-        private string principalPassword = "principal123";
+        private string principalPassword = "123";
+
         public MainWindow()
         {
             InitializeComponent();
@@ -62,6 +62,7 @@ namespace LangLang
                 MessageBox.Show("Please enter both email and password.", "Empty input", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
+
 
             var user = authenticationController.Authenticate(email, password);
             if (user != null)
