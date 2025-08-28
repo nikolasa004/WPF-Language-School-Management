@@ -1,0 +1,222 @@
+﻿<Window x:Class="LangLang.RoleWindows.ReassignCoursesWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d"
+        Title="Reassign Courses" 
+        Height="600" Width="1000"
+        WindowStartupLocation="CenterScreen"
+        ResizeMode="NoResize"
+        Icon="/GUIResources/icon.ico">
+
+    <Window.Resources>
+        <Style x:Key="FancyButtonStyle" TargetType="Button">
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="FontFamily" Value="Script MT Bold"/>
+            <Setter Property="FontSize" Value="16"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}" 
+                                CornerRadius="4">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+
+    <Grid>
+        <Grid.Background>
+            <ImageBrush ImageSource="/GUIResources/loginBackground.jpg" Stretch="Fill"/>
+        </Grid.Background>
+
+        <Border CornerRadius="10" Padding="10" 
+                HorizontalAlignment="Center" VerticalAlignment="Center"
+                BorderBrush="#B8860B" BorderThickness="2"
+                Width="950" Height="550">
+            
+
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+
+                <!-- Header -->
+                <TextBlock Grid.Row="0" 
+                           Text="{Binding HeaderText}"
+                           FontSize="24" 
+                           FontFamily="Script MT Bold"
+                           Foreground="White" 
+                           Margin="0,0,0,20"
+                           HorizontalAlignment="Center"/>
+
+                <!-- Info Text -->
+                <TextBlock Grid.Row="1"
+                           Text="The following courses need to be reassigned to other professors before deletion:"
+                           FontSize="16"
+                           FontFamily="Script MT Bold"
+                           Foreground="White"
+                           Margin="0,0,0,15"
+                           TextWrapping="Wrap"/>
+
+                <!-- Courses DataGrid -->
+                <DataGrid Grid.Row="2"
+                          x:Name="CoursesDataGrid"
+                          ItemsSource="{Binding CourseAssignments}"
+                          AutoGenerateColumns="False"
+                          CanUserAddRows="False"
+                          CanUserDeleteRows="False"
+                          CanUserReorderColumns="False"
+                          CanUserSortColumns="False"
+                          GridLinesVisibility="None"
+                          HeadersVisibility="Column"
+                          SelectionMode="Single"
+                          Margin="0,0,0,20"
+                          Background="#66000000"
+                          Foreground="White"
+                          FontFamily="Script MT Bold"
+                          RowBackground="#33000000"
+                          AlternatingRowBackground="#22000000"
+                          BorderBrush="#00000000">
+
+                    <DataGrid.Resources>
+                        <Style TargetType="{x:Type DataGridColumnHeader}">
+                            <Setter Property="Background" Value="#88000000"/>
+                            <Setter Property="Foreground" Value="White"/>
+                            <Setter Property="FontWeight" Value="Bold"/>
+                            <Setter Property="FontFamily" Value="Script MT Bold"/>
+                            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                            <Setter Property="Padding" Value="6,4"/>
+                        </Style>
+                        <Style TargetType="{x:Type DataGridCell}">
+                            <Setter Property="Foreground" Value="White"/>
+                            <Setter Property="FontFamily" Value="Script MT Bold"/>
+                            <Setter Property="BorderBrush" Value="#00000000"/>
+                            <Setter Property="Padding" Value="6,2"/>
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="{x:Type DataGridCell}">
+                                        <Grid Background="{TemplateBinding Background}">
+                                            <ContentPresenter VerticalAlignment="Center"/>
+                                        </Grid>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                        </Style>
+                    </DataGrid.Resources>
+
+                    <DataGrid.Columns>
+                        <!-- Course Info -->
+                        <DataGridTextColumn Header="Course ID" 
+                                            Binding="{Binding Course.Id}" 
+                                            Width="80"
+                                            IsReadOnly="True"/>
+
+                        <DataGridTextColumn Header="Language" 
+                                            Binding="{Binding Course.Language}" 
+                                            Width="100"
+                                            IsReadOnly="True"/>
+
+                        <DataGridTextColumn Header="Level" 
+                                            Binding="{Binding Course.Level}" 
+                                            Width="80"
+                                            IsReadOnly="True"/>
+
+                        <DataGridTextColumn Header="Start Date" 
+                                            Binding="{Binding Course.Date}" 
+                                            Width="100"
+                                            IsReadOnly="True"/>
+
+                        <DataGridTextColumn Header="Start Time" 
+                                            Binding="{Binding Course.StartAt}" 
+                                            Width="90"
+                                            IsReadOnly="True"/>
+
+                        <DataGridTextColumn Header="Duration (Weeks)" 
+                                            Binding="{Binding Course.DurationWeeks}" 
+                                            Width="120"
+                                            IsReadOnly="True"/>
+
+                        <DataGridTextColumn Header="Days" 
+                                            Binding="{Binding DaysDisplay}" 
+                                            Width="100"
+                                            IsReadOnly="True"/>
+
+                        <!-- New Professor Selection -->
+                        <DataGridTemplateColumn Header="New Professor" Width="200">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <ComboBox ItemsSource="{Binding DataContext.AvailableProfessors, RelativeSource={RelativeSource AncestorType=Window}}"
+                                              SelectedItem="{Binding SelectedProfessor, UpdateSourceTrigger=PropertyChanged}"
+                                              DisplayMemberPath="DisplayName"
+                                              Margin="2"
+                                              Background="Gold"
+                                              Foreground="White"
+                                              FontFamily="Script MT Bold"
+                                              BorderBrush="#B8860B"
+                                              BorderThickness="2">
+                                        <ComboBox.ItemContainerStyle>
+                                            <Style TargetType="ComboBoxItem">
+                                                <Setter Property="Foreground" Value="White"/>
+                                                <Setter Property="Background" Value="Gold"/>
+                                                <Setter Property="FontFamily" Value="Script MT Bold"/>
+                                                <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                                                <Style.Triggers>
+                                                    <Trigger Property="IsMouseOver" Value="True">
+                                                        <Setter Property="Background" Value="#FFD24D"/>
+                                                        <Setter Property="Foreground" Value="Black"/>
+                                                    </Trigger>
+                                                    <Trigger Property="IsSelected" Value="True">
+                                                        <Setter Property="Background" Value="#E0B000"/>
+                                                        <Setter Property="Foreground" Value="Black"/>
+                                                    </Trigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </ComboBox.ItemContainerStyle>
+                                    </ComboBox>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                    </DataGrid.Columns>
+                </DataGrid>
+
+                <!-- Buttons -->
+                <StackPanel Grid.Row="3" 
+                            Orientation="Horizontal" 
+                            HorizontalAlignment="Center"
+                            Margin="0,10,0,0">
+
+                    <Button Content="Continue" 
+                            Width="120" 
+                            Height="38"
+                            Margin="10,0"
+                            Click="Continue_Click"
+                            Style="{StaticResource FancyButtonStyle}">
+                        <Button.Background>
+                            <ImageBrush ImageSource="/GUIResources/loginButtonBackground.png"/>
+                        </Button.Background>
+                    </Button>
+
+                    <Button Content="Cancel" 
+                            Width="120" 
+                            Height="38"
+                            Margin="10,0"
+                            Click="Cancel_Click"
+                            Style="{StaticResource FancyButtonStyle}">
+                        <Button.Background>
+                            <ImageBrush ImageSource="/GUIResources/loginButtonBackground.png"/>
+                        </Button.Background>
+                    </Button>
+                </StackPanel>
+            </Grid>
+        </Border>
+    </Grid>
+</Window>

@@ -1,12 +1,12 @@
 [
     {
         "Id": 1,
-        "ProfessorId": "profesor@gmail.com",
+        "ProfessorId": "profesor2@gmail.com",
         "Language": 3,
         "Level": 2,
         "IsLive": true,
         "MaxAttendees": 20,
-        "Date": "2025-09-25",
+        "Date": "2025-08-25",
         "StartAt": "10:00",
         "Duration": 240,
         "RoomId": "R101"

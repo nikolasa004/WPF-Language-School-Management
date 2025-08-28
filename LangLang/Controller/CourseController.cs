@@ -75,9 +75,22 @@ namespace LangLang.Controller
             return _dao.UpdateCourse(course);
         }
 
+        public Course? ForceUpdate(Course course)
+        {
+            course.IsLive = true;
+            course.Duration = 90;
+            EnsureNoOverlap(course, ignoreId: course.Id);
+            return _dao.UpdateCourse(course);
+        }
+
         public Course? Delete(int id)
         {
             EnsureCanModify(id);
+            return _dao.RemoveCourse(id);
+        }
+
+        public Course? ForceDelete(int id)
+        {
             return _dao.RemoveCourse(id);
         }
 

@@ -70,6 +70,11 @@ namespace LangLang.Controller
             EnsureCanModify(id);
             return _dao.RemoveExamTerm(id);
         }
+        public ExamTerm? ForceDelete(int id)
+        {
+            return _dao.RemoveExamTerm(id);
+        }
+
         public ExamTerm? GetById(int id) => _dao.GetExamTermById(id);
         private static void EnsureValidBasics(ExamTerm t)
         {

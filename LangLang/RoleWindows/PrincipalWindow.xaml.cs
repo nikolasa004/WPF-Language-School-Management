@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
+using System.Globalization;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 using LangLang.Controller;
 using LangLang.DTO;
 using LangLang.Model;
@@ -69,6 +72,19 @@ namespace LangLang.RoleWindows
             }
         }
 
+
+        private void ReassignCourses_Click(object sender, RoutedEventArgs e)
+        {
+            MessageBox.Show("Course reassignment functionality has been integrated into the delete professor workflow.",
+                            "Information", MessageBoxButton.OK, MessageBoxImage.Information);
+        }
+
+        private void CancelCourseReassignment_Click(object sender, RoutedEventArgs e)
+        {
+            MessageBox.Show("Course reassignment cancelled.",
+                            "Cancelled", MessageBoxButton.OK, MessageBoxImage.Information);
+        }
+
         private void AddProfessor_Click(object sender, RoutedEventArgs e)
         {
             isEditMode = false;
@@ -117,9 +133,120 @@ namespace LangLang.RoleWindows
 
         private void DeleteProfessor_Click(object sender, RoutedEventArgs e)
         {
-            // TODO: implement delete functionality
-            MessageBox.Show("Delete teacher not implemented yet.");
+            if (ProfessorsDataGrid.SelectedItem is not Professor selectedProfessor)
+            {
+                MessageBox.Show("Please select a professor to delete.",
+                                "No selection", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            var result = MessageBox.Show(
+                $"Are you sure you want to delete professor {selectedProfessor.FirstName} {selectedProfessor.LastName}?",
+                "Confirm delete",
+                MessageBoxButton.YesNo,
+                MessageBoxImage.Warning);
+
+            if (result != MessageBoxResult.Yes) return;
+
+            var isAssigned = HandleProfessorCourses(selectedProfessor);
+            HandleProfessorExams(selectedProfessor);
+            
+            if (!isAssigned) return;
+
+            professorsController.Delete(selectedProfessor.Email);
+
+            MessageBox.Show("Professor successfully deleted!",
+                            "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+
+            LoadProfessors();
         }
+
+        private bool HandleProfessorCourses(Professor professor)
+        {
+            var courseController = new CourseController();
+            var professorExams = courseController.GetMyCourses(professor.Email);
+
+            var ongoingCourses = new List<Course>();
+
+            foreach (var exam in professorExams)
+            {
+                try
+                {
+                    DateTime examDate = ParseDate(exam.Date);
+                    if (examDate > DateTime.Now)
+                    {
+                        courseController.ForceDelete(exam.Id);
+                    }
+                    else
+                    {
+                        ongoingCourses.Add(exam);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Error while processing exam {exam.Id}: {ex.Message}",
+                                    "Exam error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    Console.WriteLine(ex.ToString());
+                }
+            }
+            
+            // Handle ongoing courses - need reassignment
+            if (ongoingCourses.Any())
+            {
+                var reassignWindow = new ReassignCoursesWindow(
+                    ongoingCourses,
+                    professor,
+                    courseController,
+                    this.professorsController);
+
+                var result = reassignWindow.ShowDialog();
+
+                if (result != true || !reassignWindow.WasReassigned)
+                {
+                    MessageBox.Show("Course reassignment was cancelled. The professor cannot be deleted while having ongoing courses.",
+                                    "Deletion Cancelled", MessageBoxButton.OK, MessageBoxImage.Information);
+                    return false; // Exit the deletion process
+                }
+            }
+
+            return true; 
+        }
+
+
+        private void HandleProfessorExams(Professor professor)
+        {
+            var examsController = new ExamTermsController();
+            var professorExams = examsController.GetMyExamTerms(professor.Email);
+
+            foreach (var exam in professorExams)
+            {
+                try
+                {
+                    DateTime examDate = ParseDate(exam.Date);
+                    if (examDate > DateTime.Now)
+                    {
+                        examsController.ForceDelete(exam.Id);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Error while processing exam {exam.Id}: {ex.Message}",
+                                    "Exam error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    Console.WriteLine(ex.ToString());
+                }
+            }
+        }
+
+
+        /// <summary>
+        /// Helper za parsiranje datuma iz stringa "yyyy-MM-dd"
+        /// </summary>
+        private DateTime ParseDate(string startAt)
+        {
+            return DateTime.TryParse(startAt, out var parsed) ? parsed : DateTime.MinValue;
+        }
+
+
 
         private void AddLanguage_Click(object sender, RoutedEventArgs e)
         {
@@ -179,6 +306,13 @@ namespace LangLang.RoleWindows
                 {
                     // Editing existing professor
                     var updatedProfessor = Professor.ToProfessor();
+
+                    if (professorsController.GetProfessorById(updatedProfessor.Email) != null)
+                    {
+                        MessageBox.Show("An account with this email already exists. Please use a different email.",
+                                        "Email already exists", MessageBoxButton.OK, MessageBoxImage.Warning);
+                        return;
+                    }
 
                     // Keep original registration date & languages
                     updatedProfessor.DateOfRegistration = currentProfessor.DateOfRegistration;

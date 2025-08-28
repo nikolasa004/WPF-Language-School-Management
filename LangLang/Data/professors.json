@@ -28,5 +28,47 @@
             "English": 3,
             "German": 2
         }
+    },
+    {
+        "Languages": {
+            "Spanish": 2
+        },
+        "FirstName": "Mitar",
+        "LastName": "Mitrovic",
+        "Gender": 0,
+        "DateOfBirth": "2007-08-28",
+        "PhoneNumber": "1231231123",
+        "Email": "mitar@gmail.com",
+        "Password": "123",
+        "EducationLevel": 2,
+        "DateOfRegistration": "2025-08-28"
+    },
+    {
+        "Languages": {
+            "Spanish": 2
+        },
+        "FirstName": "Mitar",
+        "LastName": "Mitrovic",
+        "Gender": 0,
+        "DateOfBirth": "2007-08-28",
+        "PhoneNumber": "1231231123",
+        "Email": "ognjen@gmail.com",
+        "Password": "123",
+        "EducationLevel": 2,
+        "DateOfRegistration": "2025-08-28"
+    },
+    {
+        "Languages": {
+            "Italian": 0
+        },
+        "FirstName": "Nikolica",
+        "LastName": "Nikolic",
+        "Gender": 0,
+        "DateOfBirth": "2005-08-28",
+        "PhoneNumber": "123123123",
+        "Email": "nikola@gmail.com",
+        "Password": "1234",
+        "EducationLevel": 2,
+        "DateOfRegistration": "2025-08-28"
     }
 ]
