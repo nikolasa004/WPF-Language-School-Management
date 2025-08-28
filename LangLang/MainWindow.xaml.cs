@@ -76,7 +76,7 @@ namespace LangLang
             {
                 Student s => new StudentWindow(s, studentsController),
                 Professor p => new ProfessorWindow(p, professorsController),
-                string s when s == "Principal" => new PrincipalWindow(),
+                string s when s == "Principal" => new PrincipalWindow(professorsController),
                 _ => throw new InvalidOperationException("Unknown user type")
             };
 
