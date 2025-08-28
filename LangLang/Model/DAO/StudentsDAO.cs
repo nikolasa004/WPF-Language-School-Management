@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using LangLang.Observer;
 
-
 namespace LangLang.Model.DAO
 {
     class StudentsDAO
@@ -26,7 +25,6 @@ namespace LangLang.Model.DAO
             StudentSubject.NotifyObservers();
             return student;
         }
-
         public Student? UpdateStudent(Student student)
         {
             Student? oldStudent = GetStudentById(student.Email);
@@ -46,7 +44,6 @@ namespace LangLang.Model.DAO
             StudentSubject.NotifyObservers();
             return oldStudent;
         }
-
         public Student? RemoveStudent(string email)
         {
             Student? student = GetStudentById(email);
@@ -62,39 +59,9 @@ namespace LangLang.Model.DAO
         {
             return _students.Find(s => s.Email == email);
         }
-
         public List<Student> GetAllStudents()
         {
             return _students;
         }
-
-        //prototype for pagination and sorting
-        /*public List<Vehicle> GetAllVehicles(int page, int pageSize, string sortCriteria, SortDirection sortDirection)
-        {
-            IEnumerable<Vehicle> vehicles = _vehicles;
-
-            // sortiraj vehicles ukoliko je sortCriteria naveden
-            switch (sortCriteria)
-            {
-                case "Id":
-                    vehicles = _vehicles.OrderBy(x => x.Id);
-                    break;
-                case "Name":
-                    vehicles = _vehicles.OrderBy(x => x.Name);
-                    break;
-                case "NumberOfWheels":
-                    vehicles = _vehicles.OrderBy(x => x.NumberOfWheels);
-                    break;
-            }
-
-            // promeni redosled ukoliko ima potrebe za tim
-            if (sortDirection == SortDirection.Descending)
-                vehicles = vehicles.Reverse();
-
-            // paginacija
-            vehicles = vehicles.Skip((page - 1) * pageSize).Take(pageSize);
-
-            return vehicles.ToList();
-        }*/
     }
 }

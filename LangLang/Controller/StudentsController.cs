@@ -23,12 +23,10 @@ namespace LangLang.Controller
         {
             _students.AddStudent(student);
         }
-
         public Student? Update(Student student)
         {
             return _students.UpdateStudent(student);
         }
-
         public void Delete(string studentEmail)
         {
             _students.RemoveStudent(studentEmail);

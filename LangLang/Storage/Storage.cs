@@ -13,6 +13,7 @@ namespace LangLang.Storage
         {
             _fileName = string.Format(_fileName, fileName);
         }
+
         public List<T> Load()
         {
             if (!File.Exists(_fileName))
