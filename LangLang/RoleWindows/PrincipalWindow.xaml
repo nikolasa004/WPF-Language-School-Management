@@ -37,6 +37,8 @@
                         <RowDefinition Height="Auto"/>
                         <!-- Top bar -->
                         <RowDefinition Height="*"/>
+                        <!-- Filters -->
+                        <RowDefinition Height="Auto"/>
                         <!-- Content -->
                         <RowDefinition Height="Auto"/>
                         <!-- Bottom buttons -->
@@ -131,9 +133,66 @@
                             </Button.Background>
                         </Button>
                     </Grid>
+                    
+                    <!-- ====== Filters ====== -->
+                    <WrapPanel Grid.Row="1" Background="#66000000" ItemHeight="35">
+                        <Label Content="Language:" Foreground="White" FontFamily="Script MT Bold" VerticalAlignment="Center"/>
+                        <ComboBox x:Name="ExamLanguageCombo"
+                              Width="170" Height="35"
+                              Margin="6,6,12,6"
+                              VerticalAlignment="Center"
+                              ItemsSource="{Binding AvailableLanguages}"
+                              SelectedItem="{Binding SelectedLanguage, Mode=TwoWay}"/>
+
+
+                        <Label Content="Level:" Foreground="White" FontFamily="Script MT Bold" VerticalAlignment="Center"/>
+                        <ComboBox x:Name="ExamLevelCombo"
+                            Width="170" Height="35"
+                            Margin="6,6,12,6"
+                            VerticalAlignment="Center"
+                            ItemsSource="{Binding AvailableLevels}"
+                            SelectedItem="{Binding SelectedLevel, Mode=TwoWay}"/>
+
+                        <Label Content="From:" Foreground="White" FontFamily="Script MT Bold" VerticalAlignment="Center"/>
+                        <DatePicker x:Name="ExamFromDate"
+                            Width="160" Height="35"
+                            Margin="6,6,12,6"
+                            VerticalAlignment="Center"/>
+
+                        <Label Content="To:" Foreground="White" FontFamily="Script MT Bold" VerticalAlignment="Center"/>
+                        <DatePicker x:Name="ExamToDate"
+                            Width="160" Height="35"
+                            Margin="6,6,12,6"
+                            VerticalAlignment="Center"/>
+
+                        <Button Content="Search"
+                            Style="{StaticResource FancyButtonStyle}"
+                            FontSize="16"
+                            Width="120" Height="35"
+                            Margin="12,6,0,6"
+                            VerticalAlignment="Center"
+                            Click="Search_Click"
+    >
+                            <Button.Background>
+                                <ImageBrush ImageSource="/GUIResources/loginButtonBackground.png"/>
+                            </Button.Background>
+                        </Button>
+
+                        <Button Content="Remove Filters"
+                            Style="{StaticResource FancyButtonStyle}"
+                            FontSize="16"
+                            Width="140" Height="35"
+                            Margin="12,6,0,6"
+                            VerticalAlignment="Center"
+                            Click="RemoveFilters_Click">
+                            <Button.Background>
+                                <ImageBrush ImageSource="/GUIResources/loginButtonBackground.png"/>
+                            </Button.Background>
+                        </Button>
+                    </WrapPanel>
 
                     <!-- Content: DataGrid for teachers -->
-                    <Grid Grid.Row="1" Margin="0,20,0,0" Background="#80000000">
+                    <Grid Grid.Row="2" Margin="0,20,0,0" Background="#80000000">
                         <DataGrid x:Name="ProfessorsDataGrid" 
                             AutoGenerateColumns="False" 
                             FontSize="14" 
@@ -193,13 +252,13 @@
                     </Grid>
 
                     <!-- Bottom buttons -->
-                    <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,20,0,0">
+                    <WrapPanel Grid.Row="3" HorizontalAlignment="Center"  Margin="0,20,0,0">
                         <Button Content="Add Professor" Style="{StaticResource FancyButtonStyle}" Width="120" Height="38" Margin="6,0" FontSize="16" Click="AddProfessor_Click">
                             <Button.Background>
                                 <ImageBrush ImageSource="/GUIResources/loginButtonBackground.png"/>
                             </Button.Background>
                         </Button>
-                    </StackPanel>
+                    </WrapPanel>
                 </Grid>
             </Viewbox>
         </Grid>

@@ -425,5 +425,78 @@ namespace LangLang.RoleWindows
         {
             MessageBox.Show("Language report not implemented yet.");
         }
+
+        private void Search_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                // Get all professors
+                var professors = professorsController.GetAllProfessors();
+
+                // --- Collect filters ---
+                var selectedLanguage = ExamLanguageCombo.SelectedItem as Language?;
+                var selectedLevel = ExamLevelCombo.SelectedItem as LanguageLevel?;
+                var fromDate = ExamFromDate.SelectedDate;
+                var toDate = ExamToDate.SelectedDate;
+
+                // --- Apply filters ---
+                var filtered = professors.AsEnumerable();
+
+                if (selectedLanguage.HasValue)
+                {
+                    filtered = filtered.Where(p =>
+                        p.Languages != null && p.Languages.ContainsKey(selectedLanguage.Value));
+                }
+
+                if (selectedLevel.HasValue)
+                {
+                    filtered = filtered.Where(p =>
+                        p.Languages != null &&
+                        p.Languages.Values.Contains(selectedLevel.Value));
+                }
+
+                if (fromDate.HasValue)
+                {
+                    filtered = filtered.Where(p =>
+                    {
+                        if (DateTime.TryParse(p.DateOfRegistration, out var regDate))
+                            return regDate >= fromDate.Value;
+                        return false;
+                    });
+                }
+
+                if (toDate.HasValue)
+                {
+                    filtered = filtered.Where(p =>
+                    {
+                        if (DateTime.TryParse(p.DateOfRegistration, out var regDate))
+                            return regDate <= toDate.Value;
+                        return false;
+                    });
+                }
+
+                // --- Update DataGrid ---
+                ProfessorsDataGrid.ItemsSource = filtered.ToList();
+                ProfessorsDataGrid.Items.Refresh();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error during search: {ex.Message}",
+                                "Search Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private void RemoveFilters_Click(object sender, RoutedEventArgs e)
+        {
+            // Clear selections
+            ExamLanguageCombo.SelectedIndex = -1;
+            ExamLevelCombo.SelectedIndex = -1;
+            ExamFromDate.SelectedDate = null;
+            ExamToDate.SelectedDate = null;
+
+            // Reload full professor list
+            LoadProfessors();
+        }
+
     }
 }
