@@ -1,4 +1,5 @@
 ﻿using LangLang.Controller;
+using LangLang.DTO;
 using LangLang.Model;
 using LangLang.Model.Enums;
 using System;
@@ -7,9 +8,10 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Globalization;
 using System.Linq;
+using System.Reflection.Emit;
 using System.Windows;
 using System.Windows.Controls;
-using LangLang.DTO;
+using System.Windows.Documents;
 
 namespace LangLang.RoleWindows.StudentViewModules
 {
@@ -38,7 +40,6 @@ namespace LangLang.RoleWindows.StudentViewModules
         public StudentViewCourses(ComboBox examLanguageCombo, ComboBox examLevelCombo, ComboBox courseOnlineCombo, TextBox courseWeeksBox, DatePicker examFromDate, DatePicker examToDate, DataGrid examsGrid)
         {
             _courseController = new CourseController();
-
             CourseLanguageCombo = examLanguageCombo;
             CourseLevelCombo = examLevelCombo;
             CourseOnlineCombo = courseOnlineCombo;
@@ -52,9 +53,7 @@ namespace LangLang.RoleWindows.StudentViewModules
             _availableCourses = GetAvailableCourses(allCourses);
             _filtered = _availableCourses;
             _sorted = ApplySort(_filtered, _sortKey, _sortDir).ToList();
-
             ApplyFiltersSortAndPage();
-
             CoursesGrid.ItemsSource = _page;
         }
 
@@ -98,7 +97,6 @@ namespace LangLang.RoleWindows.StudentViewModules
         {
             Language? lang = null;
             LanguageLevel? level = null;
-
             if (CourseLanguageCombo.SelectedItem is Language selLang) lang = selLang;
             if (CourseLevelCombo.SelectedItem is LanguageLevel selLevel) level = selLevel;
 
@@ -108,8 +106,18 @@ namespace LangLang.RoleWindows.StudentViewModules
             if (from.HasValue && to.HasValue && from.Value > to.Value)
                 (from, to) = (to, from);
 
+            bool? isLive= CheckLiveFilter();
+
+            int weeks = 0;
+            if (int.TryParse(CourseWeeksBox.Text, out var parsedWeeks) && parsedWeeks > 0)
+                weeks = parsedWeeks;
+
+            return GetFilterResults(input, lang, level, isLive, weeks, from, to);
+        }
+        private bool? CheckLiveFilter()
+        {
             bool? isLive;
-            if(CourseOnlineCombo.SelectedItem is ComboBoxItem comboItem)
+            if (CourseOnlineCombo.SelectedItem is ComboBoxItem comboItem)
             {
                 var val = comboItem.Content?.ToString();
                 if (val == "Yes")
@@ -122,47 +130,43 @@ namespace LangLang.RoleWindows.StudentViewModules
             else
                 isLive = null;
 
-            int weeks = 0;
-            if (int.TryParse(CourseWeeksBox.Text, out var w) && w > 0)
-                weeks = w;
-
+            return isLive;
+        }
+        private List<CourseDTO> GetFilterResults(List<CourseDTO> input, Language? lang, LanguageLevel? level, bool? isLive, int weeks, DateTime? from, DateTime? to)
+        {
             List<Course> inputRaw = input.Select(dto => dto.ToCourse()).ToList();
             List<Course> resultRaw = _courseController.SearchCourses(inputRaw, lang, level, isLive, weeks, from, to);
-            List<CourseDTO> result = resultRaw.Select(et => new CourseDTO(et)).ToList();
-
+            List<CourseDTO> result = resultRaw.Select(course => new CourseDTO(course)).ToList();
             return result;
         }
 
-        private IEnumerable<CourseDTO> ApplySort(IEnumerable<CourseDTO> source, string sortKey, ListSortDirection dir)
+        private IEnumerable<CourseDTO> ApplySort(IEnumerable<CourseDTO> source, string sortKey, ListSortDirection direction)
         {
             var key = NormalizeSortKey(sortKey);
 
             Func<CourseDTO, object> keySelector = key switch
             {
-                "Id" => e => e.Id,
-                "Language" => e => e.Language.ToString(),
-                "Level" => e => (int)e.Level,
-                "ProfessorId" => e => e.ProfessorId ?? "",
-                "DurationWeeks" => e => e.DurationWeeks,
-                "FormattedDays" => e => e.DaysFormatted ?? "",
-                "IsLive" => e => e.IsLive,
-                "RoomId" => e => e.RoomId ?? "",
-                "MaxAttendees" => e => e.MaxAttendees ?? 0,
-                "StartAt" => e => GetStartDateTime(e) ?? DateTime.MinValue,
-                "Date" => e => GetStartDateTime(e) ?? DateTime.MinValue,
-                _ => e => GetStartDateTime(e) ?? DateTime.MinValue
+                "Id" => course => course.Id,
+                "Language" => course => course.Language.ToString(),
+                "Level" => course => (int)course.Level,
+                "ProfessorId" => course => course.ProfessorId ?? "",
+                "DurationWeeks" => course => course.DurationWeeks,
+                "FormattedDays" => course => course.DaysFormatted ?? "",
+                "IsLive" => course => course.IsLive,
+                "RoomId" => course => course.RoomId ?? "",
+                "MaxAttendees" => course => course.MaxAttendees ?? 0,
+                "StartAt" => course => course.StartAt ?? "",
+                "Date" => course => GetStartDateTime(course) ?? DateTime.MinValue,
+                _ => course => GetStartDateTime(course) ?? DateTime.MinValue
             };
 
-            return dir == ListSortDirection.Ascending
-                ? source.OrderBy(keySelector)
-                : source.OrderByDescending(keySelector);
+            return direction == ListSortDirection.Ascending ? source.OrderBy(keySelector) : source.OrderByDescending(keySelector);
         }
 
         private static string NormalizeSortKey(string key)
         {
             if (string.IsNullOrWhiteSpace(key)) return "Date";
             key = key.Trim();
-
 
             return key.ToLower() switch
             {
@@ -180,29 +184,22 @@ namespace LangLang.RoleWindows.StudentViewModules
                 _ => key
             };
         }
-        private static DateTime? GetStartDateTime(CourseDTO e)
+        private static DateTime? GetStartDateTime(CourseDTO course)
         {
-            if (!DateTime.TryParseExact(e.Date ?? "", "dd.MM.yyyy", new CultureInfo("sr-RS"),
-                                        DateTimeStyles.None, out var d) &&
-                !DateTime.TryParseExact(e.Date ?? "", "yyyy-MM-dd", CultureInfo.InvariantCulture,
-                                        DateTimeStyles.None, out d))
+            if (!DateTime.TryParseExact(course.Date ?? "", "dd.MM.yyyy", new CultureInfo("sr-RS"),DateTimeStyles.None, out var date) && !DateTime.TryParseExact(course.Date ?? "", "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out date))
                 return null;
 
-            if (!TimeSpan.TryParseExact(e.StartAt ?? "", @"hh\:mm", CultureInfo.InvariantCulture, out var ts))
+            if (!TimeSpan.TryParseExact(course.StartAt ?? "", @"hh\:mm", CultureInfo.InvariantCulture, out var timeStamp))
                 return null;
 
-            return d.Date.Add(ts);
+            return date.Date.Add(timeStamp);
         }
 
         private void ApplyFiltersSortAndPage(bool resetPage = true)
         {
-            // 1) filter
             _filtered = ApplyCurrentFilters(_availableCourses);
-
-            // 2) sort
             _sorted = ApplySort(_filtered, _sortKey, _sortDir).ToList();
 
-            // 3) page
             var totalPages = Math.Max(1, (int)Math.Ceiling((double)_sorted.Count / _pageSize));
             if (resetPage)
                 _currentPage = 1;
@@ -211,8 +208,8 @@ namespace LangLang.RoleWindows.StudentViewModules
             var slice = _sorted.Skip((_currentPage - 1) * _pageSize).Take(_pageSize).ToList();
 
             _page.Clear();
-            foreach (var x in slice)
-                _page.Add(x);
+            foreach (var course in slice)
+                _page.Add(course);
 
             if (CourseLanguageCombo.FindName("PagerTextCourses") is TextBlock pager)
                 pager.Text = $"Page {_currentPage}/{totalPages}  ·  {(_sorted.Count == 1 ? "1 item" : _sorted.Count + " items")}";
@@ -222,8 +219,8 @@ namespace LangLang.RoleWindows.StudentViewModules
         {
             e.Handled = true;
 
-            foreach (var c in CoursesGrid.Columns)
-                c.SortDirection = null;
+            foreach (var column in CoursesGrid.Columns)
+                column.SortDirection = null;
 
             var key = e.Column.SortMemberPath ?? e.Column.Header?.ToString() ?? "Date";
             key = NormalizeSortKey(key);
@@ -244,17 +241,13 @@ namespace LangLang.RoleWindows.StudentViewModules
         {
             if (CoursesGrid == null || !CoursesGrid.IsLoaded) return;
 
-            if (sender is ComboBox cb &&
-                cb.SelectedItem is ComboBoxItem it &&
-                int.TryParse(it.Content?.ToString(), out var ps) &&
-                ps > 0)
+            if (sender is ComboBox comboBox && comboBox.SelectedItem is ComboBoxItem item && int.TryParse(item.Content?.ToString(), out var pageSize) && pageSize > 0)
             {
-                _pageSize = ps;
+                _pageSize = pageSize;
                 _currentPage = 1;
                 ApplyFiltersSortAndPage(resetPage: true);
             }
         }
-
         public void PrevPage(object? sender, RoutedEventArgs e)
         {
             if (_currentPage > 1)
@@ -263,7 +256,6 @@ namespace LangLang.RoleWindows.StudentViewModules
                 ApplyFiltersSortAndPage(resetPage: false);
             }
         }
-
         public void NextPage(object? sender, RoutedEventArgs e)
         {
             var totalPages = Math.Max(1, (int)Math.Ceiling((double)_sorted.Count / _pageSize));

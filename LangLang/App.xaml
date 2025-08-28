@@ -149,6 +149,8 @@
             <Setter Property="FontFamily" Value="Script MT Bold"/>
             <Setter Property="BorderBrush" Value="#00000000"/>
             <Setter Property="Padding" Value="6,2"/>
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+            <Setter Property="HorizontalAlignment" Value="Center"/>
         </Style>
     </Application.Resources>
 </Application>
