@@ -12,6 +12,7 @@ using LangLang.Controller;
 using LangLang.DTO;
 using LangLang.Model;
 using LangLang.Model.Enums;
+using LangLang.RoleWindows.StudentViewModules;
 
 namespace LangLang.RoleWindows
 {
@@ -21,6 +22,8 @@ namespace LangLang.RoleWindows
         public ProfessorDTO Professor { get; set; }
         public ProfessorDTO UpdateProfessor { get; set; }
 
+        private CourseDTO? _editingCourse = null;
+
         // ===== Controllers / state =====
         private readonly ProfessorsController professorsController;
         private readonly ExamTermsController _examController = new ExamTermsController();
@@ -28,6 +31,18 @@ namespace LangLang.RoleWindows
 
         // Add/Edit overlay helper
         private ExamTerm? _editingExam;
+
+        //Course
+
+        private readonly CourseController _courseController = new();
+
+        private List<CourseDTO> _allCourses = new();
+        private List<CourseDTO> _filteredCourses = new();   // after filters
+        private List<CourseDTO> _sortedCourses = new();     // after sorting
+        private readonly ObservableCollection<CourseDTO> _pageOfCourses = new();
+
+        private int _pageSizeForCourses = 10;
+        private int _currentPageForCourses = 1;
 
         // ===== Sorting & pagination pipeline =====
         private List<ExamTerm> _allExams = new();   // all from DAO for this professor
@@ -41,7 +56,8 @@ namespace LangLang.RoleWindows
         private ListSortDirection _sortDir = ListSortDirection.Ascending;
 
         // ===== ctor =====
-        public ProfessorWindow(Professor professor, ProfessorsController professorsController)
+        public ProfessorWindow(Professor professor,
+                        ProfessorsController professorsController)
         {
             InitializeComponent();
 
@@ -64,14 +80,15 @@ namespace LangLang.RoleWindows
                     ExamToDate.SelectedDateFormat = DatePickerFormat.Short;
                 }
 
-                
                 InitAddExamOverlay();
+
             };
 
             DataContext = this;
 
             Professor = new ProfessorDTO(professor);
             UpdateProfessor = new ProfessorDTO(professor);
+
             this.professorsController = professorsController;
 
             _professorId = Professor.Email;
@@ -79,6 +96,12 @@ namespace LangLang.RoleWindows
             ExamsGrid.ItemsSource = _page;
             _allExams = _examController.GetMyExamTerms(_professorId).ToList();
             ApplyFiltersSortAndPage();
+
+            CoursesGrid.ItemsSource = _pageOfCourses;
+            _allCourses = _courseController.GetMyCourses(_professorId)
+                                .Select(c => new CourseDTO(c))
+                                .ToList();
+            ApplyFiltersSortAndPageForCourses();
 
             InformationUpdate();
         }
@@ -372,7 +395,7 @@ namespace LangLang.RoleWindows
 
         private void FindYourExams_Click(object sender, RoutedEventArgs e)
         {
-            
+
             ApplyFiltersSortAndPage(resetPage: true);
         }
 
@@ -390,29 +413,19 @@ namespace LangLang.RoleWindows
             if (from.HasValue && to.HasValue && from.Value > to.Value)
                 (from, to) = (to, from);
 
-            
-            return _examController.SearchMyExamTerms(_professorId, lang, level, from, to);
-        }
 
-        private void CoursesButton_Click(object sender, RoutedEventArgs e)
-        {
-            if (sender is Button btn && btn.ContextMenu != null)
-            {
-                btn.ContextMenu.PlacementTarget = btn;
-                btn.ContextMenu.Placement = System.Windows.Controls.Primitives.PlacementMode.Bottom;
-                btn.ContextMenu.IsOpen = true;
-            }
+            return _examController.SearchMyExamTerms(_professorId, lang, level, from, to);
         }
 
         private void ExamsButton_Click(object sender, RoutedEventArgs e)
         {
             MainPanel.Visibility = Visibility.Collapsed;
-            AddCoursePanel.Visibility = Visibility.Collapsed;
+            AddCourseOverlay.Visibility = Visibility.Collapsed;
             ExamsPanel.Visibility = Visibility.Visible;
 
             InitExamFilters();
 
-            
+
             _allExams = _examController.GetMyExamTerms(_professorId).ToList();
             ApplyFiltersSortAndPage();
         }
@@ -420,7 +433,7 @@ namespace LangLang.RoleWindows
         private void CloseExamsPanel_Click(object sender, RoutedEventArgs e)
         {
             ExamsPanel.Visibility = Visibility.Collapsed;
-            AddCoursePanel.Visibility = Visibility.Collapsed;
+            AddCourseOverlay.Visibility = Visibility.Collapsed;
             MainPanel.Visibility = Visibility.Visible;
         }
 
@@ -464,14 +477,14 @@ namespace LangLang.RoleWindows
             _page.Clear();
             foreach (var x in slice) _page.Add(x);
 
-            
+
             if (FindName("PagerText") is TextBlock pager)
                 pager.Text = $"Page {_currentPage}/{totalPages}  ·  {(_sorted.Count == 1 ? "1 item" : _sorted.Count + " items")}";
         }
 
         private IEnumerable<ExamTerm> ApplySort(IEnumerable<ExamTerm> source, string sortKey, ListSortDirection dir)
         {
-            
+
             var key = NormalizeSortKey(sortKey);
 
             Func<ExamTerm, object> keySelector = key switch
@@ -481,8 +494,8 @@ namespace LangLang.RoleWindows
                 "Level" => e => (int)e.Level,
                 "RoomId" => e => e.RoomId ?? "",
                 "MaxAttendees" => e => e.MaxAttendees ?? 0,
-                "StartAt" => e => GetStartDateTime(e) ?? DateTime.MinValue, 
-                "Date" => e => GetStartDateTime(e) ?? DateTime.MinValue, 
+                "StartAt" => e => GetStartDateTime(e) ?? DateTime.MinValue,
+                "Date" => e => GetStartDateTime(e) ?? DateTime.MinValue,
                 _ => e => GetStartDateTime(e) ?? DateTime.MinValue
             };
 
@@ -496,7 +509,7 @@ namespace LangLang.RoleWindows
             if (string.IsNullOrWhiteSpace(key)) return "Date";
             key = key.Trim();
 
-            
+
             return key.ToLower() switch
             {
                 "id" => "Id",
@@ -524,12 +537,12 @@ namespace LangLang.RoleWindows
             return d.Date.Add(ts);
         }
 
-        
+
         private void ExamsGrid_Sorting(object sender, DataGridSortingEventArgs e)
         {
             e.Handled = true;
 
-            
+
             foreach (var c in ExamsGrid.Columns) c.SortDirection = null;
 
             var key = e.Column.SortMemberPath ?? e.Column.Header?.ToString() ?? "Date";
@@ -613,24 +626,591 @@ namespace LangLang.RoleWindows
             return true;
         }
 
-        private void SaveCourse_Click(object sender, RoutedEventArgs e)
+        private void OpenAddCourseOverlay()
         {
-            MessageBox.Show("Save course clicked (not implemented yet).");
+            if (AddCourseLangCombo.Items.Count == 0)
+                AddCourseLangCombo.ItemsSource = Enum.GetValues(typeof(Language));
+            if (AddCourseLevelCombo.Items.Count == 0)
+                AddCourseLevelCombo.ItemsSource = Enum.GetValues(typeof(LanguageLevel));
+
+            AddCourseDatePicker.Language = this.Language;
+            AddCourseDatePicker.SelectedDateFormat = DatePickerFormat.Short;
+
+            AddCourseLangCombo.SelectedItem = null;
+            AddCourseLevelCombo.SelectedItem = null;
+            AddCourseMaxBox.Text = "";
+            AddCourseRoomBox.Text = "";
+            AddCourseDatePicker.SelectedDate = null;
+            AddCourseTimeBox.Text = "10:00";
+            AddCourseIsLiveCheckBox.IsChecked = false;
+
+            AddCourseMonCheckBox.IsChecked = false;
+            AddCourseTueCheckBox.IsChecked = false;
+            AddCourseWedCheckBox.IsChecked = false;
+            AddCourseThuCheckBox.IsChecked = false;
+            AddCourseFriCheckBox.IsChecked = false;
+            AddCourseSatCheckBox.IsChecked = false;
+            AddCourseSunCheckBox.IsChecked = false;
+
+            AddCourseDurationWeeksBox.Text = "";
+
+            AddCourseOverlay.Visibility = Visibility.Visible;
         }
 
-            private void CloseAddCoursePanel_Click(object sender, RoutedEventArgs e)
+        private void CloseAddCourseOverlay()
+        {
+            AddCourseOverlay.Visibility = Visibility.Collapsed;
+        }
+
+        private void AddCourseButton_Click(object sender, RoutedEventArgs e)
+        {
+            OpenAddCourseOverlay();
+        }
+
+        private void CancelAddCourse_Click(object sender, RoutedEventArgs e)
+        {
+            CloseAddCourseOverlay();
+        }
+
+        private void SaveNewCourse_Click(object sender, RoutedEventArgs e)
+        {
+            if (AddCourseLangCombo.SelectedItem is not Language lang)
             {
-        MainPanel.Visibility = Visibility.Visible;
-                AddCoursePanel.Visibility = Visibility.Collapsed;
-             }
+                MessageBox.Show("Please select language.", "Validation", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
 
-            private void AddCourse_Click(object sender, RoutedEventArgs e)
-             {
+            if (AddCourseLevelCombo.SelectedItem is not LanguageLevel level)
+            {
+                MessageBox.Show("Please select level.", "Validation", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            bool isLive = AddCourseIsLiveCheckBox.IsChecked == true;
+            int max = 0;
+            if (isLive)
+            {
+                if (!int.TryParse(AddCourseMaxBox.Text?.Trim(), out max) || max <= 0)
+                {
+                    MessageBox.Show("Max attendees must be a number greater than 0 for in-person courses.",
+                                    "Validation", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return;
+                }
+            }
+
+            if (!AddCourseDatePicker.SelectedDate.HasValue)
+            {
+                MessageBox.Show("Please choose course start date.", "Validation", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            DateTime selectedDate = AddCourseDatePicker.SelectedDate.Value;
+
+            if (string.IsNullOrWhiteSpace(AddCourseTimeBox.Text) ||
+                !TimeSpan.TryParseExact(AddCourseTimeBox.Text.Trim(), @"hh\:mm", CultureInfo.InvariantCulture, out var time))
+            {
+                MessageBox.Show("Time must be in HH:mm (e.g. 10:00).", "Validation", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            var days = new List<DayOfWeek>();
+            if (AddCourseMonCheckBox.IsChecked == true) days.Add(DayOfWeek.Monday);
+            if (AddCourseTueCheckBox.IsChecked == true) days.Add(DayOfWeek.Tuesday);
+            if (AddCourseWedCheckBox.IsChecked == true) days.Add(DayOfWeek.Wednesday);
+            if (AddCourseThuCheckBox.IsChecked == true) days.Add(DayOfWeek.Thursday);
+            if (AddCourseFriCheckBox.IsChecked == true) days.Add(DayOfWeek.Friday);
+            if (AddCourseSatCheckBox.IsChecked == true) days.Add(DayOfWeek.Saturday);
+            if (AddCourseSunCheckBox.IsChecked == true) days.Add(DayOfWeek.Sunday);
+
+            if (days.Count == 0)
+            {
+                MessageBox.Show("Please select at least one day for the course.", "Validation", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            if (!int.TryParse(AddCourseDurationWeeksBox.Text?.Trim(), out int durationWeeks) || durationWeeks <= 0)
+            {
+                MessageBox.Show("Duration (weeks) must be a number greater than 0.", "Validation", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            var newCourse = new CourseDTO
+            {
+
+                Id = 0000,
+                ProfessorId = _professorId,
+                Language = lang,
+                Level = level,
+                MaxAttendees = max,
+                Date = selectedDate.ToString("dd.MM.yyyy"),
+                StartAt = AddCourseTimeBox.Text.Trim(),
+                RoomId = string.IsNullOrWhiteSpace(AddCourseRoomBox.Text) ? null : AddCourseRoomBox.Text.Trim(),
+                IsLive = isLive,
+                Days = days,
+                DurationWeeks = durationWeeks
+            };
+
+            try
+            {
+                var saved = _courseController.Create(newCourse.ToCourse());
+                _allCourses.Add(newCourse);
+                ApplyFiltersSortAndPageForCourses(resetPage: false);
+                CloseAddCourseOverlay();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Cannot create exam", MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
+        }
+
+        private void OpenEditCourseOverlay(CourseDTO course)
+        {
+            _editingCourse = course;
+
+            if (EditCourseLangCombo.Items.Count == 0)
+                EditCourseLangCombo.ItemsSource = Enum.GetValues(typeof(Language));
+            if (EditCourseLevelCombo.Items.Count == 0)
+                EditCourseLevelCombo.ItemsSource = Enum.GetValues(typeof(LanguageLevel));
+
+            EditCourseDatePicker.Language = this.Language;
+            EditCourseDatePicker.SelectedDateFormat = DatePickerFormat.Short;
+
+            EditCourseLangCombo.SelectedItem = course.Language;
+            EditCourseLevelCombo.SelectedItem = course.Level;
+            EditCourseMaxBox.Text = course.MaxAttendees?.ToString() ?? "";
+            EditCourseRoomBox.Text = course.RoomId ?? "";
+
+            if (DateTime.TryParse(course.Date, out var d))
+                EditCourseDatePicker.SelectedDate = d.Date;
+            else
+                EditCourseDatePicker.SelectedDate = null;
+
+            EditCourseTimeBox.Text = string.IsNullOrWhiteSpace(course.StartAt) ? "10:00" : course.StartAt;
+
+            EditCourseIsLiveCheckBox.IsChecked = course.IsLive;
+
+            EditCourseMonCheckBox.IsChecked = course.Days.Contains(DayOfWeek.Monday);
+            EditCourseTueCheckBox.IsChecked = course.Days.Contains(DayOfWeek.Tuesday);
+            EditCourseWedCheckBox.IsChecked = course.Days.Contains(DayOfWeek.Wednesday);
+            EditCourseThuCheckBox.IsChecked = course.Days.Contains(DayOfWeek.Thursday);
+            EditCourseFriCheckBox.IsChecked = course.Days.Contains(DayOfWeek.Friday);
+            EditCourseSatCheckBox.IsChecked = course.Days.Contains(DayOfWeek.Saturday);
+            EditCourseSunCheckBox.IsChecked = course.Days.Contains(DayOfWeek.Sunday);
+
+            EditCourseDurationWeeksBox.Text = course.DurationWeeks.ToString();
+
+            EditCourseOverlay.Visibility = Visibility.Visible;
+        }
+
+        private void CloseEditCourseOverlay()
+        {
+            _editingCourse = null;
+            EditCourseOverlay.Visibility = Visibility.Collapsed;
+        }
+        private void EditCourse_Click(object sender, RoutedEventArgs e)
+        {
+            if ((sender as FrameworkElement)?.DataContext is not CourseDTO course) return;
+
+            OpenEditCourseOverlay(course);
+        }
+        private void SaveEditedCourse_Click(object sender, RoutedEventArgs e)
+        {
+            if (_editingCourse is null) return;
+
+            if (EditCourseLangCombo.SelectedItem is not Language lang)
+            {
+                MessageBox.Show("Please select language.", "Validation", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            if (EditCourseLevelCombo.SelectedItem is not LanguageLevel level)
+            {
+                MessageBox.Show("Please select level.", "Validation", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            bool isLive = EditCourseIsLiveCheckBox.IsChecked == true;
+            int max = 0;
+            if (isLive)
+            {
+                if (!int.TryParse(EditCourseMaxBox.Text?.Trim(), out max) || max <= 0)
+                {
+                    MessageBox.Show("Max attendees must be a number greater than 0 for in-person courses.",
+                                    "Validation", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return;
+                }
+            }
+
+            if (!EditCourseDatePicker.SelectedDate.HasValue)
+            {
+                MessageBox.Show("Please choose course start date.", "Validation", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            DateTime selectedDate = EditCourseDatePicker.SelectedDate.Value;
+
+            _editingCourse.Date = selectedDate.ToString("dd.MM.yyyy");
+
+
+
+            if (string.IsNullOrWhiteSpace(EditCourseTimeBox.Text) ||
+                !TimeSpan.TryParseExact(EditCourseTimeBox.Text.Trim(), @"hh\:mm", CultureInfo.InvariantCulture, out var time))
+            {
+                MessageBox.Show("Time must be in HH:mm (e.g. 10:00).", "Validation", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            var days = new List<DayOfWeek>();
+            if (EditCourseMonCheckBox.IsChecked == true) days.Add(DayOfWeek.Monday);
+            if (EditCourseTueCheckBox.IsChecked == true) days.Add(DayOfWeek.Tuesday);
+            if (EditCourseWedCheckBox.IsChecked == true) days.Add(DayOfWeek.Wednesday);
+            if (EditCourseThuCheckBox.IsChecked == true) days.Add(DayOfWeek.Thursday);
+            if (EditCourseFriCheckBox.IsChecked == true) days.Add(DayOfWeek.Friday);
+            if (EditCourseSatCheckBox.IsChecked == true) days.Add(DayOfWeek.Saturday);
+            if (EditCourseSunCheckBox.IsChecked == true) days.Add(DayOfWeek.Sunday);
+
+            if (days.Count == 0)
+            {
+                MessageBox.Show("Please select at least one day for the course.", "Validation", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            if (!int.TryParse(EditCourseDurationWeeksBox.Text?.Trim(), out int durationWeeks) || durationWeeks <= 0)
+            {
+                MessageBox.Show("Duration (weeks) must be a number greater than 0.", "Validation", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            _editingCourse.Language = lang;
+            _editingCourse.Level = level;
+            _editingCourse.MaxAttendees = max;
+            _editingCourse.Date = selectedDate.ToString("dd.MM.yyyy");
+            _editingCourse.StartAt = EditCourseTimeBox.Text.Trim();
+            _editingCourse.RoomId = string.IsNullOrWhiteSpace(EditCourseRoomBox.Text) ? null : EditCourseRoomBox.Text.Trim();
+
+            _editingCourse.IsLive = isLive;
+            _editingCourse.Days = days;
+            _editingCourse.DurationWeeks = durationWeeks;
+
+
+            try
+            {
+                var saved = _courseController.Update(_editingCourse.ToCourse());
+                if (saved is null) throw new InvalidOperationException("Update failed.");
+
+
+                var idx = _allCourses.FindIndex(x => x.Id == saved.Id);
+                if (idx >= 0) _allCourses[idx] = new CourseDTO(saved);
+
+                ApplyFiltersSortAndPageForCourses(resetPage: false);
+
+                CloseEditCourseOverlay();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Cannot update course", MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
+        }
+
+
+
+        private void CancelEditCourse_Click(object sender, RoutedEventArgs e)
+        {
+            CloseEditCourseOverlay();
+        }
+
+        private void DeleteCourse_Click(object sender, RoutedEventArgs e)
+        {
+            if ((sender as FrameworkElement)?.DataContext is not CourseDTO course) return;
+
+            var ok = MessageBox.Show($"Delete course ID={course.Id}?", "Confirm", MessageBoxButton.YesNo, MessageBoxImage.Question);
+            if (ok != MessageBoxResult.Yes) return;
+
+            try
+            {
+                _courseController.Delete(course.Id);
+                _allCourses.RemoveAll(x => x.Id == course.Id);
+                ApplyFiltersSortAndPageForCourses(resetPage: false);
+
+
+
+
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Cannot delete", MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
+        }
+
+
+        private void CoursesButton_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                InitCourseFilters();
+                CoursesPanel.Visibility = Visibility.Visible;
                 MainPanel.Visibility = Visibility.Collapsed;
-                AddCoursePanel.Visibility = Visibility.Visible;
-             }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Greška pri otvaranju Courses panela:\n" + ex.ToString());
+            }
+        }
+        // Course Terms Panel
+        private void ShowAllCourses_Click(object sender, RoutedEventArgs e)
+        {
+            MainPanel.Visibility = Visibility.Collapsed;
+            CoursesPanel.Visibility = Visibility.Visible;
+        }
 
-     
+        private void CloseCoursesPanel_Click(object sender, RoutedEventArgs e)
+        {
+            MainPanel.Visibility = Visibility.Visible;
+            CoursesPanel.Visibility = Visibility.Collapsed;
+        }
+
+        private void CoursesSearch_Click(object sender, RoutedEventArgs e)
+        {
+            SearchCourses(sender, e);
+        }
+
+        private void PrevPageCourses_Click(object sender, RoutedEventArgs e)
+        {
+            PrevPageForCourses(sender, e);
+        }
+
+        private void NextPageCourses_Click(object sender, RoutedEventArgs e)
+        {
+            NextPageForCourses(sender, e);
+        }
+
+        private void PageSizeComboCourses_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            PageSizeChanged(sender, e);
+        }
+
+        private void CoursesGrid_Sorting(object sender, DataGridSortingEventArgs e)
+        {
+            CoursesGridSorting(sender, e);
+        }
+
+        private void InitCourseFilters()
+        {
+            if (CourseLanguageCombo.Items.Count == 0)
+                CourseLanguageCombo.ItemsSource = Enum.GetValues(typeof(Language));
+
+            if (CourseLevelCombo.Items.Count == 0)
+                CourseLevelCombo.ItemsSource = Enum.GetValues(typeof(LanguageLevel));
+
+            CourseLanguageCombo.SelectedIndex = -1;
+            CourseLevelCombo.SelectedIndex = -1;
+        }
+
+        private List<CourseDTO> GetAvailableCourses(List<Course> allCourses)
+        {
+            var now = DateTime.Now;
+            List<CourseDTO> available = new();
+            foreach (var course in allCourses)
+            {
+                /////////////////To add
+                //exam not full
+                CourseDTO courseDto = new CourseDTO(course);
+                var start = GetStartDateTime(courseDto);
+                if (start.HasValue && start.Value > now.AddDays(7))
+                {
+                    available.Add(courseDto);
+                }
+            }
+
+            return available;
+        }
+
+        public void SearchCourses(object sender, RoutedEventArgs e)
+        {
+            ApplyFiltersSortAndPageForCourses(resetPage: true);
+        }
+
+        private List<CourseDTO> ApplyCurrentFiltersForCourses(List<CourseDTO> input)
+        {
+            Language? lang = null;
+            LanguageLevel? level = null;
+
+            if (CourseLanguageCombo.SelectedItem is Language selLang) lang = selLang;
+            if (CourseLevelCombo.SelectedItem is LanguageLevel selLevel) level = selLevel;
+
+            DateTime? from = CourseFromDate.SelectedDate?.Date;
+            DateTime? to = CourseToDate.SelectedDate?.Date;
+
+            if (from.HasValue && to.HasValue && from.Value > to.Value)
+                (from, to) = (to, from);
+
+            bool? isLive;
+            if (CourseOnlineCombo.SelectedItem is ComboBoxItem comboItem)
+            {
+                var val = comboItem.Content?.ToString();
+                if (val == "Yes")
+                    isLive = true;
+                else if (val == "No")
+                    isLive = false;
+                else
+                    isLive = null;
+            }
+            else
+                isLive = null;
+
+            int weeks = 0;
+            if (int.TryParse(CourseWeeksBox.Text, out var w) && w > 0)
+                weeks = w;
+
+            List<Course> inputRaw = input.Select(dto => dto.ToCourse()).ToList();
+            List<Course> resultRaw = _courseController.SearchCourses(inputRaw, lang, level, isLive, weeks, from, to);
+            List<CourseDTO> result = resultRaw.Select(et => new CourseDTO(et)).ToList();
+
+            return result;
+        }
+
+        private IEnumerable<CourseDTO> ApplySortForCourses(IEnumerable<CourseDTO> source, string sortKey, ListSortDirection dir)
+        {
+            var key = NormalizeSortKeyForCourses(sortKey);
+
+            Func<CourseDTO, object> keySelector = key switch
+            {
+                "Id" => e => e.Id,
+                "Language" => e => e.Language.ToString(),
+                "Level" => e => (int)e.Level,
+                "ProfessorId" => e => e.ProfessorId ?? "",
+                "DurationWeeks" => e => e.DurationWeeks,
+                "FormattedDays" => e => e.DaysFormatted ?? "",
+                "IsLive" => e => e.IsLive,
+                "RoomId" => e => e.RoomId ?? "",
+                "MaxAttendees" => e => e.MaxAttendees ?? 0,
+                "StartAt" => e => GetStartDateTime(e) ?? DateTime.MinValue,
+                "Date" => e => GetStartDateTime(e) ?? DateTime.MinValue,
+                _ => e => GetStartDateTime(e) ?? DateTime.MinValue
+            };
+
+            return dir == ListSortDirection.Ascending
+                ? source.OrderBy(keySelector)
+                : source.OrderByDescending(keySelector);
+        }
+
+        private static string NormalizeSortKeyForCourses(string key)
+        {
+            if (string.IsNullOrWhiteSpace(key)) return "Date";
+            key = key.Trim();
+
+
+            return key.ToLower() switch
+            {
+                "id" => "Id",
+                "language" => "Language",
+                "level" => "Level",
+                "professor" => "ProfessorId",
+                "weeks" => "DurationWeeks",
+                "days" => "FormattedDays",
+                "online" => "IsLive",
+                "start date" => "Date",
+                "start" => "StartAt",
+                "room" => "RoomId",
+                "max" => "MaxAttendees",
+                _ => key
+            };
+        }
+        private static DateTime? GetStartDateTime(CourseDTO e)
+        {
+            if (!DateTime.TryParseExact(e.Date ?? "", "dd.MM.yyyy", new CultureInfo("sr-RS"),
+                                        DateTimeStyles.None, out var d) &&
+                !DateTime.TryParseExact(e.Date ?? "", "yyyy-MM-dd", CultureInfo.InvariantCulture,
+                                        DateTimeStyles.None, out d))
+                return null;
+
+            if (!TimeSpan.TryParseExact(e.StartAt ?? "", @"hh\:mm", CultureInfo.InvariantCulture, out var ts))
+                return null;
+
+            return d.Date.Add(ts);
+        }
+
+        private void ApplyFiltersSortAndPageForCourses(bool resetPage = true)
+        {
+            // 1) filter
+            _filteredCourses = ApplyCurrentFiltersForCourses(_allCourses);
+
+            // 2) sort
+            _sortedCourses = ApplySortForCourses(_filteredCourses, _sortKey, _sortDir).ToList();
+
+            // 3) page
+            var totalPages = Math.Max(1, (int)Math.Ceiling((double)_sortedCourses.Count / _pageSizeForCourses));
+            if (resetPage)
+                _currentPageForCourses = 1;
+            _currentPageForCourses = Math.Min(Math.Max(_currentPageForCourses, 1), totalPages);
+
+            var slice = _sortedCourses.Skip((_currentPageForCourses - 1) * _pageSizeForCourses).Take(_pageSizeForCourses).ToList();
+
+            _pageOfCourses.Clear();
+            foreach (var x in slice)
+                _pageOfCourses.Add(x);
+
+            if (CourseLanguageCombo.FindName("PagerTextCourses") is TextBlock pager)
+                pager.Text = $"Page {_currentPageForCourses}/{totalPages}  ·  {(_sortedCourses.Count == 1 ? "1 item" : _sortedCourses.Count + " items")}";
+        }
+
+        public void CoursesGridSorting(object sender, DataGridSortingEventArgs e)
+        {
+            e.Handled = true;
+
+            foreach (var c in CoursesGrid.Columns)
+                c.SortDirection = null;
+
+            var key = e.Column.SortMemberPath ?? e.Column.Header?.ToString() ?? "Date";
+            key = NormalizeSortKeyForCourses(key);
+
+            if (_sortKey.Equals(key, StringComparison.OrdinalIgnoreCase))
+                _sortDir = _sortDir == ListSortDirection.Ascending ? ListSortDirection.Descending : ListSortDirection.Ascending;
+            else
+            {
+                _sortKey = key;
+                _sortDir = ListSortDirection.Ascending;
+            }
+
+            e.Column.SortDirection = _sortDir;
+            ApplyFiltersSortAndPageForCourses(resetPage: false);
+        }
+
+        public void PageSizeChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (CoursesGrid == null || !CoursesGrid.IsLoaded) return;
+
+            if (sender is ComboBox cb &&
+                cb.SelectedItem is ComboBoxItem it &&
+                int.TryParse(it.Content?.ToString(), out var ps) &&
+                ps > 0)
+            {
+                _pageSizeForCourses = ps;
+                _currentPageForCourses = 1;
+                ApplyFiltersSortAndPageForCourses(resetPage: true);
+            }
+        }
+
+        public void PrevPageForCourses(object? sender, RoutedEventArgs e)
+        {
+            if (_currentPageForCourses > 1)
+            {
+                _currentPageForCourses--;
+                ApplyFiltersSortAndPageForCourses(resetPage: false);
+            }
+        }
+
+        public void NextPageForCourses(object? sender, RoutedEventArgs e)
+        {
+            var totalPages = Math.Max(1, (int)Math.Ceiling((double)_sortedCourses.Count / _pageSizeForCourses));
+            if (_currentPageForCourses < totalPages)
+            {
+                _currentPageForCourses++;
+                ApplyFiltersSortAndPageForCourses(resetPage: false);
+            }
+        }
+
+
 
     }
 }

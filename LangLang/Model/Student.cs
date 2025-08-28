@@ -18,7 +18,6 @@ namespace LangLang.Model
         {
             PenaltyPoints = 0;
         }
-
         public Student(string firstName, string lastName, Gender gender, string dateOfBirth, string phoneNumber, string email, string password, EducationLevel educationLevel, string dateOfRegistration, int penaltyPoints) : base(firstName, lastName, gender, dateOfBirth, phoneNumber, email, password, educationLevel, dateOfRegistration)
         {
             PenaltyPoints = penaltyPoints;
@@ -31,13 +30,9 @@ namespace LangLang.Model
 
         public string ToJSON()
         {
-            var options = new JsonSerializerOptions
-            {
-                WriteIndented = true
-            };
+            var options = new JsonSerializerOptions{WriteIndented = true};
             return JsonSerializer.Serialize(this,options);
         }
-
         public void FromJSON(string value)
         {
             Student? student = JsonSerializer.Deserialize<Student>(value);

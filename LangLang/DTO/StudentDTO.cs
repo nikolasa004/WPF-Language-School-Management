@@ -1,245 +1,72 @@
 ﻿using LangLang.Model;
 using LangLang.Model.Enums;
-using System;
+using LangLang.DTO.Validators;
 using System.ComponentModel;
-using System.Diagnostics;
-using System.Text.RegularExpressions;
 
 namespace LangLang.DTO
 {
     public class StudentDTO : INotifyPropertyChanged, IDataErrorInfo
     {
-        private string firstName;
+        private bool SetProperty<T>(ref T storage, T value, string propertyName)
+        {
+            if (Equals(storage, value)) return false;
+            storage = value;
+            OnPropertyChanged(propertyName);
+            return true;
+        }
+
+        private string firstName=string.Empty;
         public string FirstName
         {
-            get
-            {
-                return firstName;
-            }
-            set
-            {
-                if (value != firstName)
-                {
-                    firstName = value;
-                    OnPropertyChanged("FirstName");
-                }
-            }
+            get => firstName;
+            set => SetProperty(ref firstName, value, nameof(FirstName));
         }
-        private string lastName;
+        private string lastName=string.Empty;
         public string LastName
         {
-            get
-            {
-                return lastName;
-            }
-            set
-            {
-                if (value != lastName)
-                {
-                    lastName = value;
-                    OnPropertyChanged("LastName");
-                }
-            }
+            get => lastName;
+            set => SetProperty(ref lastName, value, nameof(LastName));
         }
         private Gender gender;
         public Gender Gender
         {
-            get
-            {
-                return gender;
-            }
-            set
-            {
-                if (value!=gender)
-                {
-                    gender = value;
-                    OnPropertyChanged("Gender");
-                }
-            }
+            get=>gender;
+            set=> SetProperty(ref gender, value, nameof(Gender));
         }
-        private string dateOfBirth;
+        private string dateOfBirth=string.Empty;
         public string DateOfBirth
         {
-            get
-            {
-                return dateOfBirth;
-            }
-            set
-            {
-                if (value != dateOfBirth)
-                {
-                    dateOfBirth = value;
-                    OnPropertyChanged("DateOfBirth");
-                }
-            }
+            get=> dateOfBirth;
+            set=> SetProperty(ref dateOfBirth, value, nameof(DateOfBirth));
         }
-        private string phoneNumber;
+        private string phoneNumber=string.Empty;
         public string PhoneNumber
         {
-            get
-            {
-                return phoneNumber;
-            }
-            set
-            {
-                if (value != phoneNumber)
-                {
-                    phoneNumber = value;
-                    OnPropertyChanged("PhoneNumber");
-                }
-            }
+            get=> phoneNumber;
+            set=> SetProperty(ref phoneNumber, value, nameof(PhoneNumber));
         }
-        public string Email { get; set; }
-        private string password;
+        public string Email { get; set; }=string.Empty;
+        private string password=string.Empty;
         public string Password
         {  
-            get
-            {
-                return password;
-            }
-            set
-            {
-                if (value != password)
-                {
-                    password = value;
-                    OnPropertyChanged("Password");
-                }
-            }
+            get=> password;
+            set=> SetProperty(ref password, value, nameof(Password));
         }
         private EducationLevel educationLevel;
         public EducationLevel EducationLevel
         {
-            get
-            {
-                return educationLevel;
-            }
-            set
-            {
-                if (value != educationLevel)
-                {
-                    educationLevel = value;
-                    OnPropertyChanged("EducationLevel");
-                }
-            }
+            get=> educationLevel;
+            set=> SetProperty(ref educationLevel, value, nameof(EducationLevel));
         }
-        private string dateOfRegistration;
+        private string dateOfRegistration=string.Empty;
         public string DateOfRegistration
         {
-            get
-            {
-                return dateOfRegistration;
-            }
-            set
-            {
-                if (value != dateOfRegistration)
-                {
-                    dateOfRegistration = value;
-                    OnPropertyChanged("DateOfRegistration");
-                }
-            }
+            get=> dateOfRegistration;
+            set=> SetProperty(ref dateOfRegistration, value, nameof(DateOfRegistration));
         }
-        public int PenaltyPoints { get; set; }
+        public int PenaltyPoints { get; set; }=0;
 
-        public string Error => string.Empty;
-
-        private readonly Regex _nameRegex = new Regex("^[A-Za-z]+$");
-        private readonly Regex _phoneRegex = new Regex(@"^[0-9\+]+$");
-        private readonly Regex _emailRegex = new Regex(@"^[^@\s]+@[^@\s]+\.[^@\s]+$");
-        public string this[string columnName]
-        {
-            get
-            {
-                switch (columnName)
-                {
-                    case nameof(FirstName):
-                        if (string.IsNullOrWhiteSpace(FirstName))
-                            return "Please enter your first name.";
-                        if (!_nameRegex.IsMatch(FirstName))
-                            return "First name can only contain letters.";
-                        break;
-
-                    case nameof(LastName):
-                        if (string.IsNullOrWhiteSpace(LastName))
-                            return "Please enter your last name.";
-                        if (!_nameRegex.IsMatch(LastName))
-                            return "Last name can only contain letters.";
-                        break;
-
-                    case nameof(DateOfBirth):
-                        if (DateOfBirth == null)
-                            return "Please select your birth date.";
-                        if (!DateTime.TryParse(DateOfBirth, out var birthDate))
-                            return "Invalid date format.";
-                        if (birthDate > DateTime.Now)
-                            return "Birth date cannot be in the future.";
-                        if (birthDate < DateTime.Now.AddYears(-120))
-                            return "Birth date cannot be more than 120 years ago.";
-                        if (birthDate > DateTime.Now.AddYears(-18))
-                            return "You must be at least 18 years old to register.";
-                        break;
-
-                    case nameof(PhoneNumber):
-                        if (string.IsNullOrWhiteSpace(PhoneNumber))
-                            return "Please enter your phone number.";
-                        if (!_phoneRegex.IsMatch(PhoneNumber))
-                            return "Phone number can only contain digits and '+' sign.";
-                        break;
-
-                    case nameof(Email):
-                        if (string.IsNullOrWhiteSpace(Email))
-                            return "Please enter your email.";
-                        if (!_emailRegex.IsMatch(Email))
-                            return "Please enter a valid email address.";
-                        break;
-
-                    case nameof(Password):
-                        if (string.IsNullOrWhiteSpace(Password))
-                            return "Please enter your password.";
-                        break;
-                }
-
-                return string.Empty;
-            }
-        }
-
-        private readonly string[] _validatedProperties = {"FirstName", "LastName", "DateOfBirth", "PhoneNumber", "Email", "Password"};
-
-        public bool IsValid
-        {
-            get
-            {
-                foreach (var property in _validatedProperties)
-                {
-                    if (this[property] != string.Empty)
-                    {
-                        Debug.WriteLine($"Validation failed for {property}: {this[property]}");
-                        return false;
-                    }
-                }
-
-                return true;
-            }
-        }
-
-        public Student ToStudent()
-        {
-            return new Student(FirstName,LastName,Gender,DateOfBirth,PhoneNumber,Email,Password,EducationLevel,DateOfRegistration,PenaltyPoints);
-        }
-
-        public StudentDTO()
-        {
-            firstName = string.Empty;
-            lastName = string.Empty;
-            dateOfBirth = string.Empty;
-            phoneNumber = string.Empty;
-            Email = string.Empty;
-            password = string.Empty;
-            dateOfRegistration = string.Empty;
-            PenaltyPoints = 0;
-        }
-
-        public event PropertyChangedEventHandler? PropertyChanged;
-
+        public StudentDTO(){}
         public StudentDTO(Student student)
         {
             firstName = student.FirstName;
@@ -253,13 +80,21 @@ namespace LangLang.DTO
             dateOfRegistration = student.DateOfRegistration;
             PenaltyPoints = student.PenaltyPoints;
         }
+        public Student ToStudent()
+        {
+            return new Student(FirstName,LastName,Gender,DateOfBirth,PhoneNumber,Email,Password,EducationLevel,DateOfRegistration,PenaltyPoints);
+        }
 
+        private readonly StudentDTOValidator validator = new StudentDTOValidator();
+        public string this[string columnName] => validator.Validate(this, columnName);
+        public bool IsValid => validator.IsValid(this);
+
+        public string Error => string.Empty;
+        public event PropertyChangedEventHandler? PropertyChanged;
         protected virtual void OnPropertyChanged(string name)
         {
             if (PropertyChanged != null)
-            {
                 PropertyChanged(this, new PropertyChangedEventArgs(name));
-            }
         }
     }
 }
