@@ -1,4 +1,5 @@
 ﻿using LangLang.Controller;
+using LangLang.DTO;
 using LangLang.Model;
 using LangLang.Model.Enums;
 using System;
@@ -7,9 +8,10 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Globalization;
 using System.Linq;
+using System.Reflection.Emit;
 using System.Windows;
 using System.Windows.Controls;
-using LangLang.DTO;
+using System.Windows.Documents;
 
 namespace LangLang.RoleWindows.StudentViewModules
 {
@@ -78,9 +80,7 @@ namespace LangLang.RoleWindows.StudentViewModules
                 ExamTermDTO examDto = new(exam);
                 var start = GetStartDateTime(examDto);
                 if (start.HasValue && start.Value > now.AddDays(30))
-                {
                     available.Add(examDto);
-                }
             }
 
             return available;
@@ -105,40 +105,40 @@ namespace LangLang.RoleWindows.StudentViewModules
             if (from.HasValue && to.HasValue && from.Value > to.Value)
                 (from, to) = (to, from);
 
+            return GetFilterResults(input, lang, level, from, to);
+        }
+        private List<ExamTermDTO> GetFilterResults(List<ExamTermDTO> input, Language? lang, LanguageLevel? level, DateTime? from, DateTime? to)
+        {
             List<ExamTerm> inputRaw = input.Select(dto => dto.ToExamTerm()).ToList();
             List<ExamTerm> resultRaw = _examController.SearchExamTerms(inputRaw, lang, level, from, to);
-            List<ExamTermDTO> result = resultRaw.Select(et => new ExamTermDTO(et)).ToList();
-
+            List<ExamTermDTO> result = resultRaw.Select(exam => new ExamTermDTO(exam)).ToList();
             return result;
         }
 
-        private IEnumerable<ExamTermDTO> ApplySort(IEnumerable<ExamTermDTO> source, string sortKey, ListSortDirection dir)
+        private IEnumerable<ExamTermDTO> ApplySort(IEnumerable<ExamTermDTO> source, string sortKey, ListSortDirection direction)
         {
 
             var key = NormalizeSortKey(sortKey);
 
             Func<ExamTermDTO, object> keySelector = key switch
             {
-                "Id" => e => e.Id,
-                "Language" => e => e.Language.ToString(),
-                "Level" => e => (int)e.Level,
-                "RoomId" => e => e.RoomId ?? "",
-                "MaxAttendees" => e => e.MaxAttendees, 
-                "StartAt" => e => GetStartDateTime(e) ?? DateTime.MinValue,
-                "Date" => e => GetStartDateTime(e) ?? DateTime.MinValue,
-                _ => e => GetStartDateTime(e) ?? DateTime.MinValue
+                "Id" => exam => exam.Id,
+                "Language" => exam => exam.Language.ToString(),
+                "Level" => exam => (int)exam.Level,
+                "RoomId" => exam => exam.RoomId ?? "",
+                "MaxAttendees" => exam => exam.MaxAttendees, 
+                "StartAt" => exam => exam.StartAt ?? "",
+                "Date" => exam => GetStartDateTime(exam) ?? DateTime.MinValue,
+                _ => exam => GetStartDateTime(exam) ?? DateTime.MinValue
             };
 
-            return dir == ListSortDirection.Ascending
-                ? source.OrderBy(keySelector)
-                : source.OrderByDescending(keySelector);
+            return direction == ListSortDirection.Ascending ? source.OrderBy(keySelector) : source.OrderByDescending(keySelector);
         }
 
         private static string NormalizeSortKey(string key)
         {
             if (string.IsNullOrWhiteSpace(key)) return "Date";
             key = key.Trim();
-
 
             return key.ToLower() switch
             {
@@ -152,29 +152,22 @@ namespace LangLang.RoleWindows.StudentViewModules
                 _ => key
             };
         }
-        private static DateTime? GetStartDateTime(ExamTermDTO e)
+        private static DateTime? GetStartDateTime(ExamTermDTO exam)
         {
-            if (!DateTime.TryParseExact(e.Date ?? "", "dd.MM.yyyy", new CultureInfo("sr-RS"),
-                                        DateTimeStyles.None, out var d) &&
-                !DateTime.TryParseExact(e.Date ?? "", "yyyy-MM-dd", CultureInfo.InvariantCulture,
-                                        DateTimeStyles.None, out d))
+            if (!DateTime.TryParseExact(exam.Date ?? "", "dd.MM.yyyy", new CultureInfo("sr-RS"), DateTimeStyles.None, out var date) && !DateTime.TryParseExact(exam.Date ?? "", "yyyy-MM-dd", CultureInfo.InvariantCulture,DateTimeStyles.None, out date))
                 return null;
 
-            if (!TimeSpan.TryParseExact(e.StartAt ?? "", @"hh\:mm", CultureInfo.InvariantCulture, out var ts))
+            if (!TimeSpan.TryParseExact(exam.StartAt ?? "", @"hh\:mm", CultureInfo.InvariantCulture, out var timeSpan))
                 return null;
 
-            return d.Date.Add(ts);
+            return date.Date.Add(timeSpan);
         }
 
         private void ApplyFiltersSortAndPage(bool resetPage = true)
         {
-            // 1) filter
             _filtered = ApplyCurrentFilters(_availableExams);
-
-            // 2) sort
             _sorted = ApplySort(_filtered, _sortKey, _sortDir).ToList();
 
-            // 3) page
             var totalPages = Math.Max(1, (int)Math.Ceiling((double)_sorted.Count / _pageSize));
             if (resetPage)
                 _currentPage = 1;
@@ -183,8 +176,8 @@ namespace LangLang.RoleWindows.StudentViewModules
             var slice = _sorted.Skip((_currentPage - 1) * _pageSize).Take(_pageSize).ToList();
 
             _page.Clear();
-            foreach (var x in slice)
-                _page.Add(x);
+            foreach (var exam in slice)
+                _page.Add(exam);
 
             if (ExamLanguageCombo.FindName("PagerTextExams") is TextBlock pager)
                 pager.Text = $"Page {_currentPage}/{totalPages}  ·  {(_sorted.Count == 1 ? "1 item" : _sorted.Count + " items")}";
@@ -194,8 +187,8 @@ namespace LangLang.RoleWindows.StudentViewModules
         {
             e.Handled = true;
 
-            foreach (var c in ExamsGrid.Columns)
-                c.SortDirection = null;
+            foreach (var column in ExamsGrid.Columns)
+                column.SortDirection = null;
 
             var key = e.Column.SortMemberPath ?? e.Column.Header?.ToString() ?? "Date";
             key = NormalizeSortKey(key);
@@ -216,17 +209,13 @@ namespace LangLang.RoleWindows.StudentViewModules
         {
             if (ExamsGrid == null || !ExamsGrid.IsLoaded) return;
 
-            if (sender is ComboBox cb &&
-                cb.SelectedItem is ComboBoxItem it &&
-                int.TryParse(it.Content?.ToString(), out var ps) &&
-                ps > 0)
+            if (sender is ComboBox comboBox && comboBox.SelectedItem is ComboBoxItem item && int.TryParse(item.Content?.ToString(), out var pageSize) && pageSize > 0)
             {
-                _pageSize = ps;
+                _pageSize = pageSize;
                 _currentPage = 1;
                 ApplyFiltersSortAndPage(resetPage: true);
             }
         }
-
         public void PrevPage(object? sender, RoutedEventArgs e)
         {
             if (_currentPage > 1)
@@ -235,7 +224,6 @@ namespace LangLang.RoleWindows.StudentViewModules
                 ApplyFiltersSortAndPage(resetPage: false);
             }
         }
-
         public void NextPage(object? sender, RoutedEventArgs e)
         {
             var totalPages = Math.Max(1, (int)Math.Ceiling((double)_sorted.Count / _pageSize));

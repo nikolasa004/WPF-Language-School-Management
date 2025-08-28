@@ -39,10 +39,7 @@ namespace LangLang.Model
 
         public override string ToString()
         {
-            return "Name: " + FirstName + " " + LastName + "\n" + "Gender: " + Gender + "\n" +
-                   "Date of Birth: " + DateOfBirth + "\n" + "Phone Number: " + PhoneNumber + "\n" +
-                   "Email: " + Email + "\n" + "Education Level: " + EducationLevel + "\n" +
-                   "Date of Registration: " + DateOfRegistration;
+            return "Name: " + FirstName + " " + LastName + "\n" + "Gender: " + Gender + "\n" +"Date of Birth: " + DateOfBirth + "\n" + "Phone Number: " + PhoneNumber + "\n" +"Email: " + Email + "\n" + "Education Level: " + EducationLevel + "\n" +"Date of Registration: " + DateOfRegistration;
         }
     }
 }
