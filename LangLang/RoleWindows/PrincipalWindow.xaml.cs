@@ -15,14 +15,11 @@ using LangLang.Model.Enums;
 
 namespace LangLang.RoleWindows
 {
-    /// <summary>
-    /// Interaction logic for PrincipalWindow.xaml
-    /// </summary>
     public partial class PrincipalWindow : Window
     {
-        private ProfessorsController professorsController;
-        private bool isEditMode = false;
-        private ProfessorDTO currentProfessor = null;
+        private ProfessorsController _professorsController;
+        private bool _isEditMode = false;
+        private ProfessorDTO _currentProfessor = null;
         public ProfessorDTO Professor { get; set; }
 
         // Language selection properties
@@ -31,12 +28,15 @@ namespace LangLang.RoleWindows
         public Dictionary<Language, LanguageLevel> ProfessorLanguages { get; set; }
         public ObservableCollection<string> ProfessorLanguagesDisplay { get; set; }
 
-        public PrincipalWindow(ProfessorsController professorsController)
+        public class DuplicateEmailException : Exception { }
+
+
+        public PrincipalWindow(ProfessorsController _professorsController)
         {
             InitializeComponent();
             DataContext = this;
 
-            this.professorsController = professorsController;
+            this._professorsController = _professorsController;
             Professor = new ProfessorDTO();
 
             InitializeLanguageCollections();
@@ -52,7 +52,7 @@ namespace LangLang.RoleWindows
         }
         private void LoadProfessors()
         {
-            var professors = professorsController.GetAllProfessors();
+            var professors = _professorsController.GetAllProfessors();
             Console.WriteLine($"Loaded {professors.Count} professors"); // Debug output
             ProfessorsDataGrid.ItemsSource = professors;
 
@@ -87,8 +87,8 @@ namespace LangLang.RoleWindows
 
         private void AddProfessor_Click(object sender, RoutedEventArgs e)
         {
-            isEditMode = false;
-            currentProfessor = null;
+            _isEditMode = false;
+            _currentProfessor = null;
 
             Professor = new ProfessorDTO();
             ProfessorLanguages.Clear();
@@ -106,15 +106,15 @@ namespace LangLang.RoleWindows
         {
             if (ProfessorsDataGrid.SelectedItem is Professor selectedProfessor)
             {
-                isEditMode = true;
-                currentProfessor = new ProfessorDTO(selectedProfessor);
+                _isEditMode = true;
+                _currentProfessor = new ProfessorDTO(selectedProfessor);
 
                 // Reset collections
                 ProfessorLanguages.Clear();
                 ProfessorLanguagesDisplay.Clear();
 
                 // Fill DTO with existing values
-                Professor = currentProfessor;
+                Professor = _currentProfessor;
 
                 // Hide languages section in edit mode
                 LanguagesSection.Visibility = Visibility.Collapsed;
@@ -153,7 +153,7 @@ namespace LangLang.RoleWindows
             
             if (!isAssigned) return;
 
-            professorsController.Delete(selectedProfessor.Email);
+            _professorsController.Delete(selectedProfessor.Email);
 
             MessageBox.Show("Professor successfully deleted!",
                             "Success", MessageBoxButton.OK, MessageBoxImage.Information);
@@ -197,7 +197,7 @@ namespace LangLang.RoleWindows
                     ongoingCourses,
                     professor,
                     courseController,
-                    this.professorsController);
+                    this._professorsController);
 
                 var result = reassignWindow.ShowDialog();
 
@@ -293,67 +293,103 @@ namespace LangLang.RoleWindows
 
         private void SaveProfessor_Click(object sender, RoutedEventArgs e)
         {
-            if (Professor.IsValid)
+            if (!Professor.IsValid)
             {
-                if (!isEditMode && ProfessorLanguages.Count == 0)
+                ShowValidationError();
+                return;
+            }
+
+            if (!_isEditMode && ProfessorLanguages.Count == 0)
+            {
+                ShowNoLanguagesWarning();
+                return;
+            }
+
+            try
+            {
+                if (_isEditMode)
                 {
-                    MessageBox.Show("Please add at least one language for the professor.",
-                                    "No languages selected", MessageBoxButton.OK, MessageBoxImage.Warning);
-                    return;
-                }
-
-                if (isEditMode)
-                {
-                    // Editing existing professor
-                    var updatedProfessor = Professor.ToProfessor();
-
-                    if (professorsController.GetProfessorById(updatedProfessor.Email) != null)
-                    {
-                        MessageBox.Show("An account with this email already exists. Please use a different email.",
-                                        "Email already exists", MessageBoxButton.OK, MessageBoxImage.Warning);
-                        return;
-                    }
-
-                    // Keep original registration date & languages
-                    updatedProfessor.DateOfRegistration = currentProfessor.DateOfRegistration;
-                    updatedProfessor.Languages = currentProfessor.Languages;
-
-                    professorsController.Update(updatedProfessor);
-
-                    MessageBox.Show("Professor successfully updated!",
-                                    "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+                    UpdateExistingProfessor();
                 }
                 else
                 {
-                    // Creating new professor
-                    var professor = Professor.ToProfessor();
-
-                    if (professorsController.GetProfessorById(professor.Email) != null)
-                    {
-                        MessageBox.Show("An account with this email already exists. Please use a different email.",
-                                        "Email already exists", MessageBoxButton.OK, MessageBoxImage.Warning);
-                        return;
-                    }
-
-                    professor.DateOfRegistration = DateTime.Now.ToString("yyyy-MM-dd");
-                    professor.Languages = new Dictionary<Language, LanguageLevel>(ProfessorLanguages);
-
-                    professorsController.Add(professor);
-
-                    MessageBox.Show("Professor successfully registered!",
-                                    "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+                    CreateNewProfessor();
                 }
 
-                AddEditProfessorOverlay.Visibility = Visibility.Collapsed;
-                LoadProfessors();
+                CloseOverlayAndRefresh();
+                ShowSuccessMessage();
             }
-            else
+            catch (DuplicateEmailException ex)
             {
-                MessageBox.Show("Please correct validation errors before saving.",
-                                "Invalid input", MessageBoxButton.OK, MessageBoxImage.Warning);
+                ShowDuplicateEmailWarning();
             }
         }
 
+        private void ShowValidationError()
+        {
+            MessageBox.Show("Please correct validation errors before saving.",
+                           "Invalid input", MessageBoxButton.OK, MessageBoxImage.Warning);
+        }
+
+        private void ShowNoLanguagesWarning()
+        {
+            MessageBox.Show("Please add at least one language for the professor.",
+                           "No languages selected", MessageBoxButton.OK, MessageBoxImage.Warning);
+        }
+
+        private void ShowDuplicateEmailWarning()
+        {
+            MessageBox.Show("An account with this email already exists. Please use a different email.",
+                           "Email already exists", MessageBoxButton.OK, MessageBoxImage.Warning);
+        }
+
+        private void ShowSuccessMessage()
+        {
+            string message = _isEditMode ? "Professor successfully updated!" : "Professor successfully registered!";
+            MessageBox.Show(message, "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+        }
+
+        private void CloseOverlayAndRefresh()
+        {
+            AddEditProfessorOverlay.Visibility = Visibility.Collapsed;
+            LoadProfessors();
+        }
+
+        private void UpdateExistingProfessor()
+        {
+            var updatedProfessor = Professor.ToProfessor();
+
+            if (EmailExists(updatedProfessor.Email))
+            {
+                throw new DuplicateEmailException();
+            }
+
+            updatedProfessor.DateOfRegistration = _currentProfessor.DateOfRegistration;
+            updatedProfessor.Languages = _currentProfessor.Languages;
+
+            _professorsController.Update(updatedProfessor);
+        }
+
+        private void CreateNewProfessor()
+        {
+            var professor = Professor.ToProfessor();
+
+            if (EmailExists(professor.Email))
+            {
+                throw new DuplicateEmailException();
+            }
+
+            professor.DateOfRegistration = DateTime.Now.ToString("yyyy-MM-dd");
+            professor.Languages = new Dictionary<Language, LanguageLevel>(ProfessorLanguages);
+
+            _professorsController.Add(professor);
+        }
+
+        private bool EmailExists(string email)
+        {
+            return _professorsController.GetProfessorById(email) != null;
+        }
+        
 
         private void CancelProfessor_Click(object sender, RoutedEventArgs e)
         {
@@ -431,7 +467,7 @@ namespace LangLang.RoleWindows
             try
             {
                 // Get all professors
-                var professors = professorsController.GetAllProfessors();
+                var professors = _professorsController.GetAllProfessors();
 
                 // --- Collect filters ---
                 var selectedLanguage = ExamLanguageCombo.SelectedItem as Language?;
