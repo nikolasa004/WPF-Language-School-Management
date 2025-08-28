@@ -61,7 +61,7 @@
                         <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="10,0,0,0">
 
                             <!-- Courses Button -->
-                            <Button x:Name="CoursesButton" Content="Courses" Style="{StaticResource FancyButtonStyle}" FontSize="20" Width="100" Height="35" Click="CoursesButton_Click">
+                            <Button x:Name="CoursesButton" Content="Courses" Style="{StaticResource FancyButtonStyle}" FontSize="20" Width="100" Height="35" Click="ActivityButton_Click">
                                 <Button.Background>
                                     <ImageBrush ImageSource="/GUIResources/topBarButtonBackground.png"/>
                                 </Button.Background>
@@ -101,7 +101,7 @@
                             </Button>
 
                             <!-- Exams Button -->
-                            <Button x:Name="ExamsButton" Content="Exams" Style="{StaticResource FancyButtonStyle}" FontSize="20" Width="100" Height="35" Click="ExamsButton_Click">
+                            <Button x:Name="ExamsButton" Content="Exams" Style="{StaticResource FancyButtonStyle}" FontSize="20" Width="100" Height="35" Click="ActivityButton_Click">
                                 <Button.Background>
                                     <ImageBrush ImageSource="/GUIResources/topBarButtonBackground.png"/>
                                 </Button.Background>
@@ -229,7 +229,7 @@
 
                     <!-- Birth Date -->
                     <Label Content="Birth Date:" FontSize="16" Foreground="White" Grid.Row="2" Grid.Column="1" Margin="10,0,0,0" FontFamily="Script MT Bold"/>
-                    <DatePicker x:Name="BirthDatePicker" Language="sr-RS" Height="30" FontSize="14" Grid.Row="3" Grid.Column="1" Margin="10,0,0,0" VerticalContentAlignment="Center" SelectedDate="{Binding Path=UpdateStudent.DateOfBirth, Converter={StaticResource DateToStringConverter}, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}" Validation.ErrorTemplate="{StaticResource ValidationTemplate}"/>
+                    <DatePicker x:Name="BirthDatePicker" Language="sr-RS" Height="30" FontSize="14" Grid.Row="3" Grid.Column="1" Margin="10,0,0,0" Background="White" BorderThickness="0" VerticalContentAlignment="Center" SelectedDate="{Binding Path=UpdateStudent.DateOfBirth, Converter={StaticResource DateToStringConverter}, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}" Validation.ErrorTemplate="{StaticResource ValidationTemplate}"/>
 
                     <!-- Phone Number -->
                     <Label Content="Phone Number:" FontSize="16" Foreground="White" Grid.Row="4" Grid.Column="0" FontFamily="Script MT Bold"/>

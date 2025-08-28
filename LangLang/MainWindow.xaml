@@ -165,7 +165,7 @@
 
                     <!-- Birth Date -->
                     <Label Content="Birth Date:" FontSize="16" Foreground="White" Grid.Row="2" Grid.Column="1" Margin="10,0,0,0" FontFamily="Script MT Bold"/>
-                    <DatePicker x:Name="BirthDatePicker" Language="sr-RS" Height="30" FontSize="14" Grid.Row="3" Grid.Column="1" Margin="10,0,0,0" VerticalContentAlignment="Center" SelectedDate="{Binding Path=Student.DateOfBirth, Converter={StaticResource DateToStringConverter}, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}" Validation.ErrorTemplate="{StaticResource ValidationTemplate}"/>
+                    <DatePicker x:Name="BirthDatePicker" Language="sr-RS" Height="30" FontSize="14" Grid.Row="3" Grid.Column="1" Margin="10,0,0,0" Background="White" BorderThickness="0" VerticalContentAlignment="Center" SelectedDate="{Binding Path=Student.DateOfBirth, Converter={StaticResource DateToStringConverter}, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}" Validation.ErrorTemplate="{StaticResource ValidationTemplate}"/>
 
                     <!-- Phone Number -->
                     <Label Content="Phone Number:" FontSize="16" Foreground="White" Grid.Row="4" Grid.Column="0" FontFamily="Script MT Bold"/>

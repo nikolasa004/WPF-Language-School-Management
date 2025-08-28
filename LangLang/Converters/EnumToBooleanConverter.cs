@@ -14,7 +14,6 @@ namespace LangLang.Converters
             string? targetValue = parameter?.ToString();
             return enumValue != null && targetValue != null && enumValue.Equals(targetValue, StringComparison.InvariantCultureIgnoreCase);
         }
-
         public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
         {
             if (parameter == null)

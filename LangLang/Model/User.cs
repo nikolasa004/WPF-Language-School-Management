@@ -24,7 +24,6 @@ namespace LangLang.Model
             Password = string.Empty;
             DateOfRegistration = string.Empty;
         }
-
         public User(string firstName, string lastName, Gender gender, string dateOfBirth, string phoneNumber, string email, string password, EducationLevel educationLevel, string dateOfRegistration)
         {
             FirstName = firstName;

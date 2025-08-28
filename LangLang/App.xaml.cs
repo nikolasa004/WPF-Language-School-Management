@@ -4,9 +4,6 @@ using System.Windows.Input;
 
 namespace LangLang
 {
-    /// <summary>
-    /// Interaction logic for App.xaml
-    /// </summary>
     public partial class App : Application
     {
         private void ComboBoxItem_MouseDown(object sender, MouseButtonEventArgs e)

@@ -1,34 +1,23 @@
 ﻿using LangLang.RoleWindows;
 using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using LangLang.Controller;
 using LangLang.DTO;
 using LangLang.Model;
+using LangLang.Controller.Services;
 
 namespace LangLang
 {
-    /// <summary>
-    /// Interaction logic for MainWindow.xaml
-    /// </summary>
     public partial class MainWindow : Window
     {
         public StudentDTO Student { get; set; }
-
         private StudentsController studentsController;
-
         public ProfessorDTO Professor { get; set; }
-
         private ProfessorsController professorsController;
 
-        //temporary variables for user credentials
-       // private string teacherEmail = "teacher@gmail.com";
-       // private string teacherPassword = "teacher123";
+        private AuthenticationController authenticationController;
 
+        //temporary variables for user credentials
         private string principalEmail = "principal@gmail.com";
         private string principalPassword = "principal123";
         public MainWindow()
@@ -39,6 +28,7 @@ namespace LangLang
             studentsController = new StudentsController();
             Professor = new ProfessorDTO();
             professorsController = new ProfessorsController();
+            authenticationController = new AuthenticationController(studentsController, professorsController, principalEmail, principalPassword);
         }
 
         private void OpenLoginPanel_Click(object sender, RoutedEventArgs e)
@@ -46,19 +36,16 @@ namespace LangLang
             MainPanel.Visibility = Visibility.Collapsed;
             LoginPanel.Visibility = Visibility.Visible;
         }
-
         private void OpenRegisterPanel_Click(object sender, RoutedEventArgs e)
         {
             RegisterPanel.Visibility = Visibility.Visible;
             MainPanel.Visibility = Visibility.Collapsed;
         }
-
         private void CloseLoginPanel_Click(object sender, RoutedEventArgs e)
         {
             LoginPanel.Visibility = Visibility.Collapsed;
             MainPanel.Visibility = Visibility.Visible;
         }
-
         private void CloseRegisterPanel_Click(object sender, RoutedEventArgs e)
         {
             RegisterPanel.Visibility = Visibility.Collapsed;
@@ -72,59 +59,33 @@ namespace LangLang
 
             if (string.IsNullOrEmpty(email) || string.IsNullOrEmpty(password))
             {
-                MessageBox.Show("Please enter both email and password.", "Empty input",MessageBoxButton.OK,MessageBoxImage.Warning);
+                MessageBox.Show("Please enter both email and password.", "Empty input", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 
-            // Check credentials against temporary variables(students work now)
-            bool errorOccurred = false;
-            if (studentsController.GetStudentById(email) is var student && student!=null)
-            {
-                if (student.Password == password)
-                {
-                    OpenNewWindow(new StudentWindow(student,studentsController));
-                }
-                else
-                {
-                    errorOccurred = true;
-                }
-            }
-            else if (professorsController.GetProfessorById(email) is var professor && professor != null)
-            {
-                if (professor.Password == password)
-                {
-                    OpenNewWindow(new ProfessorWindow(professor, professorsController));
-                }
-                else
-                {
-                    errorOccurred = true;
-                }
-            }
-            else if (email == principalEmail && password == principalPassword)
-            {
-                OpenNewWindow(new PrincipalWindow());
-            }
+            var user = authenticationController.Authenticate(email, password);
+            if (user != null)
+                OpenUserWindow(user);
             else
-            {
-                errorOccurred = true;
-            }
-
-            if (errorOccurred)
-                MessageBox.Show("Invalid email or password. Please try again.", "Login error",MessageBoxButton.OK,MessageBoxImage.Error);
+                MessageBox.Show("Invalid email or password. Please try again.", "Login error", MessageBoxButton.OK, MessageBoxImage.Error);
         }
-        private void OpenNewWindow(Window newWindow)
+        private void OpenUserWindow(object user)
         {
-            bool isFullScreen = WindowState == WindowState.Maximized;
+            Window newWindow = user switch
+            {
+                Student s => new StudentWindow(s, studentsController),
+                Professor p => new ProfessorWindow(p, professorsController),
+                string s when s == "Principal" => new PrincipalWindow(),
+                _ => throw new InvalidOperationException("Unknown user type")
+            };
 
             newWindow.Top = Top;
             newWindow.Left = Left;
             newWindow.Width = Width;
             newWindow.Height = Height;
 
-            if (isFullScreen)
-            {
+            if (WindowState == WindowState.Maximized)
                 newWindow.WindowState = WindowState.Maximized;
-            }
 
             newWindow.Show();
             Close();
@@ -132,21 +93,13 @@ namespace LangLang
 
         private void TryRegister_Click(object sender, RoutedEventArgs e)
         {
-            if (Student.IsValid)
+            if (authenticationController.Register(Student, out string message))
             {
-                Student student=Student.ToStudent();
-                if (studentsController.GetStudentById(student.Email)!=null)
-                {
-                    MessageBox.Show("An account with this email already exists. Please log in or use a different email to create an account.", "Email already exists",MessageBoxButton.OK,MessageBoxImage.Warning);
-                    return;
-                }
-                student.DateOfRegistration = DateTime.Now.ToString("yyyy-MM-dd");
-                studentsController.Add(student);
-
-                MessageBox.Show("Registration successful! You can now log in.", "Registration successful", MessageBoxButton.OK, MessageBoxImage.Information);
-
+                MessageBox.Show(message, "Registration successful", MessageBoxButton.OK, MessageBoxImage.Information);
                 CloseRegisterPanel_Click(sender, e);
             }
+            else
+                MessageBox.Show(message, "Registration failed", MessageBoxButton.OK, MessageBoxImage.Warning);
         }
     }
 }
