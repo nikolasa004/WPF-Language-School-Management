@@ -1,10 +1,14 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using LangLang.Controller;
 using LangLang.DTO;
 using LangLang.Model;
 using LangLang.Model.DAO;
+using LangLang.Model.Enums;
 
 namespace LangLang.RoleWindows
 {
@@ -16,6 +20,13 @@ namespace LangLang.RoleWindows
         private ProfessorsController professorsController;
         private bool isEditMode = false;
         private ProfessorDTO currentProfessor = null;
+        public ProfessorDTO Professor { get; set; }
+
+        // Language selection properties
+        public ObservableCollection<Language> AvailableLanguages { get; set; }
+        public ObservableCollection<LanguageLevel> AvailableLevels { get; set; }
+        public Dictionary<Language, LanguageLevel> ProfessorLanguages { get; set; }
+        public ObservableCollection<string> ProfessorLanguagesDisplay { get; set; }
 
         public PrincipalWindow(ProfessorsController professorsController)
         {
@@ -23,12 +34,27 @@ namespace LangLang.RoleWindows
             DataContext = this;
 
             this.professorsController = professorsController;
+            Professor = new ProfessorDTO();
+
+            InitializeLanguageCollections();
             LoadProfessors();
         }
 
+        private void InitializeLanguageCollections()
+        {
+            AvailableLanguages = new ObservableCollection<Language>(Enum.GetValues(typeof(Language)).Cast<Language>());
+            AvailableLevels = new ObservableCollection<LanguageLevel>(Enum.GetValues(typeof(LanguageLevel)).Cast<LanguageLevel>());
+            ProfessorLanguages = new Dictionary<Language, LanguageLevel>();
+            ProfessorLanguagesDisplay = new ObservableCollection<string>();
+        }
         private void LoadProfessors()
         {
-            ProfessorsDataGrid.ItemsSource = professorsController.GetAllProfessors();
+            var professors = professorsController.GetAllProfessors();
+            Console.WriteLine($"Loaded {professors.Count} professors"); // Debug output
+            ProfessorsDataGrid.ItemsSource = professors;
+
+            // Force refresh
+            ProfessorsDataGrid.Items.Refresh();
         }
 
         // === Professors actions ===
@@ -43,53 +69,51 @@ namespace LangLang.RoleWindows
             }
         }
 
-        private void ShowAllProfessors_Click(object sender, RoutedEventArgs e)
-        {
-            LoadProfessors();
-        }
-
-        private void SearchProfessors_Click(object sender, RoutedEventArgs e)
-        {
-            // TODO: implement search dialog for teachers
-            MessageBox.Show("Search teachers not implemented yet.");
-        }
-
-        private void SortProfessors_Click(object sender, RoutedEventArgs e)
-        {
-            // TODO: implement sorting logic
-            MessageBox.Show("Sort teachers not implemented yet.");
-        }
-
         private void AddProfessor_Click(object sender, RoutedEventArgs e)
         {
             isEditMode = false;
             currentProfessor = null;
 
-            ProfessorFirstNameBox.Text = "";
-            ProfessorLastNameBox.Text = "";
-            ProfessorEmailBox.Text = "";
-            ProfessorPhoneBox.Text = "";
-            ProfessorBirthDatePicker.SelectedDate = null;
-            ProfessorLanguagesBox.Text = "";
+            Professor = new ProfessorDTO();
+            ProfessorLanguages.Clear();
+            ProfessorLanguagesDisplay.Clear();
+
+            LanguagesSection.Visibility = Visibility.Visible;
+
+            DataContext = null;
+            DataContext = this;
 
             AddEditProfessorOverlay.Visibility = Visibility.Visible;
         }
 
         private void UpdateProfessor_Click(object sender, RoutedEventArgs e)
         {
-           
-            isEditMode = false;
-            currentProfessor = null;
+            if (ProfessorsDataGrid.SelectedItem is Professor selectedProfessor)
+            {
+                isEditMode = true;
+                currentProfessor = new ProfessorDTO(selectedProfessor);
 
-            ProfessorFirstNameBox.Text = "";
-            ProfessorLastNameBox.Text = "";
-            ProfessorEmailBox.Text = "";
-            ProfessorPhoneBox.Text = "";
-            ProfessorBirthDatePicker.SelectedDate = null;
-            ProfessorLanguagesBox.Text = "";
+                // Reset collections
+                ProfessorLanguages.Clear();
+                ProfessorLanguagesDisplay.Clear();
 
-            AddEditProfessorOverlay.Visibility = Visibility.Visible;
+                // Fill DTO with existing values
+                Professor = currentProfessor;
+
+                // Hide languages section in edit mode
+                LanguagesSection.Visibility = Visibility.Collapsed;
+
+                DataContext = null;
+                DataContext = this;
+
+                AddEditProfessorOverlay.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                MessageBox.Show("Please select a professor to edit.", "No selection", MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
         }
+
 
         private void DeleteProfessor_Click(object sender, RoutedEventArgs e)
         {
@@ -97,26 +121,109 @@ namespace LangLang.RoleWindows
             MessageBox.Show("Delete teacher not implemented yet.");
         }
 
-        private void SaveProfessor_Click(object sender, RoutedEventArgs e)
+        private void AddLanguage_Click(object sender, RoutedEventArgs e)
         {
-            // TODO: implement save functionality
-            if (isEditMode)
+            var selectedLanguage = LanguageComboBox.SelectedItem as Language?;
+            var selectedLevel = LanguageLevelComboBox.SelectedItem as LanguageLevel?;
+
+            if (selectedLanguage.HasValue && selectedLevel.HasValue)
             {
-                MessageBox.Show("Save edited teacher not implemented yet.");
+                // Check if this language is already added
+                if (ProfessorLanguages.ContainsKey(selectedLanguage.Value))
+                {
+                    MessageBox.Show("This language is already added. Please select a different language.",
+                                    "Language already exists", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return;
+                }
+
+                ProfessorLanguages.Add(selectedLanguage.Value, selectedLevel.Value);
+                ProfessorLanguagesDisplay.Add($"{selectedLanguage.Value} - {selectedLevel.Value}");
+
+                // Clear the selection
+                LanguageComboBox.SelectedIndex = -1;
+                LanguageLevelComboBox.SelectedIndex = -1;
+                
             }
             else
             {
-                MessageBox.Show("Save new teacher not implemented yet.");
+                MessageBox.Show("Please select both a language and a level.",
+                                "Invalid selection", MessageBoxButton.OK, MessageBoxImage.Warning);
             }
-
-            AddEditProfessorOverlay.Visibility = Visibility.Collapsed;
-            MainPanel.Visibility = Visibility.Visible;
         }
+
+        private void RemoveLanguage_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender is Button button && button.Tag is string languageDisplay)
+            {
+                var parts = languageDisplay.Split(new[] { " - " }, StringSplitOptions.None);
+                if (parts.Length == 2 && Enum.TryParse<Language>(parts[0], out var language))
+                {
+                    ProfessorLanguages.Remove(language);
+                    ProfessorLanguagesDisplay.Remove(languageDisplay);
+                }
+            }
+        }
+
+        private void SaveProfessor_Click(object sender, RoutedEventArgs e)
+        {
+            if (Professor.IsValid)
+            {
+                if (!isEditMode && ProfessorLanguages.Count == 0)
+                {
+                    MessageBox.Show("Please add at least one language for the professor.",
+                                    "No languages selected", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return;
+                }
+
+                if (isEditMode)
+                {
+                    // Editing existing professor
+                    var updatedProfessor = Professor.ToProfessor();
+
+                    // Keep original registration date & languages
+                    updatedProfessor.DateOfRegistration = currentProfessor.DateOfRegistration;
+                    updatedProfessor.Languages = currentProfessor.Languages;
+
+                    professorsController.Update(updatedProfessor);
+
+                    MessageBox.Show("Professor successfully updated!",
+                                    "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+                }
+                else
+                {
+                    // Creating new professor
+                    var professor = Professor.ToProfessor();
+
+                    if (professorsController.GetProfessorById(professor.Email) != null)
+                    {
+                        MessageBox.Show("An account with this email already exists. Please use a different email.",
+                                        "Email already exists", MessageBoxButton.OK, MessageBoxImage.Warning);
+                        return;
+                    }
+
+                    professor.DateOfRegistration = DateTime.Now.ToString("yyyy-MM-dd");
+                    professor.Languages = new Dictionary<Language, LanguageLevel>(ProfessorLanguages);
+
+                    professorsController.Add(professor);
+
+                    MessageBox.Show("Professor successfully registered!",
+                                    "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+                }
+
+                AddEditProfessorOverlay.Visibility = Visibility.Collapsed;
+                LoadProfessors();
+            }
+            else
+            {
+                MessageBox.Show("Please correct validation errors before saving.",
+                                "Invalid input", MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
+        }
+
 
         private void CancelProfessor_Click(object sender, RoutedEventArgs e)
         {
             AddEditProfessorOverlay.Visibility = Visibility.Collapsed;
-            MainPanel.Visibility = Visibility.Visible;
         }
 
         // === Courses ===

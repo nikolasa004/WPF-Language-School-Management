@@ -29,8 +29,8 @@ namespace LangLang
        // private string teacherEmail = "teacher@gmail.com";
        // private string teacherPassword = "teacher123";
 
-        private string principalEmail = "principal@gmail.com";
-        private string principalPassword = "principal123";
+        private string principalEmail = "123";
+        private string principalPassword = "123";
         public MainWindow()
         {
             InitializeComponent();
@@ -102,7 +102,7 @@ namespace LangLang
             }
             else if (email == principalEmail && password == principalPassword)
             {
-                OpenNewWindow(new PrincipalWindow());
+                OpenNewWindow(new PrincipalWindow(professorsController));
             }
             else
             {

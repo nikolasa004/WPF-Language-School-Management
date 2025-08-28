@@ -203,7 +203,7 @@
                 </Grid>
             </Viewbox>
         </Grid>
-
+        
         <!-- Add/Edit Professor Overlay -->
         <Grid x:Name="AddEditProfessorOverlay" Visibility="Collapsed" Background="#80000000" Panel.ZIndex="999">
             <Grid.Resources>
@@ -251,43 +251,43 @@
                             <ControlTemplate TargetType="{x:Type ComboBox}">
                                 <Grid SnapsToDevicePixels="True">
                                     <Border Background="Gold"
-                            BorderBrush="{TemplateBinding BorderBrush}"
-                            BorderThickness="{TemplateBinding BorderThickness}"
-                            CornerRadius="4">
+                    BorderBrush="{TemplateBinding BorderBrush}"
+                    BorderThickness="{TemplateBinding BorderThickness}"
+                    CornerRadius="4">
                                         <DockPanel>
                                             <ToggleButton x:Name="PART_DropDownToggle"
-                                          DockPanel.Dock="Right"
-                                          Focusable="False"
-                                          IsChecked="{Binding IsDropDownOpen, RelativeSource={RelativeSource TemplatedParent}}"
-                                          ClickMode="Press"
-                                          Background="Gold"
-                                          BorderThickness="0"
-                                          Width="28">
+                                  DockPanel.Dock="Right"
+                                  Focusable="False"
+                                  IsChecked="{Binding IsDropDownOpen, RelativeSource={RelativeSource TemplatedParent}}"
+                                  ClickMode="Press"
+                                  Background="Gold"
+                                  BorderThickness="0"
+                                  Width="28">
                                                 <Path Data="M 0 0 L 8 0 L 4 4 Z"
-                                      Fill="White"
-                                      HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                              Fill="White"
+                              HorizontalAlignment="Center" VerticalAlignment="Center"/>
                                             </ToggleButton>
                                             <ContentPresenter Margin="6,0,6,0"
-                                              HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
-                                              VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
+                                      HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                      VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
                                         </DockPanel>
                                     </Border>
 
                                     <Popup x:Name="PART_Popup"
-                           Placement="Bottom"
-                           IsOpen="{TemplateBinding IsDropDownOpen}"
-                           AllowsTransparency="True"
-                           Focusable="False"
-                           PopupAnimation="Slide">
-                                        <Border Background="Gold"
-                                BorderBrush="{TemplateBinding BorderBrush}"
-                                BorderThickness="2"
-                                CornerRadius="4"
-                                Margin="0,2,0,0">
+                                       Placement="Bottom"
+                                       IsOpen="{TemplateBinding IsDropDownOpen}"
+                                       AllowsTransparency="True"
+                                       Focusable="False"
+                                       PopupAnimation="Slide">
+                                       <Border Background="Gold"
+                                            BorderBrush="{TemplateBinding BorderBrush}"
+                                            BorderThickness="2"
+                                            CornerRadius="4"
+                                            Margin="0,2,0,0">
                                             <ScrollViewer CanContentScroll="True" SnapsToDevicePixels="True">
                                                 <StackPanel IsItemsHost="True"/>
                                             </ScrollViewer>
-                                        </Border>
+                                       </Border>
                                     </Popup>
                                 </Grid>
                                 <ControlTemplate.Triggers>
@@ -323,85 +323,152 @@
                 </Style>
             </Grid.Resources>
 
-            <Border CornerRadius="10" Padding="18" Width="640"
-            HorizontalAlignment="Center" VerticalAlignment="Center"
-            BorderBrush="#B8860B" BorderThickness="2">
+            <Border CornerRadius="10" Padding="18" Width="600" Height="400"
+                HorizontalAlignment="Center" VerticalAlignment="Center"
+                BorderBrush="#B8860B" BorderThickness="2">
                 <Border.Background>
                     <ImageBrush ImageSource="/GUIResources/loginBackground.jpg" Stretch="Fill"/>
                 </Border.Background>
 
-                <Viewbox Stretch="Uniform" HorizontalAlignment="Center" VerticalAlignment="Center">
-                    <Grid Width="600" Margin="10,10,10,0">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*" />
-                            <ColumnDefinition Width="*" />
-                        </Grid.ColumnDefinitions>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                        </Grid.RowDefinitions>
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
 
-                        <!-- First Name -->
-                        <Label Content="First Name:" FontSize="16" Foreground="White" Grid.Row="0" Grid.Column="0" FontFamily="Script MT Bold" />
-                        <TextBox x:Name="ProfessorFirstNameBox" Height="30" FontSize="14" Grid.Row="1" Grid.Column="0" Margin="0,0,10,0" VerticalContentAlignment="Center" Style="{StaticResource GoldTextBoxStyle}"/>
+                    <!-- Scrollable Content -->
+                    <ScrollViewer Grid.Row="0" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Margin="0,0,0,10">
+                        <Grid Width="400" Margin="10,10,10,0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
 
-                        <!-- Last Name -->
-                        <Label Content="Last Name:" FontSize="16" Foreground="White" Grid.Row="0" Grid.Column="1" Margin="10,0,0,0" FontFamily="Script MT Bold"/>
-                        <TextBox x:Name="ProfessorLastNameBox" Height="30" FontSize="14" Grid.Row="1" Grid.Column="1" Margin="10,0,0,0" VerticalContentAlignment="Center" Style="{StaticResource GoldTextBoxStyle}"/>
+                            <!-- First Name -->
+                            <Label Content="First Name:" FontSize="16" Foreground="White" Grid.Row="0" Grid.Column="0" FontFamily="Script MT Bold" />
+                            <TextBox x:Name="FirstNameBox" Height="30" FontSize="14" Grid.Row="1" Grid.Column="0" Margin="0,0,10,10" VerticalContentAlignment="Center" Text="{Binding Path=Professor.FirstName, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}" Validation.ErrorTemplate="{StaticResource ValidationTemplate}"/>
 
-                        <!-- Email -->
-                        <Label Content="Email:" FontSize="16" Foreground="White" Grid.Row="2" Grid.Column="0" FontFamily="Script MT Bold"/>
-                        <TextBox x:Name="ProfessorEmailBox" Height="30" FontSize="14" Grid.Row="3" Grid.Column="0" Margin="0,0,10,0" VerticalContentAlignment="Center" Style="{StaticResource GoldTextBoxStyle}"/>
+                            <!-- Last Name -->
+                            <Label Content="Last Name:" FontSize="16" Foreground="White" Grid.Row="0" Grid.Column="1" Margin="10,0,0,0" FontFamily="Script MT Bold"/>
+                            <TextBox x:Name="LastNameBox" Height="30" FontSize="14" Grid.Row="1" Grid.Column="1" Margin="10,0,0,10" VerticalContentAlignment="Center" Text="{Binding Path=Professor.LastName, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}" Validation.ErrorTemplate="{StaticResource ValidationTemplate}"/>
 
-                        <!-- Phone -->
-                        <Label Content="Phone:" FontSize="16" Foreground="White" Grid.Row="2" Grid.Column="1" Margin="10,0,0,0" FontFamily="Script MT Bold"/>
-                        <TextBox x:Name="ProfessorPhoneBox" Height="30" FontSize="14" Grid.Row="3" Grid.Column="1" Margin="10,0,0,0" VerticalContentAlignment="Center" Style="{StaticResource GoldTextBoxStyle}"/>
+                            <!-- Gender -->
+                            <Label Content="Gender:" FontSize="16" Foreground="White" Grid.Row="2" Grid.Column="0" FontFamily="Script MT Bold"/>
+                            <StackPanel Orientation="Horizontal" Grid.Row="3" Grid.Column="0" Margin="0,0,0,10">
+                                <RadioButton Content="Male" FontFamily="Script MT Bold" IsChecked="{Binding Path=Professor.Gender, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter=Male, Mode=TwoWay}" />
+                                <RadioButton Content="Female" FontFamily="Script MT Bold" IsChecked="{Binding Path=Professor.Gender, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter=Female, Mode=TwoWay}" />
+                            </StackPanel>
 
-                        <!-- Gender -->
-                        <Label Content="Gender:" FontSize="16" Foreground="White" Grid.Row="4" Grid.Column="0" FontFamily="Script MT Bold"/>
-                        <StackPanel Orientation="Horizontal" Grid.Row="5" Grid.Column="0">
-                            <RadioButton Content="Male" FontFamily="Script MT Bold"  />
-                            <RadioButton Content="Female" FontFamily="Script MT Bold" />
-                        </StackPanel>
+                            <!-- Birth Date -->
+                            <Label Content="Birth Date:" FontSize="16" Foreground="White" Grid.Row="2" Grid.Column="1" Margin="10,0,0,0" FontFamily="Script MT Bold"/>
+                            <DatePicker x:Name="BirthDatePicker" Language="sr-RS" Height="30" FontSize="14" Grid.Row="3" Grid.Column="1" Margin="10,0,0,10" VerticalContentAlignment="Center" SelectedDate="{Binding Path=Professor.DateOfBirth, Converter={StaticResource DateToStringConverter}, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}" Validation.ErrorTemplate="{StaticResource ValidationTemplate}"/>
 
-                        <!-- Birth Date -->
-                        <Label Content="Birth Date:" FontSize="16" Foreground="White" Grid.Row="4" Grid.Column="1" Margin="10,0,0,0" FontFamily="Script MT Bold"/>
-                        <DatePicker x:Name="ProfessorBirthDatePicker" Height="30" FontSize="14" Grid.Row="5" Grid.Column="1" Margin="10,0,0,0" VerticalContentAlignment="Center" Style="{StaticResource GoldDatePickerStyle}"/>
+                            <!-- Phone Number -->
+                            <Label Content="Phone Number:" FontSize="16" Foreground="White" Grid.Row="4" Grid.Column="0" FontFamily="Script MT Bold"/>
+                            <TextBox x:Name="PhoneBox" Height="30" FontSize="14" Grid.Row="5" Grid.Column="0" Margin="0,0,10,10" VerticalContentAlignment="Center" Text="{Binding Path=Professor.PhoneNumber, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}" Validation.ErrorTemplate="{StaticResource ValidationTemplate}"/>
 
-                        <!-- Languages -->
-                        <Label Content="Languages:" FontSize="16" Foreground="White" Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="2" Margin="10,0,0,0" FontFamily="Script MT Bold"/>
-                        <TextBox x:Name="ProfessorLanguagesBox" Height="30" FontSize="14" Grid.Row="7" Grid.Column="0" Grid.ColumnSpan="2" Margin="10,0,0,0" VerticalContentAlignment="Center" Style="{StaticResource GoldTextBoxStyle}"
-                      ToolTip="Comma separated languages with levels, e.g., English-Advanced, Spanish-Intermediate"/>
+                            <!-- Email -->
+                            <Label Content="Email:" FontSize="16" Foreground="White" Grid.Row="4" Grid.Column="1" Margin="10,0,0,0" FontFamily="Script MT Bold"/>
+                            <TextBox x:Name="EmailBoxRegister" Height="30" FontSize="14" Grid.Row="5" Grid.Column="1" Margin="10,0,0,10" VerticalContentAlignment="Center" Text="{Binding Path=Professor.Email, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}" Validation.ErrorTemplate="{StaticResource ValidationTemplate}"/>
 
-                        
-                        <!-- Buttons -->
-                        <StackPanel Grid.Row="9" Grid.Column="0" Grid.ColumnSpan="2" Orientation="Horizontal" HorizontalAlignment="Center" Margin="10,0,0,0">
-                            <Button Content="Save" Width="100" Height="38" Margin="8"
-                    Click="SaveProfessor_Click"
-                    Style="{StaticResource FancyButtonStyle}">
-                                <Button.Background>
-                                    <ImageBrush ImageSource="/GUIResources/loginButtonBackground.png"/>
-                                </Button.Background>
-                            </Button>
-                            <Button Content="Cancel" Width="100" Height="38" Margin="8"
-                    Click="CancelProfessor_Click"
-                    Style="{StaticResource FancyButtonStyle}">
-                                <Button.Background>
-                                    <ImageBrush ImageSource="/GUIResources/loginButtonBackground.png"/>
-                                </Button.Background>
-                            </Button>
-                        </StackPanel>
-                    </Grid>
-                </Viewbox>
+                            <!-- Password -->
+                            <Label Content="Password:" FontSize="16" Foreground="White" Grid.Row="6" Grid.Column="0" FontFamily="Script MT Bold"/>
+                            <TextBox x:Name="PasswordBoxRegister" Height="30" FontSize="14" Grid.Row="7" Grid.Column="0" Margin="0,0,10,15" VerticalContentAlignment="Center" Text="{Binding Path=Professor.Password, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}" Validation.ErrorTemplate="{StaticResource ValidationTemplate}"/>
+
+                            <!-- Language Selection Section (All language-related elements grouped here) -->
+                            <StackPanel x:Name="LanguagesSection" Grid.Row="8" Grid.Column="0" Grid.ColumnSpan="2" Margin="0,10,0,0">
+                                <!-- Language Selection Title-->
+                                <Label Content="Language Selection:" FontSize="16" Foreground="White" FontFamily="Script MT Bold" Margin="0,0,0,5"/>
+
+                                <!-- Language Selection Input Grid -->
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                    </Grid.RowDefinitions>
+
+                                    <!-- Language ComboBox -->
+                                    <Label Content="Language:" FontSize="14" Foreground="White" Grid.Row="0" Grid.Column="0" FontFamily="Script MT Bold"/>
+                                    <ComboBox x:Name="LanguageComboBox" Height="30" FontSize="14" Grid.Row="1" Grid.Column="0" Margin="0,0,10,10" 
+                                              ItemsSource="{Binding AvailableLanguages}" Style="{StaticResource GoldComboStyle}"/>
+
+                                    <!-- Language Level ComboBox -->
+                                    <Label Content="Level:" FontSize="14" Foreground="White" Grid.Row="0" Grid.Column="1" Margin="10,0,0,0" FontFamily="Script MT Bold"/>
+                                    <ComboBox x:Name="LanguageLevelComboBox" Height="30" FontSize="14" Grid.Row="1" Grid.Column="1" Margin="10,0,0,10"
+                                              ItemsSource="{Binding AvailableLevels}" Style="{StaticResource GoldComboStyle}"/>
+
+                                    <!-- Add Language Button -->
+                                    <Button Content="Add Language" Width="120" Height="30" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" 
+                                            Style="{StaticResource FancyButtonStyle}">
+                                        <Button.Background>
+                                            <ImageBrush ImageSource="/GUIResources/loginButtonBackground.png"/>
+                                        </Button.Background>
+                                    </Button>
+                                </Grid>
+
+                                <!-- Selected Languages List -->
+                                <Label Content="Selected Languages:" FontSize="14" Foreground="White" FontFamily="Script MT Bold" Margin="0,0,0,5"/>
+                                <ScrollViewer Height="150" Margin="0,0,0,20" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+                                    <ItemsControl ItemsSource="{Binding ProfessorLanguagesDisplay}">
+                                        <ItemsControl.ItemTemplate>
+                                            <DataTemplate>
+                                                <Border Background="Gold" BorderBrush="#B8860B" BorderThickness="1" CornerRadius="3" Margin="0,2" Padding="8,4">
+                                                    <Grid>
+                                                        <Grid.ColumnDefinitions>
+                                                            <ColumnDefinition Width="*"/>
+                                                            <ColumnDefinition Width="Auto"/>
+                                                        </Grid.ColumnDefinitions>
+                                                        <TextBlock Text="{Binding}" Foreground="White" FontFamily="Script MT Bold" FontSize="14" VerticalAlignment="Center"/>
+                                                        <Button Grid.Column="1" Content="Remove" Width="60" Height="20" FontFamily="Script MT Bold" FontSize="10" 
+                                        Click="RemoveLanguage_Click" Tag="{Binding}"
+                                        Background="Red" Foreground="White" BorderThickness="0">
+                                                        </Button>
+                                                    </Grid>
+                                                </Border>
+                                            </DataTemplate>
+                                        </ItemsControl.ItemTemplate>
+                                    </ItemsControl>
+                                </ScrollViewer>
+                            </StackPanel>
+                        </Grid>
+                    </ScrollViewer>
+
+                    <!-- Buttons at Bottom -->
+                    <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,10,0,10">
+                        <Button Content="Save" Width="100" Height="38" Margin="8"
+                            Click="SaveProfessor_Click"
+                            Style="{StaticResource FancyButtonStyle}">
+                            <Button.Background>
+                                <ImageBrush ImageSource="/GUIResources/loginButtonBackground.png"/>
+                            </Button.Background>
+                        </Button>
+                        <Button Content="Cancel" Width="100" Height="38" Margin="8"
+                            Click="CancelProfessor_Click"
+                            Style="{StaticResource FancyButtonStyle}">
+                             <Button.Background>
+                                <ImageBrush ImageSource="/GUIResources/loginButtonBackground.png"/>
+                            </Button.Background>
+                        </Button>
+                    </StackPanel>
+                </Grid>
             </Border>
         </Grid>
+
     </Grid>
 </Window>
