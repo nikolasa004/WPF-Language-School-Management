@@ -331,37 +331,37 @@
                                 <Grid SnapsToDevicePixels="True">
                                     <!-- gornja kutija -->
                                     <Border Background="Gold"
-                            BorderBrush="{TemplateBinding BorderBrush}"
-                            BorderThickness="{TemplateBinding BorderThickness}"
-                            CornerRadius="4">
+                     BorderBrush="{TemplateBinding BorderBrush}"
+                     BorderThickness="{TemplateBinding BorderThickness}"
+                     CornerRadius="4">
                                         <DockPanel>
                                             <ToggleButton x:Name="PART_DropDownToggle"
-                                          DockPanel.Dock="Right"
-                                          Focusable="False"
-                                          IsChecked="{Binding IsDropDownOpen, RelativeSource={RelativeSource TemplatedParent}}"
-                                          ClickMode="Press"
-                                          Background="Gold"
-                                          BorderThickness="0"
-                                          Width="28">
+                                   DockPanel.Dock="Right"
+                                   Focusable="False"
+                                   IsChecked="{Binding IsDropDownOpen, RelativeSource={RelativeSource TemplatedParent}}"
+                                   ClickMode="Press"
+                                   Background="Gold"
+                                   BorderThickness="0"
+                                   Width="28">
                                                 <Path Data="M 0 0 L 8 0 L 4 4 Z" Fill="White"
-                                      HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                               HorizontalAlignment="Center" VerticalAlignment="Center"/>
                                             </ToggleButton>
                                             <ContentPresenter Margin="6,0,6,0"
-                                              HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
-                                              VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
+                                       HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                       VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
                                         </DockPanel>
                                     </Border>
 
                                     <!-- dropdown -->
                                     <Popup x:Name="PART_Popup"
-                           Placement="Bottom"
-                           IsOpen="{TemplateBinding IsDropDownOpen}"
-                           AllowsTransparency="True"
-                           Focusable="False"
-                           PopupAnimation="Slide">
+                    Placement="Bottom"
+                    IsOpen="{TemplateBinding IsDropDownOpen}"
+                    AllowsTransparency="True"
+                    Focusable="False"
+                    PopupAnimation="Slide">
                                         <Border Background="Gold" Margin="0,2,0,0"
-                                BorderBrush="{TemplateBinding BorderBrush}"
-                                BorderThickness="2" CornerRadius="4">
+                         BorderBrush="{TemplateBinding BorderBrush}"
+                         BorderThickness="2" CornerRadius="4">
                                             <ScrollViewer CanContentScroll="True" SnapsToDevicePixels="True">
                                                 <StackPanel IsItemsHost="True"/>
                                             </ScrollViewer>
@@ -414,39 +414,39 @@
             <WrapPanel Grid.Row="0" Background="#66000000" ItemHeight="35">
                 <Label Content="Language:" Foreground="White" FontFamily="Script MT Bold" VerticalAlignment="Center"/>
                 <ComboBox x:Name="ExamLanguageCombo"
-                  Style="{StaticResource GoldComboStyle}"
-                  Width="170" Height="35"
-                  Margin="6,6,12,6"
-                  VerticalAlignment="Center"/>
+           Style="{StaticResource GoldComboStyle}"
+           Width="170" Height="35"
+           Margin="6,6,12,6"
+           VerticalAlignment="Center"/>
 
                 <Label Content="Level:" Foreground="White" FontFamily="Script MT Bold" VerticalAlignment="Center"/>
                 <ComboBox x:Name="ExamLevelCombo"
-                  Style="{StaticResource GoldComboStyle}"
-                  Width="170" Height="35"
-                  Margin="6,6,12,6"
-                  VerticalAlignment="Center"/>
+           Style="{StaticResource GoldComboStyle}"
+           Width="170" Height="35"
+           Margin="6,6,12,6"
+           VerticalAlignment="Center"/>
 
                 <Label Content="From:" Foreground="White" FontFamily="Script MT Bold" VerticalAlignment="Center"/>
                 <DatePicker x:Name="ExamFromDate"
-                    Style="{StaticResource GoldDatePickerStyle}"
-                    Width="160" Height="35"
-                    Margin="6,6,12,6"
-                    VerticalAlignment="Center"/>
+             Style="{StaticResource GoldDatePickerStyle}"
+             Width="160" Height="35"
+             Margin="6,6,12,6"
+             VerticalAlignment="Center"/>
 
                 <Label Content="To:" Foreground="White" FontFamily="Script MT Bold" VerticalAlignment="Center"/>
                 <DatePicker x:Name="ExamToDate"
-                    Style="{StaticResource GoldDatePickerStyle}"
-                    Width="160" Height="35"
-                    Margin="6,6,12,6"
-                    VerticalAlignment="Center"/>
+             Style="{StaticResource GoldDatePickerStyle}"
+             Width="160" Height="35"
+             Margin="6,6,12,6"
+             VerticalAlignment="Center"/>
 
                 <Button Content="Search"
-                Style="{StaticResource FancyButtonStyle}"
-                FontSize="16"
-                Width="120" Height="35"
-                Margin="12,6,0,6"
-                VerticalAlignment="Center"
-                Click="FindYourExams_Click">
+         Style="{StaticResource FancyButtonStyle}"
+         FontSize="16"
+         Width="120" Height="35"
+         Margin="12,6,0,6"
+         VerticalAlignment="Center"
+         Click="FindYourExams_Click">
                     <Button.Background>
                         <ImageBrush ImageSource="/GUIResources/loginButtonBackground.png"/>
                     </Button.Background>
@@ -1012,135 +1012,7 @@
 
         <!-- ================== EDIT COURSE OVERLAY ================== -->
         <Grid x:Name="EditCourseOverlay" Visibility="Collapsed" Background="Transparent" Panel.ZIndex="999">
-            <Grid.Resources>
-                <!-- ComboBoxItem style -->
-                <Style x:Key="EditGoldComboItemStyle" TargetType="ComboBoxItem">
-                    <Setter Property="OverridesDefaultStyle" Value="True"/>
-                    <Setter Property="Foreground" Value="White"/>
-                    <Setter Property="Background" Value="Gold"/>
-                    <Setter Property="Padding" Value="8,4"/>
-                    <Setter Property="HorizontalContentAlignment" Value="Center"/>
-                    <Setter Property="Template">
-                        <Setter.Value>
-                            <ControlTemplate TargetType="ComboBoxItem">
-                                <Border x:Name="Bd" Background="{TemplateBinding Background}">
-                                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" Margin="6,2"/>
-                                </Border>
-                                <ControlTemplate.Triggers>
-                                    <Trigger Property="IsMouseOver" Value="True">
-                                        <Setter TargetName="Bd" Property="Background" Value="#FFD24D"/>
-                                        <Setter Property="Foreground" Value="Black"/>
-                                    </Trigger>
-                                    <Trigger Property="IsSelected" Value="True">
-                                        <Setter TargetName="Bd" Property="Background" Value="#E0B000"/>
-                                        <Setter Property="Foreground" Value="Black"/>
-                                    </Trigger>
-                                </ControlTemplate.Triggers>
-                            </ControlTemplate>
-                        </Setter.Value>
-                    </Setter>
-                </Style>
-
-                <!-- ComboBox style -->
-                <Style x:Key="EditGoldComboStyle" TargetType="{x:Type ComboBox}">
-                    <Setter Property="OverridesDefaultStyle" Value="True"/>
-                    <Setter Property="Foreground" Value="White"/>
-                    <Setter Property="FontFamily" Value="Script MT Bold"/>
-                    <Setter Property="FontSize" Value="16"/>
-                    <Setter Property="HorizontalContentAlignment" Value="Center"/>
-                    <Setter Property="VerticalContentAlignment" Value="Center"/>
-                    <Setter Property="Padding" Value="6,2"/>
-                    <Setter Property="BorderBrush" Value="#B8860B"/>
-                    <Setter Property="BorderThickness" Value="2"/>
-                    <Setter Property="SnapsToDevicePixels" Value="True"/>
-                    <Setter Property="ItemContainerStyle" Value="{StaticResource EditGoldComboItemStyle}"/>
-                    <Setter Property="Template">
-                        <Setter.Value>
-                            <ControlTemplate TargetType="{x:Type ComboBox}">
-                                <Grid SnapsToDevicePixels="True">
-                                    <Border Background="Gold"
-                                    BorderBrush="{TemplateBinding BorderBrush}"
-                                    BorderThickness="{TemplateBinding BorderThickness}"
-                                    CornerRadius="4">
-                                        <DockPanel>
-                                            <ToggleButton x:Name="PART_DropDownToggle"
-                                                  DockPanel.Dock="Right"
-                                                  Focusable="False"
-                                                  IsChecked="{Binding IsDropDownOpen, RelativeSource={RelativeSource TemplatedParent}}"
-                                                  ClickMode="Press"
-                                                  Background="Gold"
-                                                  BorderThickness="0"
-                                                  Width="28">
-                                                <Path Data="M 0 0 L 8 0 L 4 4 Z"
-                                              Fill="White"
-                                              HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                                            </ToggleButton>
-                                            <ContentPresenter Margin="6,0,6,0"
-                                                      HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
-                                                      VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
-                                        </DockPanel>
-                                    </Border>
-                                    <Popup x:Name="PART_Popup"
-                                   Placement="Bottom"
-                                   IsOpen="{TemplateBinding IsDropDownOpen}"
-                                   AllowsTransparency="True"
-                                   Focusable="False"
-                                   PopupAnimation="Slide">
-                                        <Border Background="Gold"
-                                        BorderBrush="{TemplateBinding BorderBrush}"
-                                        BorderThickness="2"
-                                        CornerRadius="4"
-                                        Margin="0,2,0,0">
-                                            <ScrollViewer CanContentScroll="True" SnapsToDevicePixels="True">
-                                                <StackPanel IsItemsHost="True"/>
-                                            </ScrollViewer>
-                                        </Border>
-                                    </Popup>
-                                </Grid>
-                                <ControlTemplate.Triggers>
-                                    <Trigger Property="IsEnabled" Value="False">
-                                        <Setter Property="Opacity" Value="0.6"/>
-                                    </Trigger>
-                                </ControlTemplate.Triggers>
-                            </ControlTemplate>
-                        </Setter.Value>
-                    </Setter>
-                </Style>
-
-                <!-- DatePicker style -->
-                <Style x:Key="EditGoldDatePickerStyle" TargetType="DatePicker">
-                    <Setter Property="Foreground" Value="White"/>
-                    <Setter Property="FontFamily" Value="Script MT Bold"/>
-                    <Setter Property="FontSize" Value="16"/>
-                    <Setter Property="Background" Value="Gold"/>
-                    <Setter Property="BorderBrush" Value="#B8860B"/>
-                    <Setter Property="BorderThickness" Value="2"/>
-                    <Setter Property="HorizontalContentAlignment" Value="Center"/>
-                </Style>
-                <Style TargetType="DatePickerTextBox">
-                    <Setter Property="Foreground" Value="White"/>
-                    <Setter Property="Background" Value="#33000000"/>
-                    <Setter Property="BorderBrush" Value="#B8860B"/>
-                    <Setter Property="BorderThickness" Value="1"/>
-                    <Setter Property="FontFamily" Value="Script MT Bold"/>
-                    <Setter Property="FontSize" Value="16"/>
-                    <Setter Property="Padding" Value="6,2"/>
-                    <Setter Property="HorizontalContentAlignment" Value="Center"/>
-                </Style>
-
-                <!-- TextBox style -->
-                <Style x:Key="EditGoldTextBoxStyle" TargetType="TextBox">
-                    <Setter Property="Foreground" Value="White"/>
-                    <Setter Property="FontFamily" Value="Script MT Bold"/>
-                    <Setter Property="FontSize" Value="16"/>
-                    <Setter Property="Background" Value="Gold"/>
-                    <Setter Property="BorderBrush" Value="#B8860B"/>
-                    <Setter Property="BorderThickness" Value="2"/>
-                    <Setter Property="Padding" Value="6,2"/>
-                    <Setter Property="HorizontalContentAlignment" Value="Center"/>
-                    <Setter Property="VerticalContentAlignment" Value="Center"/>
-                </Style>
-            </Grid.Resources>
+           <!-- ovde stilovi-->
 
             <Border CornerRadius="10" Padding="18" Width="640"
             HorizontalAlignment="Center" VerticalAlignment="Center"
@@ -1181,28 +1053,28 @@
                     <Label Grid.Row="0" Grid.Column="0" Content="Language:" Foreground="White"
            FontFamily="Script MT Bold" VerticalAlignment="Center" Margin="0,4"/>
                     <ComboBox x:Name="EditCourseLangCombo" Grid.Row="0" Grid.Column="1"
-              Style="{StaticResource EditGoldComboStyle}" Height="35" Margin="8,4,0,4"/>
+              Style="{StaticResource GoldComboStyle}" Height="35" Margin="8,4,0,4"/>
 
                     <!-- Level -->
                     <Label Grid.Row="1" Grid.Column="0" Content="Level:" Foreground="White"
            FontFamily="Script MT Bold" VerticalAlignment="Center" Margin="0,4"/>
                     <ComboBox x:Name="EditCourseLevelCombo" Grid.Row="1" Grid.Column="1"
-              Style="{StaticResource EditGoldComboStyle}" Height="35" Margin="8,4,0,4"/>
+              Style="{StaticResource GoldComboStyle}" Height="35" Margin="8,4,0,4"/>
 
                     <!-- Max attendees -->
                     <Label Grid.Row="2" Grid.Column="0" Content="Max attendees:" Foreground="White"
            FontFamily="Script MT Bold" VerticalAlignment="Center" Margin="0,4"/>
                     <TextBox x:Name="EditCourseMaxBox" Grid.Row="2" Grid.Column="1"
-             Style="{StaticResource EditGoldTextBoxStyle}" Height="35" Margin="8,4,0,4"/>
+             Style="{StaticResource GoldTextBoxStyle}" Height="35" Margin="8,4,0,4"/>
 
                     <!-- Start date & time -->
                     <Label Grid.Row="3" Grid.Column="0" Content="Start (date &amp; time):" Foreground="White"
            FontFamily="Script MT Bold" VerticalAlignment="Center" Margin="0,4"/>
                     <StackPanel Grid.Row="3" Grid.Column="1" Orientation="Horizontal" Margin="8,4,0,4">
                         <DatePicker x:Name="EditCourseDatePicker" Width="170" Height="35"
-                    Style="{StaticResource EditGoldDatePickerStyle}" SelectedDateFormat="Short"/>
+                    Style="{StaticResource GoldDatePickerStyle}" SelectedDateFormat="Short"/>
                         <TextBox x:Name="EditCourseTimeBox" Width="120" Height="35" Margin="8,0,0,0"
-                 Style="{StaticResource EditGoldTextBoxStyle}"
+                 Style="{StaticResource GoldTextBoxStyle}"
                  ToolTip="Format: HH:mm (npr. 10:00)"/>
                     </StackPanel>
 
@@ -1210,7 +1082,7 @@
                     <Label Grid.Row="4" Grid.Column="0" Content="Room (optional):" Foreground="White"
            FontFamily="Script MT Bold" VerticalAlignment="Center" Margin="0,4"/>
                     <TextBox x:Name="EditCourseRoomBox" Grid.Row="4" Grid.Column="1"
-             Style="{StaticResource EditGoldTextBoxStyle}" Height="35" Margin="8,4,0,4"/>
+             Style="{StaticResource GoldTextBoxStyle}" Height="35" Margin="8,4,0,4"/>
 
                     <!-- IsLive -->
                     <Label Grid.Row="5" Grid.Column="0" Content="Is Live:" Foreground="White"
@@ -1235,17 +1107,25 @@
                     <Label Grid.Row="7" Grid.Column="0" Content="Duration (weeks):" Foreground="White"
            FontFamily="Script MT Bold" VerticalAlignment="Center" Margin="0,4"/>
                     <TextBox x:Name="EditCourseDurationWeeksBox" Grid.Row="7" Grid.Column="1"
-             Style="{StaticResource EditGoldTextBoxStyle}" Height="35" Margin="8,4,0,4"/>
+             Style="{StaticResource GoldTextBoxStyle}" Height="35" Margin="8,4,0,4"/>
 
                     <!-- Spacer je Row 8 -->
 
                     <!-- Buttons -->
                     <StackPanel Grid.Row="9" Grid.ColumnSpan="2" Orientation="Horizontal"
-                HorizontalAlignment="Center" Margin="0,6,0,0">
+            HorizontalAlignment="Center" Margin="0,6,0,0">
                         <Button Content="Save" Width="140" Height="38" Margin="8"
-                Click="SaveEditedCourse_Click" Style="{StaticResource FancyButtonStyle}"/>
+            Click="SaveEditedCourse_Click" Style="{StaticResource FancyButtonStyle}">
+                            <Button.Background>
+                                <ImageBrush ImageSource="/GUIResources/loginButtonBackground.png"/>
+                            </Button.Background>
+                        </Button>
                         <Button Content="Cancel" Width="140" Height="38" Margin="8"
-                Click="CancelEditCourse_Click" Style="{StaticResource FancyButtonStyle}"/>
+            Click="CancelEditCourse_Click" Style="{StaticResource FancyButtonStyle}">
+                            <Button.Background>
+                                <ImageBrush ImageSource="/GUIResources/loginButtonBackground.png"/>
+                            </Button.Background>
+                        </Button>
                     </StackPanel>
                 </Grid>
             </Border>
@@ -1256,135 +1136,6 @@
 
         <!-- ================== ADD COURSE OVERLAY ================== -->
         <Grid x:Name="AddCourseOverlay" Visibility="Collapsed" Background="Transparent" Panel.ZIndex="999">
-            <Grid.Resources>
-                <!-- ComboBoxItem style -->
-                <Style x:Key="EditGoldComboItemStyle" TargetType="ComboBoxItem">
-                    <Setter Property="OverridesDefaultStyle" Value="True"/>
-                    <Setter Property="Foreground" Value="White"/>
-                    <Setter Property="Background" Value="Gold"/>
-                    <Setter Property="Padding" Value="8,4"/>
-                    <Setter Property="HorizontalContentAlignment" Value="Center"/>
-                    <Setter Property="Template">
-                        <Setter.Value>
-                            <ControlTemplate TargetType="ComboBoxItem">
-                                <Border x:Name="Bd" Background="{TemplateBinding Background}">
-                                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" Margin="6,2"/>
-                                </Border>
-                                <ControlTemplate.Triggers>
-                                    <Trigger Property="IsMouseOver" Value="True">
-                                        <Setter TargetName="Bd" Property="Background" Value="#FFD24D"/>
-                                        <Setter Property="Foreground" Value="Black"/>
-                                    </Trigger>
-                                    <Trigger Property="IsSelected" Value="True">
-                                        <Setter TargetName="Bd" Property="Background" Value="#E0B000"/>
-                                        <Setter Property="Foreground" Value="Black"/>
-                                    </Trigger>
-                                </ControlTemplate.Triggers>
-                            </ControlTemplate>
-                        </Setter.Value>
-                    </Setter>
-                </Style>
-
-                <!-- ComboBox style -->
-                <Style x:Key="EditGoldComboStyle" TargetType="{x:Type ComboBox}">
-                    <Setter Property="OverridesDefaultStyle" Value="True"/>
-                    <Setter Property="Foreground" Value="White"/>
-                    <Setter Property="FontFamily" Value="Script MT Bold"/>
-                    <Setter Property="FontSize" Value="16"/>
-                    <Setter Property="HorizontalContentAlignment" Value="Center"/>
-                    <Setter Property="VerticalContentAlignment" Value="Center"/>
-                    <Setter Property="Padding" Value="6,2"/>
-                    <Setter Property="BorderBrush" Value="#B8860B"/>
-                    <Setter Property="BorderThickness" Value="2"/>
-                    <Setter Property="SnapsToDevicePixels" Value="True"/>
-                    <Setter Property="ItemContainerStyle" Value="{StaticResource EditGoldComboItemStyle}"/>
-                    <Setter Property="Template">
-                        <Setter.Value>
-                            <ControlTemplate TargetType="{x:Type ComboBox}">
-                                <Grid SnapsToDevicePixels="True">
-                                    <Border Background="Gold"
-                                BorderBrush="{TemplateBinding BorderBrush}"
-                                BorderThickness="{TemplateBinding BorderThickness}"
-                                CornerRadius="4">
-                                        <DockPanel>
-                                            <ToggleButton x:Name="PART_DropDownToggle"
-                                              DockPanel.Dock="Right"
-                                              Focusable="False"
-                                              IsChecked="{Binding IsDropDownOpen, RelativeSource={RelativeSource TemplatedParent}}"
-                                              ClickMode="Press"
-                                              Background="Gold"
-                                              BorderThickness="0"
-                                              Width="28">
-                                                <Path Data="M 0 0 L 8 0 L 4 4 Z"
-                                          Fill="White"
-                                          HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                                            </ToggleButton>
-                                            <ContentPresenter Margin="6,0,6,0"
-                                                  HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
-                                                  VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
-                                        </DockPanel>
-                                    </Border>
-                                    <Popup x:Name="PART_Popup"
-                               Placement="Bottom"
-                               IsOpen="{TemplateBinding IsDropDownOpen}"
-                               AllowsTransparency="True"
-                               Focusable="False"
-                               PopupAnimation="Slide">
-                                        <Border Background="Gold"
-                                    BorderBrush="{TemplateBinding BorderBrush}"
-                                    BorderThickness="2"
-                                    CornerRadius="4"
-                                    Margin="0,2,0,0">
-                                            <ScrollViewer CanContentScroll="True" SnapsToDevicePixels="True">
-                                                <StackPanel IsItemsHost="True"/>
-                                            </ScrollViewer>
-                                        </Border>
-                                    </Popup>
-                                </Grid>
-                                <ControlTemplate.Triggers>
-                                    <Trigger Property="IsEnabled" Value="False">
-                                        <Setter Property="Opacity" Value="0.6"/>
-                                    </Trigger>
-                                </ControlTemplate.Triggers>
-                            </ControlTemplate>
-                        </Setter.Value>
-                    </Setter>
-                </Style>
-
-                <!-- DatePicker style -->
-                <Style x:Key="EditGoldDatePickerStyle" TargetType="DatePicker">
-                    <Setter Property="Foreground" Value="White"/>
-                    <Setter Property="FontFamily" Value="Script MT Bold"/>
-                    <Setter Property="FontSize" Value="16"/>
-                    <Setter Property="Background" Value="Gold"/>
-                    <Setter Property="BorderBrush" Value="#B8860B"/>
-                    <Setter Property="BorderThickness" Value="2"/>
-                    <Setter Property="HorizontalContentAlignment" Value="Center"/>
-                </Style>
-                <Style TargetType="DatePickerTextBox">
-                    <Setter Property="Foreground" Value="White"/>
-                    <Setter Property="Background" Value="#33000000"/>
-                    <Setter Property="BorderBrush" Value="#B8860B"/>
-                    <Setter Property="BorderThickness" Value="1"/>
-                    <Setter Property="FontFamily" Value="Script MT Bold"/>
-                    <Setter Property="FontSize" Value="16"/>
-                    <Setter Property="Padding" Value="6,2"/>
-                    <Setter Property="HorizontalContentAlignment" Value="Center"/>
-                </Style>
-
-                <!-- TextBox style -->
-                <Style x:Key="EditGoldTextBoxStyle" TargetType="TextBox">
-                    <Setter Property="Foreground" Value="White"/>
-                    <Setter Property="FontFamily" Value="Script MT Bold"/>
-                    <Setter Property="FontSize" Value="16"/>
-                    <Setter Property="Background" Value="Gold"/>
-                    <Setter Property="BorderBrush" Value="#B8860B"/>
-                    <Setter Property="BorderThickness" Value="2"/>
-                    <Setter Property="Padding" Value="6,2"/>
-                    <Setter Property="HorizontalContentAlignment" Value="Center"/>
-                    <Setter Property="VerticalContentAlignment" Value="Center"/>
-                </Style>
-            </Grid.Resources>
 
             <Border CornerRadius="10" Padding="18" Width="640"
             HorizontalAlignment="Center" VerticalAlignment="Center"
@@ -1425,28 +1176,28 @@
                     <Label Grid.Row="0" Grid.Column="0" Content="Language:" Foreground="White"
                    FontFamily="Script MT Bold" VerticalAlignment="Center" Margin="0,4"/>
                     <ComboBox x:Name="AddCourseLangCombo" Grid.Row="0" Grid.Column="1"
-                      Style="{StaticResource EditGoldComboStyle}" Height="35" Margin="8,4,0,4"/>
+                      Style="{StaticResource GoldComboStyle}" Height="35" Margin="8,4,0,4"/>
 
                     <!-- Level -->
                     <Label Grid.Row="1" Grid.Column="0" Content="Level:" Foreground="White"
                    FontFamily="Script MT Bold" VerticalAlignment="Center" Margin="0,4"/>
                     <ComboBox x:Name="AddCourseLevelCombo" Grid.Row="1" Grid.Column="1"
-                      Style="{StaticResource EditGoldComboStyle}" Height="35" Margin="8,4,0,4"/>
+                      Style="{StaticResource GoldComboStyle}" Height="35" Margin="8,4,0,4"/>
 
                     <!-- Max attendees -->
                     <Label Grid.Row="2" Grid.Column="0" Content="Max attendees:" Foreground="White"
                    FontFamily="Script MT Bold" VerticalAlignment="Center" Margin="0,4"/>
                     <TextBox x:Name="AddCourseMaxBox" Grid.Row="2" Grid.Column="1"
-                     Style="{StaticResource EditGoldTextBoxStyle}" Height="35" Margin="8,4,0,4"/>
+                     Style="{StaticResource GoldTextBoxStyle}" Height="35" Margin="8,4,0,4"/>
 
                     <!-- Start date & time -->
                     <Label Grid.Row="3" Grid.Column="0" Content="Start (date &amp; time):" Foreground="White"
                    FontFamily="Script MT Bold" VerticalAlignment="Center" Margin="0,4"/>
                     <StackPanel Grid.Row="3" Grid.Column="1" Orientation="Horizontal" Margin="8,4,0,4">
                         <DatePicker x:Name="AddCourseDatePicker" Width="170" Height="35"
-                            Style="{StaticResource EditGoldDatePickerStyle}" SelectedDateFormat="Short"/>
+                            Style="{StaticResource GoldDatePickerStyle}" SelectedDateFormat="Short"/>
                         <TextBox x:Name="AddCourseTimeBox" Width="120" Height="35" Margin="8,0,0,0"
-                         Style="{StaticResource EditGoldTextBoxStyle}"
+                         Style="{StaticResource GoldTextBoxStyle}"
                          ToolTip="Format: HH:mm (npr. 10:00)"/>
                     </StackPanel>
 
@@ -1454,7 +1205,7 @@
                     <Label Grid.Row="4" Grid.Column="0" Content="Room (optional):" Foreground="White"
                    FontFamily="Script MT Bold" VerticalAlignment="Center" Margin="0,4"/>
                     <TextBox x:Name="AddCourseRoomBox" Grid.Row="4" Grid.Column="1"
-                     Style="{StaticResource EditGoldTextBoxStyle}" Height="35" Margin="8,4,0,4"/>
+                     Style="{StaticResource GoldTextBoxStyle}" Height="35" Margin="8,4,0,4"/>
 
                     <!-- IsLive -->
                     <Label Grid.Row="5" Grid.Column="0" Content="Is Live:" Foreground="White"
@@ -1479,17 +1230,25 @@
                     <Label Grid.Row="7" Grid.Column="0" Content="Duration (weeks):" Foreground="White"
                    FontFamily="Script MT Bold" VerticalAlignment="Center" Margin="0,4"/>
                     <TextBox x:Name="AddCourseDurationWeeksBox" Grid.Row="7" Grid.Column="1"
-                     Style="{StaticResource EditGoldTextBoxStyle}" Height="35" Margin="8,4,0,4"/>
+                     Style="{StaticResource GoldTextBoxStyle}" Height="35" Margin="8,4,0,4"/>
 
                     <!-- Spacer je Row 8 -->
 
                     <!-- Buttons -->
                     <StackPanel Grid.Row="9" Grid.ColumnSpan="2" Orientation="Horizontal"
-                        HorizontalAlignment="Center" Margin="0,6,0,0">
+            HorizontalAlignment="Center" Margin="0,6,0,0">
                         <Button Content="Save" Width="140" Height="38" Margin="8"
-                        Click="SaveNewCourse_Click" Style="{StaticResource FancyButtonStyle}"/>
+            Click="SaveNewCourse_Click" Style="{StaticResource FancyButtonStyle}">
+                            <Button.Background>
+                                <ImageBrush ImageSource="/GUIResources/loginButtonBackground.png"/>
+                            </Button.Background>
+                        </Button>
                         <Button Content="Cancel" Width="140" Height="38" Margin="8"
-                        Click="CancelAddCourse_Click" Style="{StaticResource FancyButtonStyle}"/>
+            Click="CancelAddCourse_Click" Style="{StaticResource FancyButtonStyle}">
+                            <Button.Background>
+                                <ImageBrush ImageSource="/GUIResources/loginButtonBackground.png"/>
+                            </Button.Background>
+                        </Button>
                     </StackPanel>
                 </Grid>
             </Border>

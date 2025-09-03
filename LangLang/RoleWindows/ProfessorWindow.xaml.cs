@@ -830,7 +830,7 @@ namespace LangLang.RoleWindows
             }
 
             bool isLive = EditCourseIsLiveCheckBox.IsChecked == true;
-            int max = 0;
+            int max=0;
             if (isLive)
             {
                 if (!int.TryParse(EditCourseMaxBox.Text?.Trim(), out max) || max <= 0)
@@ -839,7 +839,9 @@ namespace LangLang.RoleWindows
                                     "Validation", MessageBoxButton.OK, MessageBoxImage.Warning);
                     return;
                 }
+        
             }
+            
 
             if (!EditCourseDatePicker.SelectedDate.HasValue)
             {
