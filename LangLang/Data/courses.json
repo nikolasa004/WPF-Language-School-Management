@@ -1,5 +1,10 @@
 [
   {
+    "DurationWeeks": 8,
+    "Days": [
+      1,
+      2
+    ],
     "Id": 1,
     "ProfessorId": "profesor@gmail.com",
     "Language": 0,
@@ -8,12 +13,15 @@
     "MaxAttendees": 20,
     "Date": "2025-09-01",
     "StartAt": "10:00",
-    "Days": [ 1, 2 ],
-    "DurationWeeks": 8,
     "Duration": 90,
     "RoomId": "1"
   },
   {
+    "DurationWeeks": 10,
+    "Days": [
+      1,
+      3
+    ],
     "Id": 2,
     "ProfessorId": "profesor@gmail.com",
     "Language": 1,
@@ -22,12 +30,15 @@
     "MaxAttendees": 15,
     "Date": "2025-09-05",
     "StartAt": "14:00",
-    "Days": [ 1, 3 ],
-    "DurationWeeks": 10,
     "Duration": 90,
     "RoomId": "2"
   },
   {
+    "DurationWeeks": 12,
+    "Days": [
+      2,
+      4
+    ],
     "Id": 3,
     "ProfessorId": "profesor@gmail.com",
     "Language": 2,
@@ -36,12 +47,14 @@
     "MaxAttendees": 25,
     "Date": "2025-09-10",
     "StartAt": "09:00",
-    "Days": [ 2, 4 ],
-    "DurationWeeks": 12,
     "Duration": 90,
     "RoomId": "1"
   },
   {
+    "DurationWeeks": 6,
+    "Days": [
+      2
+    ],
     "Id": 4,
     "ProfessorId": "profesor@gmail.com",
     "Language": 3,
@@ -50,40 +63,31 @@
     "MaxAttendees": 18,
     "Date": "2025-09-12",
     "StartAt": "17:00",
-    "Days": [ 2 ],
-    "DurationWeeks": 6,
     "Duration": 90,
     "RoomId": "2"
   },
   {
+    "DurationWeeks": 14,
+    "Days": [
+      1,
+      3
+    ],
     "Id": 5,
     "ProfessorId": "profesor@gmail.com",
     "Language": 4,
     "Level": 0,
     "IsLive": false,
-    "MaxAttendees": 12,
-    "Date": "2025-09-15",
+    "MaxAttendees": 0,
+    "Date": "2026-05-16",
     "StartAt": "11:00",
-    "Days": [ 1, 3 ],
-    "DurationWeeks": 14,
     "Duration": 90,
     "RoomId": "1"
   },
   {
-    "Id": 6,
-    "ProfessorId": "profesor@gmail.com",
-    "Language": 5,
-    "Level": 1,
-    "IsLive": true,
-    "MaxAttendees": 30,
-    "Date": "2025-09-20",
-    "StartAt": "08:30",
-    "Days": [ 1, 2, 4],
-    "DurationWeeks": 16,
-    "Duration": 90,
-    "RoomId": "2"
-  },
-  {
+    "DurationWeeks": 20,
+    "Days": [
+      5
+    ],
     "Id": 7,
     "ProfessorId": "profesor@gmail.com",
     "Language": 6,
@@ -92,51 +96,41 @@
     "MaxAttendees": 10,
     "Date": "2025-09-22",
     "StartAt": "19:00",
-    "Days": [ 5 ],
-    "DurationWeeks": 20,
     "Duration": 90,
     "RoomId": "1"
   },
   {
+    "DurationWeeks": 10,
+    "Days": [
+      1,
+      3
+    ],
     "Id": 8,
     "ProfessorId": "profesor@gmail.com",
     "Language": 7,
     "Level": 3,
     "IsLive": true,
-    "MaxAttendees": 22,
-    "Date": "2025-09-25",
+    "MaxAttendees": 35,
+    "Date": "2026-05-28",
     "StartAt": "15:00",
-    "Days": [ 1, 3 ],
-    "DurationWeeks": 10,
     "Duration": 90,
     "RoomId": "2"
   },
   {
+    "DurationWeeks": 8,
+    "Days": [
+      2,
+      3
+    ],
     "Id": 9,
     "ProfessorId": "profesor@gmail.com",
-    "Language": 8,
-    "Level": 4,
+    "Language": 6,
+    "Level": 3,
     "IsLive": true,
-    "MaxAttendees": 16,
-    "Date": "2025-09-28",
-    "StartAt": "13:00",
-    "Days": [ 1, 2 ],
-    "DurationWeeks": 8,
+    "MaxAttendees": 15,
+    "Date": "2027-04-10",
+    "StartAt": "15:00",
     "Duration": 90,
     "RoomId": "1"
-  },
-  {
-    "Id": 10,
-    "ProfessorId": "profesor@gmail.com",
-    "Language": 5,
-    "Level": 5,
-    "IsLive": false,
-    "MaxAttendees": 14,
-    "Date": "2025-10-01",
-    "StartAt": "18:00",
-    "Days": [ 3 ],
-    "DurationWeeks": 12,
-    "Duration": 90,
-    "RoomId": "2"
   }
 ]
