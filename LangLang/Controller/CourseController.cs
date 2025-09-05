@@ -86,7 +86,6 @@ namespace LangLang.Controller
 
         public Course Create(Course course)
         {
-            course.IsLive = true;
             course.Duration = 90;
 
             EnsureValidBasics(course);
@@ -95,17 +94,17 @@ namespace LangLang.Controller
             return _dao.AddCourse(course);
         }
 
-        public Course? Update(Course course)
+       public Course? Update(Course course)
         {
             EnsureCanModify(course.Id);
-            course.IsLive = true;
+            
             course.Duration = 90;
 
             EnsureValidBasics(course);
             EnsureNoOverlap(course, ignoreId: course.Id);
 
             return _dao.UpdateCourse(course);
-        }
+        } 
 
         public Course? ForceUpdate(Course course)
         {
