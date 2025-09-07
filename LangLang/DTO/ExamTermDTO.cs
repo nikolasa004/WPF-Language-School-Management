@@ -1,109 +1,99 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Globalization;
 using System.Text.RegularExpressions;
 using LangLang.Model;
 using LangLang.Model.Enums;
+
 namespace LangLang.DTO
 {
     public class ExamTermDTO : INotifyPropertyChanged, IDataErrorInfo
     {
         public int Id { get; set; }
-        public string ProfessorId { get; set; }
+        public string ProfessorId { get; set; } = string.Empty;
+
         private Language language;
         public Language Language
         {
-            get 
-            { 
-                return language;
-            }
-            set 
-            { 
+            get => language;
+            set
+            {
                 if (value != language)
                 {
-                    language = value; 
-                    OnPropertyChanged(nameof(Language)); 
-                } 
+                    language = value;
+                    OnPropertyChanged(nameof(Language));
+                }
             }
         }
+
         private LanguageLevel level;
         public LanguageLevel Level
         {
-            get
+            get => level;
+            set
             {
-                return level;
-            }
-            set 
-            {
-                if (value != level) 
+                if (value != level)
                 {
-                    level = value; 
-                    OnPropertyChanged(nameof(Level)); 
-                } 
+                    level = value;
+                    OnPropertyChanged(nameof(Level));
+                }
             }
         }
+
         public bool IsLive { get; set; } = true;
+
         private int maxAttendees;
         public int MaxAttendees
         {
-            get
+            get => maxAttendees;
+            set
             {
-                return maxAttendees;
-            }
-            set 
-            { 
-                if (value != maxAttendees) 
+                if (value != maxAttendees)
                 {
                     maxAttendees = value;
-                    OnPropertyChanged(nameof(MaxAttendees)); 
+                    OnPropertyChanged(nameof(MaxAttendees));
                 }
             }
         }
-        private string date = string.Empty;        
+
+        private string date = string.Empty; 
         public string Date
         {
-            get
+            get => date;
+            set
             {
-                return date;
-            }
-            set 
-            {
-                if (value != date) 
+                if (value != date)
                 {
-                    date = value; 
-                    OnPropertyChanged(nameof(Date)); 
+                    date = value;
+                    OnPropertyChanged(nameof(Date));
                 }
             }
         }
-        private string startAt = string.Empty;
+        private string startAt = string.Empty; 
         public string StartAt
         {
-            get  
+            get => startAt;
+            set
             {
-                return startAt;
-
-            }
-            set 
-            {
-                if (value != startAt) 
+                if (value != startAt)
                 {
                     startAt = value;
-                    OnPropertyChanged(nameof(StartAt)); 
+                    OnPropertyChanged(nameof(StartAt));
                 }
             }
         }
-        public int Duration { get; set; } = 240;  
+        public int Duration { get; set; } = 240;
         private string? roomId;
         public string? RoomId
         {
-            get 
-            {return roomId;}
-            set 
+            get => roomId;
+            set
             {
-                if (value != roomId) 
+                if (value != roomId)
                 {
                     roomId = value;
-                    OnPropertyChanged(nameof(RoomId)); 
+                    OnPropertyChanged(nameof(RoomId));
                 }
             }
         }
@@ -124,15 +114,15 @@ namespace LangLang.DTO
             ProfessorId = examTerm.ProfessorId;
             Language = examTerm.Language;
             Level = examTerm.Level;
-            IsLive = true;             
+            IsLive = examTerm.IsLive;
             MaxAttendees = examTerm.MaxAttendees ?? 0;
             Date = examTerm.Date ?? string.Empty;
             StartAt = examTerm.StartAt ?? string.Empty;
-            Duration = 240;
+            Duration = examTerm.Duration = 240;
             RoomId = examTerm.RoomId ?? string.Empty;
         }
         public ExamTerm ToExamTerm()
-            {
+        {
             return new ExamTerm(Id, ProfessorId, Language, Level, MaxAttendees, Date, StartAt, RoomId)
             {
                 IsLive = IsLive,
@@ -140,14 +130,16 @@ namespace LangLang.DTO
             };
         }
         public string Error => string.Empty;
-        private readonly Regex _dateRegex = new Regex(@"^([01]\d|2[0-3]):[0-5]\d$"); // HH:mm
+
+        private readonly Regex _timeRegex = new Regex(@"^([01]\d|2[0-3]):[0-5]\d$", RegexOptions.Compiled);
+
         public string this[string columnName]
         {
             get
             {
+                var sr = new CultureInfo("sr-RS");
                 switch (columnName)
                 {
-
                     case nameof(MaxAttendees):
                         if (MaxAttendees <= 0)
                             return "Max attendees must be greater than 0.";
@@ -156,14 +148,14 @@ namespace LangLang.DTO
                     case nameof(Date):
                         if (string.IsNullOrWhiteSpace(Date))
                             return "Please select exam date.";
-                        if (!DateTime.TryParse(Date, out _))
-                            return "Invalid date format.";
+                        if (!DateTime.TryParseExact(Date, "dd.MM.yyyy", sr, DateTimeStyles.None, out _))
+                            return "Invalid date format (dd.MM.yyyy).";
                         break;
 
                     case nameof(StartAt):
                         if (string.IsNullOrWhiteSpace(StartAt))
                             return "Please select start time.";
-                        if (!_dateRegex.IsMatch(StartAt))
+                        if (!_timeRegex.IsMatch(StartAt))
                             return "Invalid time format (HH:mm).";
                         break;
                 }
@@ -172,6 +164,7 @@ namespace LangLang.DTO
         }
         private readonly string[] _validatedProperties =
             { nameof(Language), nameof(Level), nameof(MaxAttendees), nameof(Date), nameof(StartAt) };
+
         public bool IsValid
         {
             get
@@ -186,6 +179,18 @@ namespace LangLang.DTO
                 }
                 return true;
             }
+        }
+        public bool TryGetStart(out DateTime start)
+        {
+            start = default;
+            var sr = new CultureInfo("sr-RS");
+            if (!DateTime.TryParseExact(Date, "dd.MM.yyyy", sr, DateTimeStyles.None, out var d))
+                return false;
+            if (!TimeSpan.TryParseExact(StartAt, @"hh\:mm", CultureInfo.InvariantCulture, out var t))
+                return false;
+
+            start = d.Date.Add(t);
+            return true;
         }
         public event PropertyChangedEventHandler? PropertyChanged;
         protected virtual void OnPropertyChanged(string name)

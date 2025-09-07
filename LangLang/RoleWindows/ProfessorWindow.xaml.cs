@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Threading;
@@ -12,81 +9,38 @@ using System.Windows.Markup;
 using LangLang.Controller;
 using LangLang.DTO;
 using LangLang.Model;
-using LangLang.Model.Enums;
+using LangLang.RoleWindows.ProfessorExamModules;     
 using LangLang.RoleWindows.ProfessorViewModules;
-using LangLang.RoleWindows.StudentViewModules;
 
 namespace LangLang.RoleWindows
 {
     public partial class ProfessorWindow : Window
     {
-
         private ProfessorViewProfile _profileView;
 
         private ProfessorViewCourses professorViewCourses;
-
         private ProfessorManageCourses _manageCourses;
+        private List<CourseDTO> _allCourses = new();
 
+        private ProfessorViewExams _examsView;
+        private ProfessorManageExams _examsManage;
 
-
-
-        // ===== Public view models (unchanged) =====
         public ProfessorDTO Professor { get; set; }
         public ProfessorDTO UpdateProfessor { get; set; }
 
-        // ===== Controllers / state =====
         private readonly ProfessorsController professorsController;
-        private readonly ExamTermsController _examController = new ExamTermsController();
-        private readonly CourseController _courseController = new CourseController();
+        private readonly ExamTermsController _examController = new();
+        private readonly CourseController _courseController = new();
         private readonly string _professorId;
 
-        // Add/Edit overlay helper
-        private ExamTerm? _editingExam;
-
-        //Course = new();
-
-        private List<CourseDTO> _allCourses = new();
-
-        // ===== Sorting & pagination pipeline =====
-        private List<ExamTerm> _allExams = new();   // all from DAO for this professor
-        private List<ExamTerm> _filtered = new();   // after filters
-        private List<ExamTerm> _sorted = new();     // after sorting
-        private readonly ObservableCollection<ExamTerm> _page = new(); // currently shown page
-
-        private int _pageSize = 10;
-        private int _currentPage = 1;
-        private string _sortKey = "Date";
-        private ListSortDirection _sortDir = ListSortDirection.Ascending;
-
-        // ===== ctor =====
-        public ProfessorWindow(Professor professor,
-                        ProfessorsController professorsController)
+        public ProfessorWindow(Professor professor, ProfessorsController professorsController)
         {
             InitializeComponent();
 
-
-            // sr-RS culture only for this window
             var sr = new CultureInfo("sr-RS");
             Thread.CurrentThread.CurrentCulture = sr;
             Thread.CurrentThread.CurrentUICulture = sr;
             this.Language = XmlLanguage.GetLanguage(sr.IetfLanguageTag);
-
-            this.Loaded += (_, __) =>
-            {
-                if (ExamFromDate != null)
-                {
-                    ExamFromDate.Language = this.Language;
-                    ExamFromDate.SelectedDateFormat = DatePickerFormat.Short;
-                }
-                if (ExamToDate != null)
-                {
-                    ExamToDate.Language = this.Language;
-                    ExamToDate.SelectedDateFormat = DatePickerFormat.Short;
-                }
-
-                InitAddExamOverlay();
-
-            };
 
             DataContext = this;
 
@@ -99,355 +53,64 @@ namespace LangLang.RoleWindows
             _profileView.InformationUpdate();
 
             this.professorsController = professorsController;
-
             _professorId = Professor.Email;
+            _examsView = new ProfessorViewExams(
+                _professorId,
+                _examController,
+                ExamsGrid,
+                ExamLanguageCombo, ExamLevelCombo,
+                ExamFromDate, ExamToDate,
+                (TextBlock)FindName("PagerText"),
+                PageSizeCombo);
 
-            ExamsGrid.ItemsSource = _page;
-            _allExams = _examController.GetMyExamTerms(_professorId).ToList();
-            ApplyFiltersSortAndPage();
+            _examsView.InitFilters(sr, this.Language);
+            _examsView.ReloadAll();
 
+            _examsManage = new ProfessorManageExams(
+                _professorId,
+                _examController,
+                _examsView,
+                AddExamOverlay, AddExamLangCombo, AddExamLevelCombo, AddExamDatePicker, AddExamTimeBox, AddExamMaxBox, AddExamRoomBox,
+                EditExamOverlay, EditExamLangCombo, EditExamLevelCombo, EditExamDatePicker, EditExamTimeBox, EditExamMaxBox, EditExamRoomBox);
 
-
-            //    CoursesGrid.ItemsSource = _pageOfCourses;
             _allCourses = _courseController.GetMyCourses(_professorId)
-                  .Select(c => new CourseDTO(c))
-                  .ToList();
+                  .Select(c => new CourseDTO(c)).ToList();
 
             professorViewCourses = new ProfessorViewCourses(
-                    _allCourses,
-                    CourseLanguageCombo,
-                    CourseLevelCombo,
-                    CourseOnlineCombo,
-                    CourseWeeksBox,
-                    CourseFromDate,
-                    CourseToDate,
-                    CoursesGrid
-                    );
+                _allCourses,
+                CourseLanguageCombo, CourseLevelCombo, CourseOnlineCombo, CourseWeeksBox,
+                CourseFromDate, CourseToDate, CoursesGrid);
             professorViewCourses.ApplyFiltersSortAndPageForCourses();
 
-
-
-          
-
-        _manageCourses = new ProfessorManageCourses(
-            _professorId,
-            _allCourses,
-            professorViewCourses,
-            AddCourseOverlay,
-            AddCourseLangCombo, AddCourseLevelCombo,
-            AddCourseMaxBox, AddCourseRoomBox,
-            AddCourseDatePicker, AddCourseTimeBox,
-            AddCourseIsLiveCheckBox,
-            AddCourseMonCheckBox, AddCourseTueCheckBox, AddCourseWedCheckBox,
-            AddCourseThuCheckBox, AddCourseFriCheckBox, AddCourseSatCheckBox, AddCourseSunCheckBox,
-            AddCourseDurationWeeksBox,
-
-            EditCourseOverlay,
-            EditCourseLangCombo, EditCourseLevelCombo,
-            EditCourseMaxBox, EditCourseRoomBox,
-            EditCourseDatePicker, EditCourseTimeBox,
-            EditCourseIsLiveCheckBox,
-            EditCourseMonCheckBox, EditCourseTueCheckBox, EditCourseWedCheckBox,
-            EditCourseThuCheckBox, EditCourseFriCheckBox, EditCourseSatCheckBox, EditCourseSunCheckBox,
-            EditCourseDurationWeeksBox
-        );
-
+            _manageCourses = new ProfessorManageCourses(
+                _professorId,
+                _allCourses,
+                professorViewCourses,
+                AddCourseOverlay,
+                AddCourseLangCombo, AddCourseLevelCombo,
+                AddCourseMaxBox, AddCourseRoomBox,
+                AddCourseDatePicker, AddCourseTimeBox,
+                AddCourseIsLiveCheckBox,
+                AddCourseMonCheckBox, AddCourseTueCheckBox, AddCourseWedCheckBox,
+                AddCourseThuCheckBox, AddCourseFriCheckBox, AddCourseSatCheckBox, AddCourseSunCheckBox,
+                AddCourseDurationWeeksBox,
+                EditCourseOverlay,
+                EditCourseLangCombo, EditCourseLevelCombo,
+                EditCourseMaxBox, EditCourseRoomBox,
+                EditCourseDatePicker, EditCourseTimeBox,
+                EditCourseIsLiveCheckBox,
+                EditCourseMonCheckBox, EditCourseTueCheckBox, EditCourseWedCheckBox,
+                EditCourseThuCheckBox, EditCourseFriCheckBox, EditCourseSatCheckBox, EditCourseSunCheckBox,
+                EditCourseDurationWeeksBox);
         }
-
-   
-
-        private void InitAddExamOverlay()
-        {
-            if (AddExamLangCombo != null && AddExamLangCombo.Items.Count == 0)
-                AddExamLangCombo.ItemsSource = Enum.GetValues(typeof(Language));
-
-            if (AddExamLevelCombo != null && AddExamLevelCombo.Items.Count == 0)
-                AddExamLevelCombo.ItemsSource = Enum.GetValues(typeof(LanguageLevel));
-
-            if (AddExamDatePicker != null)
-            {
-                AddExamDatePicker.Language = this.Language;
-                AddExamDatePicker.SelectedDateFormat = DatePickerFormat.Short;
-                AddExamDatePicker.SelectedDate = DateTime.Now.Date.AddDays(1);
-            }
-
-            if (AddExamTimeBox != null)
-                AddExamTimeBox.Text = "10:00";
-
-            if (AddExamMaxBox != null) AddExamMaxBox.Text = "10";
-            if (AddExamRoomBox != null) AddExamRoomBox.Text = "";
-        }
-
-        private void OpenAddExamOverlay()
-        {
-            InitAddExamOverlay();
-            AddExamOverlay.Visibility = Visibility.Visible;
-        }
-
-        private void CloseAddExamOverlay()
-        {
-            AddExamOverlay.Visibility = Visibility.Collapsed;
-        }
-
-        private void AddExam_Click(object sender, RoutedEventArgs e) => OpenAddExamOverlay();
-
-        private void SaveNewExam_Click(object sender, RoutedEventArgs e)
-        {
-            if (AddExamLangCombo.SelectedItem is not Language lang)
-            {
-                MessageBox.Show("Please select language.", "Validation", MessageBoxButton.OK, MessageBoxImage.Warning);
-                return;
-            }
-            if (AddExamLevelCombo.SelectedItem is not LanguageLevel level)
-            {
-                MessageBox.Show("Please select level.", "Validation", MessageBoxButton.OK, MessageBoxImage.Warning);
-                return;
-            }
-            
-            if (!int.TryParse(AddExamMaxBox.Text?.Trim(), out int max) || max <= 0)
-            {
-                MessageBox.Show("Max attendees must be a number greater than 0.", "Validation", MessageBoxButton.OK, MessageBoxImage.Warning);
-                return;
-            }
-            if (AddExamDatePicker.SelectedDate is not DateTime date)
-            {
-                MessageBox.Show("Please choose exam date.", "Validation", MessageBoxButton.OK, MessageBoxImage.Warning);
-                return;
-            }
-            if (string.IsNullOrWhiteSpace(AddExamTimeBox.Text) ||
-                !TimeSpan.TryParseExact(AddExamTimeBox.Text.Trim(), @"hh\:mm", CultureInfo.InvariantCulture, out var time))
-            {
-                MessageBox.Show("Time must be in HH:mm (e.g. 10:00).", "Validation", MessageBoxButton.OK, MessageBoxImage.Warning);
-                return;
-            }
-
-            var start = date.Date.Add(time);
-            if (start <= DateTime.Now)
-            {
-                MessageBox.Show("Exam start must be in the future.", "Validation", MessageBoxButton.OK, MessageBoxImage.Warning);
-                return;
-            }
-
-            var sr = new CultureInfo("sr-RS");
-            var term = new ExamTerm
-            {
-                ProfessorId = _professorId,
-                Language = lang,
-                Level = level,
-                IsLive = true,
-                MaxAttendees = max,
-                Date = start.ToString("dd.MM.yyyy", sr),
-                StartAt = start.ToString("HH:mm", CultureInfo.InvariantCulture),
-                Duration = 240,
-                RoomId = string.IsNullOrWhiteSpace(AddExamRoomBox.Text) ? null : AddExamRoomBox.Text.Trim()
-            };
-
-            try
-            {
-                var created = _examController.Create(term);
-                _allExams.Add(created);
-                ApplyFiltersSortAndPage(resetPage: false);
-                CloseAddExamOverlay();
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message, "Cannot create exam", MessageBoxButton.OK, MessageBoxImage.Warning);
-            }
-        }
-
-        private void CancelNewExam_Click(object sender, RoutedEventArgs e) => CloseAddExamOverlay();
-
-        private void OpenEditExamOverlay(ExamTerm exam)
-        {
-            _editingExam = exam;
-
-            if (EditExamLangCombo.Items.Count == 0)
-                EditExamLangCombo.ItemsSource = Enum.GetValues(typeof(Language));
-            if (EditExamLevelCombo.Items.Count == 0)
-                EditExamLevelCombo.ItemsSource = Enum.GetValues(typeof(LanguageLevel));
-
-            EditExamDatePicker.Language = this.Language;
-            EditExamDatePicker.SelectedDateFormat = DatePickerFormat.Short;
-
-            EditExamLangCombo.SelectedItem = exam.Language;
-            EditExamLevelCombo.SelectedItem = exam.Level;
-            EditExamMaxBox.Text = (exam.MaxAttendees ?? 0).ToString();
-            EditExamRoomBox.Text = exam.RoomId ?? "";
-
-            if (TryParseExamDateString(exam.Date, out var d)) EditExamDatePicker.SelectedDate = d.Date;
-            else EditExamDatePicker.SelectedDate = null;
-
-            EditExamTimeBox.Text = string.IsNullOrWhiteSpace(exam.StartAt) ? "10:00" : exam.StartAt;
-
-            EditExamOverlay.Visibility = Visibility.Visible;
-        }
-
-        private void CloseEditExamOverlay()
-        {
-            EditExamOverlay.Visibility = Visibility.Collapsed;
-        }
-
-        private void EditExam_Click(object sender, RoutedEventArgs e)
-        {
-            if ((sender as FrameworkElement)?.DataContext is not ExamTerm exam) return;
-
-            if (!TryGetExamStart(exam, out var start))
-            {
-                MessageBox.Show("This exam has invalid date/time and cannot be edited.",
-                                "Edit not allowed", MessageBoxButton.OK, MessageBoxImage.Warning);
-                return;
-            }
-
-            if ((start - DateTime.Now).TotalDays < 14)
-            {
-                var sr = new CultureInfo("sr-RS");
-                MessageBox.Show(
-                    $"You can edit an exam no later than 14 days before it starts.\n" +
-                    $"Exam start: {start.ToString("dd.MM.yyyy HH:mm", sr)}",
-                    "Edit not allowed",
-                    MessageBoxButton.OK, MessageBoxImage.Information);
-                return;
-            }
-
-            OpenEditExamOverlay(exam);
-        }
-
-        private void SaveEditedExam_Click(object sender, RoutedEventArgs e)
-        {
-            if (_editingExam is null)
-            {
-                MessageBox.Show("No exam selected.", "Edit", MessageBoxButton.OK, MessageBoxImage.Warning);
-                return;
-            }
-
-            if (EditExamLangCombo.SelectedItem is not Language lang)
-            {
-                MessageBox.Show("Please select language.", "Validation", MessageBoxButton.OK, MessageBoxImage.Warning);
-                return;
-            }
-            if (EditExamLevelCombo.SelectedItem is not LanguageLevel level)
-            {
-                MessageBox.Show("Please select level.", "Validation", MessageBoxButton.OK, MessageBoxImage.Warning);
-                return;
-            }
-            if (!int.TryParse(EditExamMaxBox.Text?.Trim(), out int max) || max <= 0)
-            {
-                MessageBox.Show("Max attendees must be a number greater than 0.", "Validation", MessageBoxButton.OK, MessageBoxImage.Warning);
-                return;
-            }
-            if (EditExamDatePicker.SelectedDate is not DateTime date)
-            {
-                MessageBox.Show("Please choose exam date.", "Validation", MessageBoxButton.OK, MessageBoxImage.Warning);
-                return;
-            }
-            if (string.IsNullOrWhiteSpace(EditExamTimeBox.Text) ||
-                !TimeSpan.TryParseExact(EditExamTimeBox.Text.Trim(), @"hh\:mm", CultureInfo.InvariantCulture, out var time))
-            {
-                MessageBox.Show("Time must be in HH:mm (e.g. 10:00).", "Validation", MessageBoxButton.OK, MessageBoxImage.Warning);
-                return;
-            }
-
-            var start = date.Date.Add(time);
-            if (start <= DateTime.Now)
-            {
-                MessageBox.Show("Exam start must be in the future.", "Validation", MessageBoxButton.OK, MessageBoxImage.Warning);
-                return;
-            }
-
-            var sr = new CultureInfo("sr-RS");
-            var updated = new ExamTerm
-            {
-                Id = _editingExam.Id,
-                ProfessorId = _professorId,
-                Language = lang,
-                Level = level,
-                IsLive = true,
-                MaxAttendees = max,
-                Date = start.ToString("dd.MM.yyyy", sr),
-                StartAt = start.ToString("HH:mm", CultureInfo.InvariantCulture),
-                Duration = 240,
-                RoomId = string.IsNullOrWhiteSpace(EditExamRoomBox.Text) ? null : EditExamRoomBox.Text.Trim()
-            };
-
-            try
-            {
-                var saved = _examController.Update(updated);
-                if (saved is null) throw new InvalidOperationException("Update failed.");
-
-                var idx = _allExams.FindIndex(x => x.Id == saved.Id);
-                if (idx >= 0) _allExams[idx] = saved;
-                ApplyFiltersSortAndPage(resetPage: false);
-
-                CloseEditExamOverlay();
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message, "Cannot update exam", MessageBoxButton.OK, MessageBoxImage.Warning);
-            }
-        }
-
-        private void CancelEditExam_Click(object sender, RoutedEventArgs e) => CloseEditExamOverlay();
-
-        private void InitExamFilters()
-        {
-            if (ExamLanguageCombo.Items.Count == 0)
-                ExamLanguageCombo.ItemsSource = Enum.GetValues(typeof(Language));
-
-            if (ExamLevelCombo.Items.Count == 0)
-                ExamLevelCombo.ItemsSource = Enum.GetValues(typeof(LanguageLevel));
-
-            ExamLanguageCombo.SelectedIndex = -1;
-            ExamLevelCombo.SelectedIndex = -1;
-
-            if (ExamFromDate != null)
-            {
-                ExamFromDate.Language = this.Language;
-                ExamFromDate.SelectedDateFormat = DatePickerFormat.Short;
-                ExamFromDate.SelectedDate = null;
-            }
-            if (ExamToDate != null)
-            {
-                ExamToDate.Language = this.Language;
-                ExamToDate.SelectedDateFormat = DatePickerFormat.Short;
-                ExamToDate.SelectedDate = null;
-            }
-        }
-
-        private void FindYourExams_Click(object sender, RoutedEventArgs e)
-        {
-
-            ApplyFiltersSortAndPage(resetPage: true);
-        }
-
-        private List<ExamTerm> ApplyCurrentFilters(List<ExamTerm> input)
-        {
-            Language? lang = null;
-            LanguageLevel? level = null;
-
-            if (ExamLanguageCombo.SelectedItem is Language selLang) lang = selLang;
-            if (ExamLevelCombo.SelectedItem is LanguageLevel selLevel) level = selLevel;
-
-            DateTime? from = ExamFromDate.SelectedDate?.Date;
-            DateTime? to = ExamToDate.SelectedDate?.Date;
-
-            if (from.HasValue && to.HasValue && from.Value > to.Value)
-                (from, to) = (to, from);
-
-
-            return _examController.SearchMyExamTerms(_professorId, lang, level, from, to);
-        }
-
         private void ExamsButton_Click(object sender, RoutedEventArgs e)
         {
             MainPanel.Visibility = Visibility.Collapsed;
             AddCourseOverlay.Visibility = Visibility.Collapsed;
             ExamsPanel.Visibility = Visibility.Visible;
 
-            InitExamFilters();
-
-
-            _allExams = _examController.GetMyExamTerms(_professorId).ToList();
-            ApplyFiltersSortAndPage();
+            _examsView.InitFilters(new CultureInfo("sr-RS"), this.Language);
+            _examsView.ReloadAll();
         }
 
         private void CloseExamsPanel_Click(object sender, RoutedEventArgs e)
@@ -457,260 +120,34 @@ namespace LangLang.RoleWindows
             MainPanel.Visibility = Visibility.Visible;
         }
 
-        private void CancelExam_Click(object sender, RoutedEventArgs e)
-        {
-            if ((sender as FrameworkElement)?.DataContext is not ExamTerm exam) return;
+        private void FindYourExams_Click(object sender, RoutedEventArgs e) => _examsView.ApplyFiltersSortAndPage(true);
+        private void ExamsGrid_Sorting(object sender, DataGridSortingEventArgs e) => _examsView.GridSorting(sender, e);
+        private void PrevPage_Click(object? sender, RoutedEventArgs e) => _examsView.PrevPage(sender, e);
+        private void NextPage_Click(object? sender, RoutedEventArgs e) => _examsView.NextPage(sender, e);
+        private void PageSizeCombo_SelectionChanged(object sender, SelectionChangedEventArgs e) => _examsView.PageSizeChanged(sender, e, IsLoaded);
 
-            var ok = MessageBox.Show($"Cancel exam ID={exam.Id}?", "Confirm", MessageBoxButton.YesNo, MessageBoxImage.Question);
-            if (ok != MessageBoxResult.Yes) return;
+        private void AddExam_Click(object sender, RoutedEventArgs e) => _examsManage.OpenAddOverlay(this);
+        private void SaveNewExam_Click(object sender, RoutedEventArgs e) => _examsManage.SaveNewExam(this);
+        private void CancelNewExam_Click(object sender, RoutedEventArgs e) => _examsManage.CloseAddExamOverlay();
 
-            try
-            {
-                _examController.Delete(exam.Id);
-                _allExams.RemoveAll(x => x.Id == exam.Id);
-                ApplyFiltersSortAndPage(resetPage: false);
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message, "Cannot cancel", MessageBoxButton.OK, MessageBoxImage.Warning);
-            }
-        }
+        private void EditExam_Click(object sender, RoutedEventArgs e) => _examsManage.EditExam_Click(this, sender, e);
+        private void SaveEditedExam_Click(object sender, RoutedEventArgs e) => _examsManage.SaveEditedExam();
+        private void CancelEditExam_Click(object sender, RoutedEventArgs e) => _examsManage.CloseEditExamOverlay();
 
-        private void ApplyFiltersSortAndPage(bool resetPage = true)
-        {
-            // 1) filter
-            _filtered = ApplyCurrentFilters(_allExams);
+        private void CancelExam_Click(object sender, RoutedEventArgs e) => _examsManage.CancelExam(sender, e);
 
-            // 2) sort
-            _sorted = ApplySort(_filtered, _sortKey, _sortDir).ToList();
-
-            // 3) page
-            var totalPages = Math.Max(1, (int)Math.Ceiling((double)_sorted.Count / _pageSize));
-            if (resetPage) _currentPage = 1;
-            _currentPage = Math.Min(Math.Max(_currentPage, 1), totalPages);
-
-            var slice = _sorted
-                .Skip((_currentPage - 1) * _pageSize)
-                .Take(_pageSize)
-                .ToList();
-
-            _page.Clear();
-            foreach (var x in slice) _page.Add(x);
-
-
-            if (FindName("PagerText") is TextBlock pager)
-                pager.Text = $"Page {_currentPage}/{totalPages}  ·  {(_sorted.Count == 1 ? "1 item" : _sorted.Count + " items")}";
-        }
-
-        private IEnumerable<ExamTerm> ApplySort(IEnumerable<ExamTerm> source, string sortKey, ListSortDirection dir)
-        {
-
-            var key = NormalizeSortKey(sortKey);
-
-            Func<ExamTerm, object> keySelector = key switch
-            {
-                "Id" => e => e.Id,
-                "Language" => e => e.Language.ToString(),
-                "Level" => e => (int)e.Level,
-                "RoomId" => e => e.RoomId ?? "",
-                "MaxAttendees" => e => e.MaxAttendees ?? 0,
-                "StartAt" => e => GetStartDateTime(e) ?? DateTime.MinValue,
-                "Date" => e => GetStartDateTime(e) ?? DateTime.MinValue,
-                _ => e => GetStartDateTime(e) ?? DateTime.MinValue
-            };
-
-            return dir == ListSortDirection.Ascending
-                ? source.OrderBy(keySelector)
-                : source.OrderByDescending(keySelector);
-        }
-
-        private static string NormalizeSortKey(string key)
-        {
-            if (string.IsNullOrWhiteSpace(key)) return "Date";
-            key = key.Trim();
-
-
-            return key.ToLower() switch
-            {
-                "id" => "Id",
-                "language" => "Language",
-                "level" => "Level",
-                "date" => "Date",
-                "start" => "StartAt",
-                "room" => "RoomId",
-                "max" => "MaxAttendees",
-                _ => key
-            };
-        }
-
-        private static DateTime? GetStartDateTime(ExamTerm e)
-        {
-            if (!DateTime.TryParseExact(e.Date ?? "", "dd.MM.yyyy", new CultureInfo("sr-RS"),
-                                        DateTimeStyles.None, out var d) &&
-                !DateTime.TryParseExact(e.Date ?? "", "yyyy-MM-dd", CultureInfo.InvariantCulture,
-                                        DateTimeStyles.None, out d))
-                return null;
-
-            if (!TimeSpan.TryParseExact(e.StartAt ?? "", @"hh\:mm", CultureInfo.InvariantCulture, out var ts))
-                return null;
-
-            return d.Date.Add(ts);
-        }
-
-
-        private void ExamsGrid_Sorting(object sender, DataGridSortingEventArgs e)
-        {
-            e.Handled = true;
-
-
-            foreach (var c in ExamsGrid.Columns) c.SortDirection = null;
-
-            var key = e.Column.SortMemberPath ?? e.Column.Header?.ToString() ?? "Date";
-            key = NormalizeSortKey(key);
-
-            if (_sortKey.Equals(key, StringComparison.OrdinalIgnoreCase))
-                _sortDir = _sortDir == ListSortDirection.Ascending ? ListSortDirection.Descending : ListSortDirection.Ascending;
-            else
-            {
-                _sortKey = key;
-                _sortDir = ListSortDirection.Ascending;
-            }
-
-            e.Column.SortDirection = _sortDir;
-            ApplyFiltersSortAndPage(resetPage: false);
-        }
-
-        private void PrevPage_Click(object? sender, RoutedEventArgs e)
-        {
-            if (_currentPage > 1)
-            {
-                _currentPage--;
-                ApplyFiltersSortAndPage(resetPage: false);
-            }
-        }
-
-        private void NextPage_Click(object? sender, RoutedEventArgs e)
-        {
-            var totalPages = Math.Max(1, (int)Math.Ceiling((double)_sorted.Count / _pageSize));
-            if (_currentPage < totalPages)
-            {
-                _currentPage++;
-                ApplyFiltersSortAndPage(resetPage: false);
-            }
-        }
-
-        private void PageSizeCombo_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            if (!IsLoaded) return;
-            if (sender is ComboBox cb &&
-                cb.SelectedItem is ComboBoxItem it &&
-                int.TryParse(it.Content?.ToString(), out var ps) &&
-                ps > 0)
-            {
-                _pageSize = ps;
-                _currentPage = 1;
-                ApplyFiltersSortAndPage(resetPage: true);
-            }
-        }
-
-        private static bool TryParseExamDateString(string? s, out DateTime date)
-        {
-            date = default;
-            if (string.IsNullOrWhiteSpace(s)) return false;
-
-            if (DateTime.TryParseExact(s, "dd.MM.yyyy", new CultureInfo("sr-RS"),
-                                       DateTimeStyles.None, out date))
-                return true;
-
-            if (DateTime.TryParseExact(s, "yyyy-MM-dd", CultureInfo.InvariantCulture,
-                                       DateTimeStyles.None, out date))
-                return true;
-
-            return false;
-        }
-
-        private static bool TryGetExamStart(ExamTerm exam, out DateTime start)
-        {
-            start = default;
-
-            if (!DateTime.TryParseExact(exam.Date ?? "", "dd.MM.yyyy", new CultureInfo("sr-RS"),
-                                        DateTimeStyles.None, out var d) &&
-                !DateTime.TryParseExact(exam.Date ?? "", "yyyy-MM-dd", CultureInfo.InvariantCulture,
-                                        DateTimeStyles.None, out d))
-                return false;
-
-            if (!TimeSpan.TryParseExact(exam.StartAt ?? "", @"hh\:mm", CultureInfo.InvariantCulture, out var ts))
-                return false;
-
-            start = d.Date.Add(ts);
-            return true;
-        }
-
-        //===== CRUD for Course =====
-        private void SaveNewCourse_Click(object sender, RoutedEventArgs e)
-        {
-            _manageCourses.SaveNewCourse();
-        }
-
-        private void CancelAddCourse_Click(object sender, RoutedEventArgs e)
-        {
-            _manageCourses.CloseAddCourseOverlay();
-        }
-
-        private void DeleteCourse_Click(object sender, RoutedEventArgs e)
-        {
-            if ((sender as FrameworkElement)?.DataContext is not CourseDTO course) return;
-            _manageCourses.DeleteCourse(course);
-        }
-
-        private void SaveEditedCourse_Click(object sender, RoutedEventArgs e)
-        {
-            _manageCourses.SaveEditedCourse();
-        }
-
-        private void AddCourseButton_Click(object sender, RoutedEventArgs e)
-        {
-            _manageCourses.OpenAddCourseOverlay();
-        }
-        private void EditCourse_Click(object sender, RoutedEventArgs e)
-        {
-            if ((sender as FrameworkElement)?.DataContext is not CourseDTO course) return;
-            _manageCourses.OpenEditCourseOverlay(course);
-        }
-
-        private void CancelEditCourse_Click(object sender, RoutedEventArgs e)
-        {
-            _manageCourses.CloseEditCourseOverlay();
-        }
-
-
-        //===== Else for Course =====
-        private void CoursesSearch_Click(object sender, RoutedEventArgs e)
-        {
-            professorViewCourses.SearchCourses(sender, e);
-        }
-
-        private void PrevPageCourses_Click(object sender, RoutedEventArgs e)
-        {
-            professorViewCourses.PrevPageForCourses(sender, e);
-        }
-
-        private void NextPageCourses_Click(object sender, RoutedEventArgs e)
-        {
-            professorViewCourses.NextPageForCourses(sender, e);
-        }
-
-        private void PageSizeComboCourses_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            if (professorViewCourses == null) return;
-            professorViewCourses.PageSizeChanged(sender, e);
-        }
-
-        private void CoursesGrid_Sorting(object sender, DataGridSortingEventArgs e)
-        {
-            professorViewCourses.CoursesGridSorting(sender, e);
-        }
-
+        private void SaveNewCourse_Click(object sender, RoutedEventArgs e) => _manageCourses.SaveNewCourse();
+        private void CancelAddCourse_Click(object sender, RoutedEventArgs e) => _manageCourses.CloseAddCourseOverlay();
+        private void DeleteCourse_Click(object sender, RoutedEventArgs e) { if ((sender as FrameworkElement)?.DataContext is CourseDTO course) _manageCourses.DeleteCourse(course); }
+        private void SaveEditedCourse_Click(object sender, RoutedEventArgs e) => _manageCourses.SaveEditedCourse();
+        private void AddCourseButton_Click(object sender, RoutedEventArgs e) => _manageCourses.OpenAddCourseOverlay();
+        private void EditCourse_Click(object sender, RoutedEventArgs e) { if ((sender as FrameworkElement)?.DataContext is CourseDTO course) _manageCourses.OpenEditCourseOverlay(course); }
+        private void CancelEditCourse_Click(object sender, RoutedEventArgs e) => _manageCourses.CloseEditCourseOverlay();
+        private void CoursesSearch_Click(object sender, RoutedEventArgs e) => professorViewCourses.SearchCourses(sender, e);
+        private void PrevPageCourses_Click(object sender, RoutedEventArgs e) => professorViewCourses.PrevPageForCourses(sender, e);
+        private void NextPageCourses_Click(object sender, RoutedEventArgs e) => professorViewCourses.NextPageForCourses(sender, e);
+        private void PageSizeComboCourses_SelectionChanged(object sender, SelectionChangedEventArgs e) { if (professorViewCourses != null) professorViewCourses.PageSizeChanged(sender, e); }
+        private void CoursesGrid_Sorting(object sender, DataGridSortingEventArgs e) => professorViewCourses.CoursesGridSorting(sender, e);
         private void CoursesButton_Click(object sender, RoutedEventArgs e)
         {
             try
@@ -721,18 +158,14 @@ namespace LangLang.RoleWindows
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Greška pri otvaranju Courses panela:\n" + ex.ToString());
+                MessageBox.Show("Greška pri otvaranju Courses panela:\n" + ex);
             }
         }
-
         private void CloseCoursesPanel_Click(object sender, RoutedEventArgs e)
         {
             MainPanel.Visibility = Visibility.Visible;
             CoursesPanel.Visibility = Visibility.Collapsed;
-
             professorViewCourses?.ApplyFiltersSortAndPageForCourses(resetPage: true);
         }
-
-        
     }
 }
