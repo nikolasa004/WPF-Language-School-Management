@@ -359,11 +359,6 @@ namespace LangLang.RoleWindows
         {
             var updatedProfessor = Professor.ToProfessor();
 
-            if (EmailExists(updatedProfessor.Email))
-            {
-                throw new DuplicateEmailException();
-            }
-
             updatedProfessor.DateOfRegistration = _currentProfessor.DateOfRegistration;
             updatedProfessor.Languages = _currentProfessor.Languages;
 

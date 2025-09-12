@@ -473,7 +473,7 @@
                                               ItemsSource="{Binding AvailableLevels}" Style="{StaticResource GoldComboStyle}"/>
 
                                     <!-- Add Language Button -->
-                                    <Button Content="Add Language" Width="120" Height="30" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" 
+                                    <Button Content="Add Language" Width="120" Height="30" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Click="AddLanguage_Click" 
                                             Style="{StaticResource FancyButtonStyle}">
                                         <Button.Background>
                                             <ImageBrush ImageSource="/GUIResources/loginButtonBackground.png"/>
