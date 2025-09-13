@@ -17,7 +17,6 @@ namespace LangLang.RoleWindows
 
         public string HeaderText { get; set; }
         public ObservableCollection<CourseAssignment> CourseAssignments { get; set; }
-        public ObservableCollection<ProfessorOption> AvailableProfessors { get; set; }
         public bool WasReassigned { get; private set; } = false;
 
         public ReassignCoursesWindow(
@@ -37,12 +36,6 @@ namespace LangLang.RoleWindows
             var assignments = _service.BuildAssignments(ongoingCourses, professorToDelete);
 
             CourseAssignments = new ObservableCollection<CourseAssignment>(assignments);
-
-            AvailableProfessors = new ObservableCollection<ProfessorOption>(
-                assignments.SelectMany(a => a.AvailableProfessorsForCourse)
-                           .GroupBy(p => p.Email)
-                           .Select(g => g.First())
-            );
         }
 
         private void Continue_Click(object sender, RoutedEventArgs e)

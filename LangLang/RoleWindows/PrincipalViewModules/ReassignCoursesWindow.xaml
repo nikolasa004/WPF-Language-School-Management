@@ -154,7 +154,7 @@
                         <DataGridTemplateColumn Header="New Professor" Width="200">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
-                                    <ComboBox ItemsSource="{Binding DataContext.AvailableProfessors, RelativeSource={RelativeSource AncestorType=Window}}"
+                                    <ComboBox ItemsSource="{Binding AvailableProfessorsForCourse}"
                                               SelectedItem="{Binding SelectedProfessor, UpdateSourceTrigger=PropertyChanged}"
                                               DisplayMemberPath="DisplayName"
                                               Margin="2"
