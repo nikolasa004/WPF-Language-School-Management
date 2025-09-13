@@ -108,7 +108,6 @@ namespace LangLang.Controller
 
         public Course? ForceUpdate(Course course)
         {
-            course.IsLive = true;
             course.Duration = 90;
             EnsureNoOverlap(course, ignoreId: course.Id);
             return _dao.UpdateCourse(course);

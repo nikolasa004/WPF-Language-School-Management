@@ -67,19 +67,6 @@
                                 <Button.Background>
                                     <ImageBrush ImageSource="/GUIResources/topBarButtonBackground.png"/>
                                 </Button.Background>
-                                <Button.ContextMenu>
-                                    <ContextMenu>
-                                        <ContextMenu.ItemContainerStyle>
-                                            <Style TargetType="MenuItem">
-                                                <Setter Property="Foreground" Value="White"/>
-                                                <Setter Property="Background" Value="Gold"/>
-                                                <Setter Property="FontFamily" Value="Script MT Bold"/>
-                                                <Setter Property="FontSize" Value="20"/>
-                                            </Style>
-                                        </ContextMenu.ItemContainerStyle>
-                                        <MenuItem Header="Smart assign professor" Click="SmartAssignProfessor_Click"/>
-                                    </ContextMenu>
-                                </Button.ContextMenu>
                             </Button>
 
                             <!-- Exams Button -->
@@ -87,19 +74,6 @@
                                 <Button.Background>
                                     <ImageBrush ImageSource="/GUIResources/topBarButtonBackground.png"/>
                                 </Button.Background>
-                                <Button.ContextMenu>
-                                    <ContextMenu>
-                                        <ContextMenu.ItemContainerStyle>
-                                            <Style TargetType="MenuItem">
-                                                <Setter Property="Foreground" Value="White"/>
-                                                <Setter Property="Background" Value="Gold"/>
-                                                <Setter Property="FontFamily" Value="Script MT Bold"/>
-                                                <Setter Property="FontSize" Value="20"/>
-                                            </Style>
-                                        </ContextMenu.ItemContainerStyle>
-                                        <MenuItem Header="Smart assign examiner" Click="SmartAssignExaminer_Click"/>
-                                    </ContextMenu>
-                                </Button.ContextMenu>
                             </Button>
 
                             <!-- Reports Button -->
@@ -107,22 +81,6 @@
                                 <Button.Background>
                                     <ImageBrush ImageSource="/GUIResources/topBarButtonBackground.png"/>
                                 </Button.Background>
-                                <Button.ContextMenu>
-                                    <ContextMenu>
-                                        <ContextMenu.ItemContainerStyle>
-                                            <Style TargetType="MenuItem">
-                                                <Setter Property="Foreground" Value="White"/>
-                                                <Setter Property="Background" Value="Gold"/>
-                                                <Setter Property="FontFamily" Value="Script MT Bold"/>
-                                                <Setter Property="FontSize" Value="20"/>
-                                            </Style>
-                                        </ContextMenu.ItemContainerStyle>
-                                        <MenuItem Header="Generate penalty report" Click="ReportPenalties_Click"/>
-                                        <MenuItem Header="Generate course report" Click="ReportCourses_Click"/>
-                                        <MenuItem Header="Generate exam report" Click="ReportExams_Click"/>
-                                        <MenuItem Header="Generate language report" Click="ReportLanguages_Click"/>
-                                    </ContextMenu>
-                                </Button.ContextMenu>
                             </Button>
                         </StackPanel>
 
@@ -473,7 +431,7 @@
                                               ItemsSource="{Binding AvailableLevels}" Style="{StaticResource GoldComboStyle}"/>
 
                                     <!-- Add Language Button -->
-                                    <Button Content="Add Language" Width="120" Height="30" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" 
+                                    <Button Content="Add Language" Width="120" Height="30" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Click="AddLanguage_Click" 
                                             Style="{StaticResource FancyButtonStyle}">
                                         <Button.Background>
                                             <ImageBrush ImageSource="/GUIResources/loginButtonBackground.png"/>
