@@ -1,14 +1,17 @@
 [
   {
     "PenaltyPoints": 0,
+    "RequestedCourses": [
+      1
+    ],
     "FirstName": "Student",
     "LastName": "Studentic",
     "Gender": 0,
-    "DateOfBirth": "1920-06-24",
-    "PhoneNumber": "12345678",
-    "Email": "student@gmail.com",
+    "DateOfBirth": "1971-03-12",
+    "PhoneNumber": "123",
+    "Email": "s@gmail.com",
     "Password": "123",
-    "EducationLevel": 4,
-    "DateOfRegistration": "2025-08-17"
+    "EducationLevel": 0,
+    "DateOfRegistration": "2025-09-20"
   }
 ]

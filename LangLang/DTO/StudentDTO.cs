@@ -1,7 +1,8 @@
-﻿using LangLang.Model;
-using LangLang.Model.Enums;
+﻿using LangLang.Model.Enums;
 using LangLang.DTO.Validators;
 using System.ComponentModel;
+using LangLang.Model.Users;
+using System.Collections.Generic;
 
 namespace LangLang.DTO
 {
@@ -65,6 +66,7 @@ namespace LangLang.DTO
             set=> SetProperty(ref dateOfRegistration, value, nameof(DateOfRegistration));
         }
         public int PenaltyPoints { get; set; }=0;
+        public List<int> RequestedCourses { get; set; }=new List<int>();
 
         public StudentDTO(){}
         public StudentDTO(Student student)
@@ -82,7 +84,7 @@ namespace LangLang.DTO
         }
         public Student ToStudent()
         {
-            return new Student(FirstName,LastName,Gender,DateOfBirth,PhoneNumber,Email,Password,EducationLevel,DateOfRegistration,PenaltyPoints);
+            return new Student(FirstName,LastName,Gender,DateOfBirth,PhoneNumber,Email,Password,EducationLevel,DateOfRegistration,PenaltyPoints, RequestedCourses);
         }
 
         private readonly StudentDTOValidator validator = new StudentDTOValidator();

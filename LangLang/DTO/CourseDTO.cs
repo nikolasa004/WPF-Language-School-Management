@@ -1,9 +1,9 @@
-﻿using LangLang.Model;
-using LangLang.Model.Enums;
+﻿using LangLang.Model.Enums;
 using LangLang.DTO.Validators;
 using System.ComponentModel;
 using System.Collections.Generic;
 using System;
+using LangLang.Model.TeachingActivities;
 
 namespace LangLang.DTO
 {

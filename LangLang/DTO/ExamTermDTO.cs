@@ -3,8 +3,8 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Globalization;
 using System.Text.RegularExpressions;
-using LangLang.Model;
 using LangLang.Model.Enums;
+using LangLang.Model.TeachingActivities;
 
 namespace LangLang.DTO
 {

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using LangLang.Model.TeachingActivities;
+using System.Collections.Generic;
 
 namespace LangLang.Model
 {

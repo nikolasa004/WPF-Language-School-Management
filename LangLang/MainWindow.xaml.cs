@@ -1,10 +1,10 @@
 ﻿using LangLang.RoleWindows;
 using System;
 using System.Windows;
-using LangLang.Controller;
 using LangLang.DTO;
-using LangLang.Model;
 using LangLang.Controller.Services;
+using LangLang.Model.Users;
+using LangLang.Controller.Users;
 
 namespace LangLang
 {
@@ -15,7 +15,7 @@ namespace LangLang
         public ProfessorDTO Professor { get; set; }
         private ProfessorsController professorsController;
 
-        private AuthenticationController authenticationController;
+        private AuthenticationService authenticationController;
 
         private string principalEmail = "principal@gmail.com";
         private string principalPassword = "123";
@@ -28,7 +28,7 @@ namespace LangLang
             studentsController = new StudentsController();
             Professor = new ProfessorDTO();
             professorsController = new ProfessorsController();
-            authenticationController = new AuthenticationController(studentsController, professorsController, principalEmail, principalPassword);
+            authenticationController = new AuthenticationService(studentsController, professorsController, principalEmail, principalPassword);
         }
 
         private void OpenLoginPanel_Click(object sender, RoutedEventArgs e)
