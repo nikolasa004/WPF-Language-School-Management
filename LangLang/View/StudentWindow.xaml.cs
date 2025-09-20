@@ -2,6 +2,7 @@
 using LangLang.DTO;
 using LangLang.Model.Users;
 using LangLang.RoleWindows.StudentViewModules;
+using LangLang.View;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -174,6 +175,13 @@ namespace LangLang.RoleWindows
         private void CoursesGrid_Sorting(object sender, DataGridSortingEventArgs e)
         {
             studentViewCourses.CoursesGridSorting(e);
+        }
+
+        //Inbox Panel
+        private void OpenInboxPanel_Click(object sender, RoutedEventArgs e)
+        {
+            MessagesInboxWindow messagesInboxWindow = new MessagesInboxWindow(Student.Email);
+            messagesInboxWindow.Show();
         }
     }
 }

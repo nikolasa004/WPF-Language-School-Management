@@ -144,7 +144,7 @@
 
 
                         <!-- Inbox button -->
-                        <Button Content="" Style="{StaticResource FancyButtonStyle}" Width="40" Height="40" HorizontalAlignment="Right" Grid.Column="1">
+                        <Button Content="" Style="{StaticResource FancyButtonStyle}" Width="40" Height="40" HorizontalAlignment="Right" Grid.Column="1" Click="OpenInboxPanel_Click">
                             <Button.Background>
                                 <ImageBrush ImageSource="/GUIResources/inbox.png"/>
                             </Button.Background>
