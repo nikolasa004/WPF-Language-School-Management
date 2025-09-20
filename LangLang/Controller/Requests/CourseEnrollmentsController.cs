@@ -19,9 +19,9 @@ namespace LangLang.Controller.Requests
             return _courseEnrollments.GetAllCourseEnrollments();
         }
 
-        public void Add(CourseEnrollment courseEnrollment)
+        public int Add(CourseEnrollment courseEnrollment)
         {
-            _courseEnrollments.AddCourseEnrollment(courseEnrollment);
+            return _courseEnrollments.AddCourseEnrollment(courseEnrollment).ID;
         }
         public CourseEnrollment? Update(CourseEnrollment courseEnrollment)
         {
@@ -32,9 +32,22 @@ namespace LangLang.Controller.Requests
             _courseEnrollments.RemoveCourseEnrollment(courseEnrollmentId);
         }
 
-        public CourseEnrollment? GetStudentById(int id)
+        public CourseEnrollment? GetCourseEnrollmentById(int id)
         {
             return _courseEnrollments.GetCourseEnrollmentById(id);
+        }
+        public List<int> GetCourseIds(List<int> courseEnrollmentIds)
+        {
+            List<int> courseIds = new List<int>();
+            foreach (int id in courseEnrollmentIds)
+            {
+                CourseEnrollment? courseEnrollment = _courseEnrollments.GetCourseEnrollmentById(id);
+                if (courseEnrollment != null)
+                {
+                    courseIds.Add(courseEnrollment.TeachingActivityID);
+                }
+            }
+            return courseIds;
         }
 
         public void Subscribe(IObserver observer)

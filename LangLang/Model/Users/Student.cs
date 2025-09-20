@@ -1,13 +1,14 @@
 ﻿using LangLang.Model.Enums;
 using LangLang.Storage.Serialization;
 using System.Text.Json;
+using System.Collections.Generic;
 
 namespace LangLang.Model.Users
 {
     public class Student : User, ISerializable
     {
         public int PenaltyPoints { get; set; }
-        // Here should be a list of requested courses
+        public List<int> RequestedCourses { get; set; }
         // and a list of requested exams
         // and a list of finished courses
         // and a list of finished exams
@@ -17,10 +18,12 @@ namespace LangLang.Model.Users
         public Student() : base()
         {
             PenaltyPoints = 0;
+            RequestedCourses = new List<int>();
         }
-        public Student(string firstName, string lastName, Gender gender, string dateOfBirth, string phoneNumber, string email, string password, EducationLevel educationLevel, string dateOfRegistration, int penaltyPoints) : base(firstName, lastName, gender, dateOfBirth, phoneNumber, email, password, educationLevel, dateOfRegistration)
+        public Student(string firstName, string lastName, Gender gender, string dateOfBirth, string phoneNumber, string email, string password, EducationLevel educationLevel, string dateOfRegistration, int penaltyPoints, List<int> requestedCourses) : base(firstName, lastName, gender, dateOfBirth, phoneNumber, email, password, educationLevel, dateOfRegistration)
         {
             PenaltyPoints = penaltyPoints;
+            RequestedCourses = requestedCourses;
         }
 
         public override string ToString()
@@ -48,6 +51,7 @@ namespace LangLang.Model.Users
                 EducationLevel = student.EducationLevel;
                 DateOfRegistration = student.DateOfRegistration;
                 PenaltyPoints = student.PenaltyPoints;
+                RequestedCourses = student.RequestedCourses;
             }
         }
     }

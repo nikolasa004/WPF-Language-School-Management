@@ -1,8 +1,11 @@
 ﻿using LangLang.Controller.Requests;
 using LangLang.Controller.TeachingActivities;
+using LangLang.Controller.Users;
 using LangLang.DTO;
 using LangLang.Model.Enums;
+using LangLang.Model.Requests;
 using LangLang.Model.TeachingActivities;
+using LangLang.Model.Users;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -11,7 +14,6 @@ using System.Globalization;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
-using LangLang.Model.Requests;
 
 namespace LangLang.RoleWindows.StudentViewModules
 {
@@ -19,6 +21,7 @@ namespace LangLang.RoleWindows.StudentViewModules
     {
         private readonly CourseController _courseController;
         private readonly CourseEnrollmentsController _enrollmentsController;
+        private readonly StudentsController _studentsController;
 
         private List<CourseDTO> _availableCourses;
         private List<CourseDTO> _filtered;   // after filters
@@ -38,10 +41,13 @@ namespace LangLang.RoleWindows.StudentViewModules
         private DatePicker CourseToDate;
         private DataGrid CoursesGrid;
 
-        public StudentViewCourses(ComboBox examLanguageCombo, ComboBox examLevelCombo, ComboBox courseOnlineCombo, TextBox courseWeeksBox, DatePicker examFromDate, DatePicker examToDate, DataGrid examsGrid)
+        private string _studentId;
+
+        public StudentViewCourses(ComboBox examLanguageCombo, ComboBox examLevelCombo, ComboBox courseOnlineCombo, TextBox courseWeeksBox, DatePicker examFromDate, DatePicker examToDate, DataGrid examsGrid, string studentId, StudentsController studentsController)
         {
             _courseController = new CourseController();
             _enrollmentsController = new CourseEnrollmentsController();
+            _studentsController = studentsController;
             CourseLanguageCombo = examLanguageCombo;
             CourseLevelCombo = examLevelCombo;
             CourseOnlineCombo = courseOnlineCombo;
@@ -49,16 +55,15 @@ namespace LangLang.RoleWindows.StudentViewModules
             CourseFromDate = examFromDate;
             CourseToDate = examToDate;
             CoursesGrid = examsGrid;
+            _studentId = studentId;
             InitCourseFilters();
 
-            List<Course> allCourses = _courseController.GetAll();
-            _availableCourses = GetAvailableCourses(allCourses);
-            _filtered = _availableCourses;
-            _sorted = ApplySort(_filtered, _sortKey, _sortDir).ToList();
-            ApplyFiltersSortAndPage();
+            _availableCourses = new List<CourseDTO>();
+            _filtered = new List<CourseDTO>();
+            _sorted = new List<CourseDTO>();
+
             CoursesGrid.ItemsSource = _page;
         }
-
         private void InitCourseFilters()
         {
             if (CourseLanguageCombo.Items.Count == 0)
@@ -71,6 +76,14 @@ namespace LangLang.RoleWindows.StudentViewModules
             CourseLevelCombo.SelectedIndex = -1;
         }
 
+        public void ShowAllCourses()
+        {
+            List<Course> allCourses = _courseController.GetAll();
+            _availableCourses = GetAvailableCourses(allCourses);
+            _filtered = _availableCourses;
+            _sorted = ApplySort(_filtered, _sortKey, _sortDir).ToList();
+            ApplyFiltersSortAndPage();
+        }
         private List<CourseDTO> GetAvailableCourses(List<Course> allCourses)
         {
             var now = DateTime.Now;
@@ -78,10 +91,12 @@ namespace LangLang.RoleWindows.StudentViewModules
             foreach (var course in allCourses)
             {
                 /////////////////To add
-                //exam not full
+                //course not full
                 CourseDTO courseDto = new CourseDTO(course);
                 var start = GetStartDateTime(courseDto);
-                if (start.HasValue && start.Value > now.AddDays(7))
+                List<int> courseRequests=_studentsController.GetRequestedCourses(_studentId);
+                List<int> requestedCourses = _enrollmentsController.GetCourseIds(courseRequests);
+                if (start.HasValue && start.Value > now.AddDays(7) && !requestedCourses.Contains(course.Id))
                 {
                     available.Add(courseDto);
                 }
@@ -90,7 +105,28 @@ namespace LangLang.RoleWindows.StudentViewModules
             return available;
         }
 
-        public void SearchCourses(object sender, RoutedEventArgs e)
+        public void ShowRequestedCourses()
+        {
+            List<int> courseRequests = _studentsController.GetRequestedCourses(_studentId);
+            List<int> requestedCourses = _enrollmentsController.GetCourseIds(courseRequests);
+            _availableCourses = GetCoursesByIds(requestedCourses);
+            _filtered = _availableCourses;
+            _sorted = ApplySort(_filtered, _sortKey, _sortDir).ToList();
+            ApplyFiltersSortAndPage();
+        }
+        private List<CourseDTO> GetCoursesByIds(List<int> courseIds)
+        {
+            List<CourseDTO> courses = new();
+            foreach (int id in courseIds)
+            {
+                Course? course = _courseController.GetById(id);
+                if (course != null)
+                    courses.Add(new CourseDTO(course));
+            }
+            return courses;
+        }
+
+        public void SearchCourses()
         {
             ApplyFiltersSortAndPage(resetPage: true);
         }
@@ -217,7 +253,7 @@ namespace LangLang.RoleWindows.StudentViewModules
                 pager.Text = $"Page {_currentPage}/{totalPages}  ·  {(_sorted.Count == 1 ? "1 item" : _sorted.Count + " items")}";
         }
 
-        public void CoursesGridSorting(object sender, DataGridSortingEventArgs e)
+        public void CoursesGridSorting(DataGridSortingEventArgs e)
         {
             e.Handled = true;
 
@@ -239,7 +275,7 @@ namespace LangLang.RoleWindows.StudentViewModules
             ApplyFiltersSortAndPage(resetPage: false);
         }
 
-        public void PageSizeChanged(object sender, SelectionChangedEventArgs e)
+        public void PageSizeChanged(object sender)
         {
             if (CoursesGrid == null || !CoursesGrid.IsLoaded) return;
 
@@ -250,7 +286,7 @@ namespace LangLang.RoleWindows.StudentViewModules
                 ApplyFiltersSortAndPage(resetPage: true);
             }
         }
-        public void PrevPage(object? sender, RoutedEventArgs e)
+        public void PrevPage()
         {
             if (_currentPage > 1)
             {
@@ -258,7 +294,7 @@ namespace LangLang.RoleWindows.StudentViewModules
                 ApplyFiltersSortAndPage(resetPage: false);
             }
         }
-        public void NextPage(object? sender, RoutedEventArgs e)
+        public void NextPage()
         {
             var totalPages = Math.Max(1, (int)Math.Ceiling((double)_sorted.Count / _pageSize));
             if (_currentPage < totalPages)
@@ -268,17 +304,53 @@ namespace LangLang.RoleWindows.StudentViewModules
             }
         }
 
-        public void EnrollInSelectedCourse(object sender, RoutedEventArgs e, string studentId)
+        public void EnrollInSelectedCourse()
         {
             if (CoursesGrid.SelectedItem is CourseDTO selectedCourse)
             {
-                _enrollmentsController.Add(new CourseEnrollment(0,studentId, selectedCourse.Id, DateTime.Now.ToString("yyyy-MM-dd"), RequestStatus.Pending));
+                int courseEnrollmentId=_enrollmentsController.Add(new CourseEnrollment(0,_studentId, selectedCourse.Id, DateTime.Now.ToString("yyyy-MM-dd"), RequestStatus.Pending));
+                _studentsController.AddCourseRequest(_studentId, courseEnrollmentId);
                 MessageBox.Show("Enrollment request submitted successfully!", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
                 _availableCourses.RemoveAll(c => c.Id == selectedCourse.Id);
                 ApplyFiltersSortAndPage(resetPage: true);
             }
             else
                 MessageBox.Show("Please select a course to enroll in.", "No Selection", MessageBoxButton.OK, MessageBoxImage.Warning);
+        }
+        public void UnenrollFromSelectedCourse()
+        {
+            if (CoursesGrid.SelectedItem is CourseDTO selectedCourse)
+            {
+                if(GetStartDateTime(selectedCourse) is DateTime start && start < DateTime.Now.AddDays(7))
+                {
+                    MessageBox.Show("You can only unenroll from courses that start in more than 7 days.", "Unenrollment Not Allowed", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return;
+                }
+
+                MessageBoxResult result = MessageBox.Show("Are you sure you want to unenroll from the selected course?", "Confirm Unenrollment", MessageBoxButton.YesNo, MessageBoxImage.Question);
+                if (result == MessageBoxResult.Yes)
+                {
+                    List<int> courseRequests = _studentsController.GetRequestedCourses(_studentId);
+                    int courseRequestId=-1;
+                    foreach (int requestId in courseRequests)
+                    {
+                        CourseEnrollment? courseRequest = _enrollmentsController.GetCourseEnrollmentById(requestId);
+                        if (courseRequest!=null && courseRequest.TeachingActivityID == selectedCourse.Id)
+                        {
+                            courseRequestId = courseRequest.ID;
+                            break;
+                        }
+                    }
+
+                    _enrollmentsController.Delete(courseRequestId);
+                    _studentsController.RemoveCourseRequest(_studentId, courseRequestId);
+                    MessageBox.Show("Unenrolled from the course successfully.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+                    _availableCourses.Remove(_availableCourses.First(c => c.Id == selectedCourse.Id));
+                    ApplyFiltersSortAndPage(resetPage: true);
+                }
+            }
+            else
+                MessageBox.Show("Please select a course to unenroll from.", "No Selection", MessageBoxButton.OK, MessageBoxImage.Warning);
         }
     }
 }

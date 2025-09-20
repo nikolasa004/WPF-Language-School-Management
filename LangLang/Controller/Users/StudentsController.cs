@@ -36,6 +36,29 @@ namespace LangLang.Controller.Users
         {
             return _students.GetStudentById(email);
         }
+        public List<int> GetRequestedCourses(string email)
+        {
+            return _students.GetRequestedCourses(email);
+        }
+
+        public void AddCourseRequest(string studentEmail, int courseId)
+        {
+            Student? student = GetStudentById(studentEmail);
+            if (student != null && !student.RequestedCourses.Contains(courseId))
+            {
+                student.RequestedCourses.Add(courseId);
+                Update(student);
+            }
+        }
+        public void RemoveCourseRequest(string studentEmail, int courseId)
+        {
+            Student? student = GetStudentById(studentEmail);
+            if (student != null && student.RequestedCourses.Contains(courseId))
+            {
+                student.RequestedCourses.Remove(courseId);
+                Update(student);
+            }
+        }
 
         public void Subscribe(IObserver observer)
         {

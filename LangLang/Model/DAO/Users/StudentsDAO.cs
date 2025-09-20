@@ -40,6 +40,7 @@ namespace LangLang.Model.DAO.Users
             oldStudent.EducationLevel = student.EducationLevel;
             oldStudent.DateOfRegistration = student.DateOfRegistration;
             oldStudent.PenaltyPoints = student.PenaltyPoints;
+            oldStudent.RequestedCourses = student.RequestedCourses;
 
             _storage.Save(_students);
             StudentSubject.NotifyObservers();
@@ -63,6 +64,12 @@ namespace LangLang.Model.DAO.Users
         public List<Student> GetAllStudents()
         {
             return _students;
+        }
+        public List<int> GetRequestedCourses(string email)
+        {
+            Student? student = GetStudentById(email);
+            if (student == null) return new List<int>();
+            return student.RequestedCourses;
         }
     }
 }

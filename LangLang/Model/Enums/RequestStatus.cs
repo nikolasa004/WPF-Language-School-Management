@@ -3,6 +3,7 @@
     public enum RequestStatus
     {
         Pending,
+        Paused,
         Active,
         Cancelled,
         Completed
