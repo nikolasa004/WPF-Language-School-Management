@@ -1,6 +1,8 @@
-﻿using LangLang.Controller.Users;
+﻿using LangLang.Controller.TeachingActivities;
+using LangLang.Controller.Users;
 using LangLang.DTO;
 using LangLang.Model.Enums;
+using LangLang.Model.TeachingActivities;
 using LangLang.Model.Users;
 using System;
 using System.Globalization;
@@ -12,6 +14,7 @@ namespace LangLang.RoleWindows.StudentViewModules
     class StudentViewProfile
     {
         private readonly StudentsController studentsController;
+        private readonly CourseController courseController;
         private StudentDTO Student;
 
         private TextBox FirstNameBox;
@@ -35,10 +38,11 @@ namespace LangLang.RoleWindows.StudentViewModules
         private Label PenaltyPointsLabel = null!;
         private Label JoinedDateLabel = null!;
 
-        public StudentViewProfile(StudentDTO student, StudentsController studentsController, TextBox firstNameBox, TextBox lastNameBox, RadioButton maleRadioButton, RadioButton femaleRadioButton, DatePicker birthDatePicker, TextBox phoneBox, TextBox emailBox, TextBox passwordTextBox, ComboBox educationComboBox)
+        public StudentViewProfile(StudentDTO student, StudentsController studentsController, CourseController courseController, TextBox firstNameBox, TextBox lastNameBox, RadioButton maleRadioButton, RadioButton femaleRadioButton, DatePicker birthDatePicker, TextBox phoneBox, TextBox emailBox, TextBox passwordTextBox, ComboBox educationComboBox)
         {
             Student = student;
             this.studentsController = studentsController;
+            this.courseController = courseController;
             FirstNameBox = firstNameBox;
             LastNameBox = lastNameBox;
             MaleRadioButton = maleRadioButton;
@@ -74,7 +78,9 @@ namespace LangLang.RoleWindows.StudentViewModules
             PhoneLabel.Content = "Phone: " + Student.PhoneNumber;
             EmailLabel.Content = "Email: " + Student.Email;
             EducationLabel.Content = "Education: " + Student.EducationLevel.ToString();
-            CurrentCourseLabel.Content = "Current Course: " + "/";
+            Course? course = courseController.GetById(Student.ActiveCourseId);
+            string courseName = course != null ? course.Language+"-"+course.Level : "No active course";
+            CurrentCourseLabel.Content = "Current Course: " + courseName;
             PenaltyPointsLabel.Content = "Penalty Points: " + Student.PenaltyPoints.ToString();
             DateTime joinedDate = DateTime.ParseExact(Student.DateOfRegistration, "yyyy-MM-dd", CultureInfo.InvariantCulture);
             string joinedDateString = joinedDate.ToString("dd.MM.yyyy");

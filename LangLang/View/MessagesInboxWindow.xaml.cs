@@ -15,9 +15,9 @@ namespace LangLang.View
         private List<Message>? messages;
         private readonly MessagesController _messagesController;
 
-        public MessagesInboxWindow(string studentId)
+        public MessagesInboxWindow(string studentId, MessagesController messagesController)
         {
-            _messagesController = new MessagesController();
+            _messagesController = messagesController;
             InitializeComponent();
 
             messages = _messagesController.GetStudentMessagesById(studentId);

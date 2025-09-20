@@ -26,6 +26,12 @@ namespace LangLang.Model.DAO.Messages
         {
             int nextId = messages.Count > 0 ? messages[^1].Id + 1 : 1;
             message.Id = nextId;
+            message.IsRead = false;
+            message.Date = System.DateTime.Now.ToString("yyyy-MM-dd");
+            if (!_messages.ContainsKey(message.RecipientId))
+            {
+                _messages[message.RecipientId] = new List<Message>();
+            }
             _messages[message.RecipientId].Add(message);
             messages.Add(message);
             _storage.Save(messages);

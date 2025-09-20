@@ -1,7 +1,7 @@
 [
   {
     "Id": 1,
-    "RecipientId": "s@gmail.com",
+    "RecipientId": "student@gmail.com",
     "SenderId": "profesor@gmail.com",
     "Title": "Welcome to the course",
     "Body": "Hello! You have been enrolled in the course: Italian-A1",

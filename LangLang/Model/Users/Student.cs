@@ -9,26 +9,28 @@ namespace LangLang.Model.Users
     {
         public int PenaltyPoints { get; set; }
         public List<int> RequestedCourses { get; set; }
+        public int ActiveCourseId { get; set; }
         // and a list of requested exams
         // and a list of finished courses
         // and a list of finished exams
-        // and active course
         // and active exam
 
         public Student() : base()
         {
             PenaltyPoints = 0;
             RequestedCourses = new List<int>();
+            ActiveCourseId = -1;
         }
-        public Student(string firstName, string lastName, Gender gender, string dateOfBirth, string phoneNumber, string email, string password, EducationLevel educationLevel, string dateOfRegistration, int penaltyPoints, List<int> requestedCourses) : base(firstName, lastName, gender, dateOfBirth, phoneNumber, email, password, educationLevel, dateOfRegistration)
+        public Student(string firstName, string lastName, Gender gender, string dateOfBirth, string phoneNumber, string email, string password, EducationLevel educationLevel, string dateOfRegistration, int penaltyPoints, List<int> requestedCourses, int activeCourseId) : base(firstName, lastName, gender, dateOfBirth, phoneNumber, email, password, educationLevel, dateOfRegistration)
         {
             PenaltyPoints = penaltyPoints;
             RequestedCourses = requestedCourses;
+            ActiveCourseId = activeCourseId;
         }
 
         public override string ToString()
         {
-            return base.ToString() + "\n" + "Penalty Points: " + PenaltyPoints;
+            return base.ToString() + "\n" + "Penalty Points: " + PenaltyPoints+ "\n" + "Requested Courses: " + string.Join(", ", RequestedCourses) + "\n" + "Active Course ID: " + ActiveCourseId;
         }
 
         public string ToJSON()
@@ -52,6 +54,7 @@ namespace LangLang.Model.Users
                 DateOfRegistration = student.DateOfRegistration;
                 PenaltyPoints = student.PenaltyPoints;
                 RequestedCourses = student.RequestedCourses;
+                ActiveCourseId = student.ActiveCourseId;
             }
         }
     }

@@ -28,6 +28,19 @@ namespace LangLang.Controller.Messages
             _studentMessages.UpdateMessageReadStatus(messageId);
         }
 
+        public void ProfessorAdd(Message message)
+        {
+            _professorMessages.AddMessage(message);
+        }
+        public void ProfessorDelete(int messageId)
+        {
+            _professorMessages.RemoveMessage(messageId);
+        }
+        public void ProfessorUpdateReadStatus(int messageId)
+        {
+            _professorMessages.UpdateMessageReadStatus(messageId);
+        }
+
         public List<Message>? GetStudentMessagesById(string email)
         {
             return _studentMessages.GetMessagesByRecipientId(email);
