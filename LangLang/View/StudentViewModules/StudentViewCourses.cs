@@ -1,4 +1,5 @@
-﻿using LangLang.Controller.Requests;
+﻿using LangLang.Controller.Messages;
+using LangLang.Controller.Requests;
 using LangLang.Controller.TeachingActivities;
 using LangLang.Controller.Users;
 using LangLang.DTO;
@@ -6,6 +7,7 @@ using LangLang.Model.Enums;
 using LangLang.Model.Requests;
 using LangLang.Model.TeachingActivities;
 using LangLang.Model.Users;
+using LangLang.View;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -22,6 +24,7 @@ namespace LangLang.RoleWindows.StudentViewModules
         private readonly CourseController _courseController;
         private readonly CourseEnrollmentsController _enrollmentsController;
         private readonly StudentsController _studentsController;
+        private readonly MessagesController _messagesController;
 
         private List<CourseDTO> _availableCourses;
         private List<CourseDTO> _filtered;   // after filters
@@ -43,11 +46,12 @@ namespace LangLang.RoleWindows.StudentViewModules
 
         private string _studentId;
 
-        public StudentViewCourses(ComboBox examLanguageCombo, ComboBox examLevelCombo, ComboBox courseOnlineCombo, TextBox courseWeeksBox, DatePicker examFromDate, DatePicker examToDate, DataGrid examsGrid, string studentId, StudentsController studentsController)
+        public StudentViewCourses(CourseController courseController,ComboBox examLanguageCombo, ComboBox examLevelCombo, ComboBox courseOnlineCombo, TextBox courseWeeksBox, DatePicker examFromDate, DatePicker examToDate, DataGrid examsGrid, string studentId, StudentsController studentsController, MessagesController messagesController)
         {
-            _courseController = new CourseController();
+            _courseController = courseController;
             _enrollmentsController = new CourseEnrollmentsController();
             _studentsController = studentsController;
+            _messagesController = messagesController;
             CourseLanguageCombo = examLanguageCombo;
             CourseLevelCombo = examLevelCombo;
             CourseOnlineCombo = courseOnlineCombo;
@@ -124,6 +128,24 @@ namespace LangLang.RoleWindows.StudentViewModules
                     courses.Add(new CourseDTO(course));
             }
             return courses;
+        }
+
+        public void ShowActiveCourse()
+        {
+            Student? student = _studentsController.GetStudentById(_studentId);
+            if (student != null && student.ActiveCourseId != -1)
+            {
+                Course? course = _courseController.GetById(student.ActiveCourseId);
+                if (course != null)
+                    _availableCourses = new List<CourseDTO> { new CourseDTO(course) };
+                else
+                    _availableCourses = new List<CourseDTO>();
+            }
+            else
+                _availableCourses = new List<CourseDTO>();
+            _filtered = _availableCourses;
+            _sorted = ApplySort(_filtered, _sortKey, _sortDir).ToList();
+            ApplyFiltersSortAndPage();
         }
 
         public void SearchCourses()
@@ -304,10 +326,17 @@ namespace LangLang.RoleWindows.StudentViewModules
             }
         }
 
-        public void EnrollInSelectedCourse()
+        public void RequestForCourse()
         {
             if (CoursesGrid.SelectedItem is CourseDTO selectedCourse)
             {
+                Student? student = _studentsController.GetStudentById(_studentId);
+                if (student==null || student.ActiveCourseId!=-1)
+                {
+                    MessageBox.Show("You can only send enrollment request for a new course if you are not currently enrolled in any course.", "Enrollment Request Not Allowed", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return;
+                }
+
                 int courseEnrollmentId=_enrollmentsController.Add(new CourseEnrollment(0,_studentId, selectedCourse.Id, DateTime.Now.ToString("yyyy-MM-dd"), RequestStatus.Pending));
                 _studentsController.AddCourseRequest(_studentId, courseEnrollmentId);
                 MessageBox.Show("Enrollment request submitted successfully!", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
@@ -317,17 +346,17 @@ namespace LangLang.RoleWindows.StudentViewModules
             else
                 MessageBox.Show("Please select a course to enroll in.", "No Selection", MessageBoxButton.OK, MessageBoxImage.Warning);
         }
-        public void UnenrollFromSelectedCourse()
+        public void CancelRequestForCourse()
         {
             if (CoursesGrid.SelectedItem is CourseDTO selectedCourse)
             {
                 if(GetStartDateTime(selectedCourse) is DateTime start && start < DateTime.Now.AddDays(7))
                 {
-                    MessageBox.Show("You can only unenroll from courses that start in more than 7 days.", "Unenrollment Not Allowed", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    MessageBox.Show("You can only cancel enrollment request of course that start in more than 7 days.", "Cancellation Not Allowed", MessageBoxButton.OK, MessageBoxImage.Warning);
                     return;
                 }
 
-                MessageBoxResult result = MessageBox.Show("Are you sure you want to unenroll from the selected course?", "Confirm Unenrollment", MessageBoxButton.YesNo, MessageBoxImage.Question);
+                MessageBoxResult result = MessageBox.Show("Are you sure you want to cancel enrollment request for the selected course?", "Confirm Cancellation", MessageBoxButton.YesNo, MessageBoxImage.Question);
                 if (result == MessageBoxResult.Yes)
                 {
                     List<int> courseRequests = _studentsController.GetRequestedCourses(_studentId);
@@ -344,13 +373,35 @@ namespace LangLang.RoleWindows.StudentViewModules
 
                     _enrollmentsController.Delete(courseRequestId);
                     _studentsController.RemoveCourseRequest(_studentId, courseRequestId);
-                    MessageBox.Show("Unenrolled from the course successfully.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+                    MessageBox.Show("Cancelled enrollment request successfully.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
                     _availableCourses.Remove(_availableCourses.First(c => c.Id == selectedCourse.Id));
                     ApplyFiltersSortAndPage(resetPage: true);
                 }
             }
             else
-                MessageBox.Show("Please select a course to unenroll from.", "No Selection", MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show("Please select a course request to cancel.", "No Selection", MessageBoxButton.OK, MessageBoxImage.Warning);
+        }
+        public void UnenrollRequestCourse()
+        {
+            string professorId=string.Empty;
+            Course? course = null;
+            Student? student = _studentsController.GetStudentById(_studentId);
+            if (student != null && student.ActiveCourseId != -1)
+            {
+                course = _courseController.GetById(student.ActiveCourseId);
+                if (course != null)
+                {
+                    if(GetStartDateTime(new CourseDTO(course)) is DateTime start && start.AddDays(7) > DateTime.Now)
+                    {
+                        MessageBox.Show("You can onln send unenrollment request for course that is going on for more than 7 days.", "Unenrollment Not Allowed", MessageBoxButton.OK, MessageBoxImage.Warning);
+                        return;
+                    }
+                    professorId = course.ProfessorId;
+                }
+            }
+
+            MessageSendWindow messageWindow = new MessageSendWindow(_studentId, "Unenrollment Request", "Please provide a reason for unenrolling from the course:", professorId, _messagesController, "professor");
+            messageWindow.Show();
         }
     }
 }

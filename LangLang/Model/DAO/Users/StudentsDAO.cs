@@ -41,6 +41,7 @@ namespace LangLang.Model.DAO.Users
             oldStudent.DateOfRegistration = student.DateOfRegistration;
             oldStudent.PenaltyPoints = student.PenaltyPoints;
             oldStudent.RequestedCourses = student.RequestedCourses;
+            oldStudent.ActiveCourseId = student.ActiveCourseId;
 
             _storage.Save(_students);
             StudentSubject.NotifyObservers();

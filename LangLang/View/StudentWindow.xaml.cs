@@ -1,9 +1,12 @@
-﻿using LangLang.Controller.Users;
+﻿using LangLang.Controller.TeachingActivities;
+using LangLang.Controller.Users;
 using LangLang.DTO;
 using LangLang.Model.Users;
 using LangLang.RoleWindows.StudentViewModules;
+using LangLang.View;
 using System.Windows;
 using System.Windows.Controls;
+using LangLang.Controller.Messages;
 
 namespace LangLang.RoleWindows
 {
@@ -12,6 +15,9 @@ namespace LangLang.RoleWindows
         public StudentDTO Student { get; set; }
         public StudentDTO UpdateStudent { get; set; }
         private StudentsController studentsController;
+
+        private CourseController courseController;
+        private MessagesController messagesController;
 
         private StudentViewExams studentViewExams;
         private StudentViewCourses studentViewCourses;
@@ -26,10 +32,12 @@ namespace LangLang.RoleWindows
             Student = new StudentDTO(student);
             UpdateStudent = new StudentDTO(student);
             this.studentsController = studentsController;
+            courseController = new CourseController();
+            messagesController = new MessagesController();
 
             studentViewExams = new StudentViewExams(ExamLanguageCombo, ExamLevelCombo, ExamFromDate, ExamToDate, ExamsGrid);
-            studentViewCourses = new StudentViewCourses(CourseLanguageCombo, CourseLevelCombo, CourseOnlineCombo, CourseWeeksBox, CourseFromDate, CourseToDate, CoursesGrid, Student.Email, studentsController);
-            studentViewProfile = new StudentViewProfile(Student, studentsController, FirstNameBox, LastNameBox, MaleRadioButton, FemaleRadioButton, BirthDatePicker, PhoneBox, EmailBox, PasswordTextBox, EducationComboBox);
+            studentViewCourses = new StudentViewCourses(courseController, CourseLanguageCombo, CourseLevelCombo, CourseOnlineCombo, CourseWeeksBox, CourseFromDate, CourseToDate, CoursesGrid, Student.Email, studentsController, messagesController);
+            studentViewProfile = new StudentViewProfile(Student, studentsController, courseController, FirstNameBox, LastNameBox, MaleRadioButton, FemaleRadioButton, BirthDatePicker, PhoneBox, EmailBox, PasswordTextBox, EducationComboBox);
             studentViewProfile.SetLabels(NameLabel, SurnameLabel, GenderLabel, BirthDateLabel, PhoneLabel, EmailLabel, EducationLabel, CurrentCourseLabel, PenaltyPointsLabel,JoinedDateLabel);
             InformationUpdate();
         }
@@ -49,6 +57,11 @@ namespace LangLang.RoleWindows
         }
         private void Edit_Click(object sender, RoutedEventArgs e)
         {
+            if (Student.ActiveCourseId != -1)
+            {
+                MessageBox.Show("You cannot edit your profile while enrolled in a course. Please finish or leave your current course before making changes.", "Edit Profile", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
             studentViewProfile.SetStudentData();
 
             MainPanel.Visibility = Visibility.Collapsed;
@@ -131,8 +144,15 @@ namespace LangLang.RoleWindows
         private void ShowRequestedCourses_Click(object sender, RoutedEventArgs e)
         {
             currentCoursePanel = "show requested";
-            CoursePanelButton.Content = "Unenroll";
+            CoursePanelButton.Content = "Cancel";
             studentViewCourses.ShowRequestedCourses();
+            OpenCoursesPanel_Click(sender, e);
+        }
+        private void ShowActiveCourse_Click(object sender, RoutedEventArgs e)
+        {
+            currentCoursePanel = "show active";
+            CoursePanelButton.Content = "Unenroll";
+            studentViewCourses.ShowActiveCourse();
             OpenCoursesPanel_Click(sender, e);
         }
         private void CoursesSearch_Click(object sender, RoutedEventArgs e)
@@ -143,20 +163,28 @@ namespace LangLang.RoleWindows
         {
             if (currentCoursePanel == "show all")
             {
-                EnrollCourse_Click();
+                EnrollRequestCourse_Click();
             }
             else if (currentCoursePanel == "show requested")
             {
-                UnenrollCourse_Click();
+                CancelRequestCourse_Click();
+            }
+            else if (currentCoursePanel == "show active")
+            {
+                UnenrollRequestCourse_Click();
             }
         }
-        private void EnrollCourse_Click()
+        private void EnrollRequestCourse_Click()
         {
-            studentViewCourses.EnrollInSelectedCourse();
+            studentViewCourses.RequestForCourse();
         }
-        private void UnenrollCourse_Click()
+        private void CancelRequestCourse_Click()
         {
-            studentViewCourses.UnenrollFromSelectedCourse();
+            studentViewCourses.CancelRequestForCourse();
+        }
+        private void UnenrollRequestCourse_Click()
+        {
+            studentViewCourses.UnenrollRequestCourse();
         }
         private void PrevPageCourses_Click(object sender, RoutedEventArgs e)
         {
@@ -174,6 +202,13 @@ namespace LangLang.RoleWindows
         private void CoursesGrid_Sorting(object sender, DataGridSortingEventArgs e)
         {
             studentViewCourses.CoursesGridSorting(e);
+        }
+
+        //Inbox Panel
+        private void OpenInboxPanel_Click(object sender, RoutedEventArgs e)
+        {
+            MessagesInboxWindow messagesInboxWindow = new MessagesInboxWindow(Student.Email, messagesController);
+            messagesInboxWindow.Show();
         }
     }
 }

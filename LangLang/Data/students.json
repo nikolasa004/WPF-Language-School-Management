@@ -2,14 +2,16 @@
   {
     "PenaltyPoints": 0,
     "RequestedCourses": [
-      1
+      2,
+      3
     ],
+    "ActiveCourseId": 5,
     "FirstName": "Student",
     "LastName": "Studentic",
     "Gender": 0,
-    "DateOfBirth": "1971-03-12",
+    "DateOfBirth": "1991-02-28",
     "PhoneNumber": "123",
-    "Email": "s@gmail.com",
+    "Email": "student@gmail.com",
     "Password": "123",
     "EducationLevel": 0,
     "DateOfRegistration": "2025-09-20"

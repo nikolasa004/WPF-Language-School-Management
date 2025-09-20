@@ -1,0 +1,68 @@
+﻿<Window x:Class="LangLang.View.MessagesInboxWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d"
+        Title="Inbox" Height="450" Width="800"
+        Icon="/GUIResources/icon.ico">
+    <Grid>
+        <!-- Background -->
+        <Grid.Background>
+            <ImageBrush ImageSource="/GUIResources/loginBackground.jpg" Stretch="Fill"/>
+        </Grid.Background>
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <!-- Message list -->
+        <ScrollViewer Grid.Row="0" VerticalScrollBarVisibility="Auto" Margin="10">
+            <Grid x:Name="MessageListPanel" HorizontalAlignment="Stretch">
+                <Grid.RowDefinitions>
+                    <!-- Dynamic rows will be added here -->
+                </Grid.RowDefinitions>
+                <!-- Messages will be added here -->
+            </Grid>
+        </ScrollViewer>
+
+
+        <!-- Bottom buttons -->
+        <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center">
+            <Button Content="Delete Read" Width="150" Height="80" Margin="50,0" FontFamily="Script MT Bold" FontSize="20" Style="{StaticResource FancyButtonStyle}" Click="DeleteRead_Click">
+                <Button.Background>
+                    <ImageBrush ImageSource="/GUIResources/loginButtonBackground.png"/>
+                </Button.Background>
+            </Button>
+
+            <Button Content="Mark All as Read" Width="180" Height="80" Margin="5,0" FontFamily="Script MT Bold" FontSize="20" Style="{StaticResource FancyButtonStyle}" Click="MarkAllAsRead_Click">
+                <Button.Background>
+                    <ImageBrush ImageSource="/GUIResources/loginButtonBackground.png"/>
+                </Button.Background>
+            </Button>
+        </StackPanel>
+
+        <!-- Panel za detalje jedne poruke -->
+        <Grid x:Name="MessageDetailPanel" Visibility="Collapsed" Background="#CC000000">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*" />
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <StackPanel Margin="10">
+                <TextBlock x:Name="DetailTitle" FontSize="20" FontFamily="Script MT Bold" Foreground="White"/>
+                <TextBlock x:Name="DetailSender" FontSize="14" Foreground="LightGray"/>
+                <TextBlock x:Name="DetailDate" FontSize="12" Foreground="LightGray"/>
+                <TextBlock x:Name="DetailBody" FontSize="16" Foreground="White" TextWrapping="Wrap" Margin="0,10,0,0"/>
+            </StackPanel>
+
+            <Button Grid.Row="2" Content="Back to Inbox" Width="150" Height="40" HorizontalAlignment="Center" Margin="0,10,0,10" Style="{StaticResource FancyButtonStyle}" FontFamily="Script MT Bold" FontSize="16" Click="BackToInbox_Click">
+                <Button.Background>
+                    <ImageBrush ImageSource="/GUIResources/loginButtonBackground.png"/>
+                </Button.Background>
+            </Button>
+        </Grid>
+    </Grid>
+</Window>

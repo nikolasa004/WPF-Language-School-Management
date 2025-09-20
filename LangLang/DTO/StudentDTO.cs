@@ -67,6 +67,7 @@ namespace LangLang.DTO
         }
         public int PenaltyPoints { get; set; }=0;
         public List<int> RequestedCourses { get; set; }=new List<int>();
+        public int ActiveCourseId { get; set; }=-1;
 
         public StudentDTO(){}
         public StudentDTO(Student student)
@@ -81,10 +82,12 @@ namespace LangLang.DTO
             educationLevel = student.EducationLevel;
             dateOfRegistration = student.DateOfRegistration;
             PenaltyPoints = student.PenaltyPoints;
+            RequestedCourses = student.RequestedCourses;
+            ActiveCourseId = student.ActiveCourseId;
         }
         public Student ToStudent()
         {
-            return new Student(FirstName,LastName,Gender,DateOfBirth,PhoneNumber,Email,Password,EducationLevel,DateOfRegistration,PenaltyPoints, RequestedCourses);
+            return new Student(FirstName,LastName,Gender,DateOfBirth,PhoneNumber,Email,Password,EducationLevel,DateOfRegistration,PenaltyPoints, RequestedCourses,ActiveCourseId);
         }
 
         private readonly StudentDTOValidator validator = new StudentDTOValidator();
