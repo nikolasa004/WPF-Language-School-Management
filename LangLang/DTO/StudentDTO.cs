@@ -1,7 +1,7 @@
-﻿using LangLang.Model;
-using LangLang.Model.Enums;
+﻿using LangLang.Model.Enums;
 using LangLang.DTO.Validators;
 using System.ComponentModel;
+using LangLang.Model.Users;
 
 namespace LangLang.DTO
 {
