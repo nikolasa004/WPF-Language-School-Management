@@ -75,5 +75,20 @@ namespace LangLang.Controller.Users
         {
             _students.StudentSubject.Subscribe(observer);
         }
+
+        public void StartCourse(string studentEmail, int courseId)
+        {
+            var student = GetStudentById(studentEmail);
+            if (student == null) return;
+
+            if (student.ActiveCourseId != -1) return;
+
+            if (student.RequestedCourses.Contains(courseId))
+            {
+                student.RequestedCourses.Remove(courseId);
+                student.ActiveCourseId = courseId;
+                Update(student); 
+            }
+        }
     }
 }

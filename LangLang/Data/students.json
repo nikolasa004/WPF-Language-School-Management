@@ -1,8 +1,13 @@
 [
   {
     "PenaltyPoints": 0,
-    "RequestedCourses": [],
-    "ActiveCourseId": -1,
+    "RequestedCourses": [
+        1,
+        3,
+        4,
+        5
+    ],
+    "ActiveCourseId": 2,
     "FinishedCourses": [
       {
         "Item1": 0,

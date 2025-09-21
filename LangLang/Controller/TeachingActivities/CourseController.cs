@@ -4,6 +4,7 @@ using System.Globalization;
 using System.Linq;
 using LangLang.Model.DAO.TeachingActivity;
 using LangLang.Model.TeachingActivities;
+using LangLang.Model.Users;
 
 namespace LangLang.Controller.TeachingActivities
 {
@@ -218,6 +219,18 @@ namespace LangLang.Controller.TeachingActivities
             var sessions = ExpandToSessions(c);
             return sessions.Count > 0 ? sessions.Min(s => s.start) : null;
         }
+        public List<Course> GetRequestedCoursesForStudent(Student student)
+        {
+            var result = new List<Course>();
+            foreach (var courseId in student.RequestedCourses)
+            {
+                var course = _dao.GetCourseById(courseId);
+                if (course != null)
+                    result.Add(course);
+            }
+            return result;
+        }
     }
-}
+
+    }
 
