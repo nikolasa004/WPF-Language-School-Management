@@ -223,6 +223,11 @@ namespace LangLang.RoleWindows
 
 
         private void StartStudent_Click(object sender, RoutedEventArgs e) { }
+        { 
+            if(_examsView == null)
+                return;
+            _examsView.PageSizeChanged(sender, e, IsLoaded);
+        }
 
         private void AddExam_Click(object sender, RoutedEventArgs e) => _examsManage.OpenAddOverlay(this);
         private void SaveNewExam_Click(object sender, RoutedEventArgs e) => _examsManage.SaveNewExam(this);

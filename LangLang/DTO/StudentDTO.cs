@@ -71,6 +71,12 @@ namespace LangLang.DTO
         public int ActiveCourseId { get; set; }=-1;
         public List<Tuple<Language, LanguageLevel>> FinishedCourses { get; set; }=new List<Tuple<Language, LanguageLevel>>();
 
+        private string lastPenaltyProcessedAt = string.Empty; // očekujemo format "yyyy-MM-dd"
+        public string LastPenaltyProcessedAt
+        {
+            get => lastPenaltyProcessedAt;
+            set => SetProperty(ref lastPenaltyProcessedAt, value, nameof(LastPenaltyProcessedAt));
+        }
         public StudentDTO(){}
         public StudentDTO(Student student)
         {
@@ -87,10 +93,11 @@ namespace LangLang.DTO
             RequestedCourses = student.RequestedCourses;
             ActiveCourseId = student.ActiveCourseId;
             FinishedCourses = student.FinishedCourses;
+            LastPenaltyProcessedAt = student.LastPenaltyProcessedAt;
         }
         public Student ToStudent()
         {
-            return new Student(FirstName,LastName,Gender,DateOfBirth,PhoneNumber,Email,Password,EducationLevel,DateOfRegistration,PenaltyPoints, RequestedCourses,ActiveCourseId, FinishedCourses);
+            return new Student(FirstName,LastName,Gender,DateOfBirth,PhoneNumber,Email,Password,EducationLevel,DateOfRegistration,PenaltyPoints, RequestedCourses,ActiveCourseId, FinishedCourses,LastPenaltyProcessedAt);
         }
 
         private readonly StudentDTOValidator validator = new StudentDTOValidator();
