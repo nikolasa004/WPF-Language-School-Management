@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using LangLang.Model.DAO.Users;
+using LangLang.Model.Enums;
 using LangLang.Model.Users;
 using LangLang.Observer;
 
@@ -40,6 +42,10 @@ namespace LangLang.Controller.Users
         {
             return _students.GetRequestedCourses(email);
         }
+        public List<Tuple<Language, LanguageLevel>> GetFinishedCourses(string email)
+        {
+            return _students.GetFinishedCourses(email);
+        }
 
         public void AddCourseRequest(string studentEmail, int courseId)
         {
@@ -58,6 +64,11 @@ namespace LangLang.Controller.Users
                 student.RequestedCourses.Remove(courseId);
                 Update(student);
             }
+        }
+
+        public void FinishActiveCourse(string studentEmail, Language language, LanguageLevel level)
+        {
+            _students.FinishActiveCourse(studentEmail, language, level);
         }
 
         public void Subscribe(IObserver observer)

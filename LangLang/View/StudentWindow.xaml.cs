@@ -7,6 +7,8 @@ using LangLang.View;
 using System.Windows;
 using System.Windows.Controls;
 using LangLang.Controller.Messages;
+using LangLang.Controller.Requests;
+using System;
 
 namespace LangLang.RoleWindows
 {
@@ -14,10 +16,11 @@ namespace LangLang.RoleWindows
     {
         public StudentDTO Student { get; set; }
         public StudentDTO UpdateStudent { get; set; }
-        private StudentsController studentsController;
 
+        private StudentsController studentsController;
         private CourseController courseController;
         private MessagesController messagesController;
+        private CourseEnrollmentsController enrollmentsController;
 
         private StudentViewExams studentViewExams;
         private StudentViewCourses studentViewCourses;
@@ -29,17 +32,26 @@ namespace LangLang.RoleWindows
         {
             InitializeComponent();
             DataContext = this;
-            Student = new StudentDTO(student);
-            UpdateStudent = new StudentDTO(student);
             this.studentsController = studentsController;
             courseController = new CourseController();
             messagesController = new MessagesController();
+            enrollmentsController = new CourseEnrollmentsController();
 
             studentViewExams = new StudentViewExams(ExamLanguageCombo, ExamLevelCombo, ExamFromDate, ExamToDate, ExamsGrid);
-            studentViewCourses = new StudentViewCourses(courseController, CourseLanguageCombo, CourseLevelCombo, CourseOnlineCombo, CourseWeeksBox, CourseFromDate, CourseToDate, CoursesGrid, Student.Email, studentsController, messagesController);
-            studentViewProfile = new StudentViewProfile(Student, studentsController, courseController, FirstNameBox, LastNameBox, MaleRadioButton, FemaleRadioButton, BirthDatePicker, PhoneBox, EmailBox, PasswordTextBox, EducationComboBox);
+            studentViewCourses = new StudentViewCourses(courseController, enrollmentsController, CourseLanguageCombo, CourseLevelCombo, CourseOnlineCombo, CourseWeeksBox, CourseFromDate, CourseToDate, CoursesGrid, student.Email, studentsController, messagesController);
+            RateWindow? rateWindow = studentViewCourses.CheckIfActiveCourseFinished();
+            Student = new StudentDTO(student);
+            UpdateStudent = new StudentDTO(student);
+            studentViewProfile = new StudentViewProfile(Student, studentsController, courseController,enrollmentsController, messagesController, FirstNameBox, LastNameBox, MaleRadioButton, FemaleRadioButton, BirthDatePicker, PhoneBox, EmailBox, PasswordTextBox, EducationComboBox);
+            
             studentViewProfile.SetLabels(NameLabel, SurnameLabel, GenderLabel, BirthDateLabel, PhoneLabel, EmailLabel, EducationLabel, CurrentCourseLabel, PenaltyPointsLabel,JoinedDateLabel);
             InformationUpdate();
+
+            if (rateWindow != null)
+            {
+                rateWindow.Show();
+                rateWindow.Topmost = true;
+            }
         }
         private void ActivityButton_Click(object sender, RoutedEventArgs e)
         {
@@ -154,6 +166,11 @@ namespace LangLang.RoleWindows
             CoursePanelButton.Content = "Unenroll";
             studentViewCourses.ShowActiveCourse();
             OpenCoursesPanel_Click(sender, e);
+        }
+        private void ShowFinishedCourses_Click(object sender, RoutedEventArgs e)
+        {
+            currentCoursePanel = string.Empty;
+            studentViewCourses.ShowFinishedCourses();
         }
         private void CoursesSearch_Click(object sender, RoutedEventArgs e)
         {

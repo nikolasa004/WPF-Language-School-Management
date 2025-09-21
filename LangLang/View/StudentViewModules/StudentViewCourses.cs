@@ -8,6 +8,7 @@ using LangLang.Model.Requests;
 using LangLang.Model.TeachingActivities;
 using LangLang.Model.Users;
 using LangLang.View;
+using LangLang.View.StudentViewModules;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -25,6 +26,7 @@ namespace LangLang.RoleWindows.StudentViewModules
         private readonly CourseEnrollmentsController _enrollmentsController;
         private readonly StudentsController _studentsController;
         private readonly MessagesController _messagesController;
+        private readonly ProfessorsController _professorsController;
 
         private List<CourseDTO> _availableCourses;
         private List<CourseDTO> _filtered;   // after filters
@@ -46,12 +48,13 @@ namespace LangLang.RoleWindows.StudentViewModules
 
         private string _studentId;
 
-        public StudentViewCourses(CourseController courseController,ComboBox examLanguageCombo, ComboBox examLevelCombo, ComboBox courseOnlineCombo, TextBox courseWeeksBox, DatePicker examFromDate, DatePicker examToDate, DataGrid examsGrid, string studentId, StudentsController studentsController, MessagesController messagesController)
+        public StudentViewCourses(CourseController courseController, CourseEnrollmentsController courseEnrollmentsController, ComboBox examLanguageCombo, ComboBox examLevelCombo, ComboBox courseOnlineCombo, TextBox courseWeeksBox, DatePicker examFromDate, DatePicker examToDate, DataGrid examsGrid, string studentId, StudentsController studentsController, MessagesController messagesController)
         {
             _courseController = courseController;
-            _enrollmentsController = new CourseEnrollmentsController();
+            _enrollmentsController = courseEnrollmentsController;
             _studentsController = studentsController;
             _messagesController = messagesController;
+            _professorsController = new ProfessorsController();
             CourseLanguageCombo = examLanguageCombo;
             CourseLevelCombo = examLevelCombo;
             CourseOnlineCombo = courseOnlineCombo;
@@ -78,6 +81,26 @@ namespace LangLang.RoleWindows.StudentViewModules
 
             CourseLanguageCombo.SelectedIndex = -1;
             CourseLevelCombo.SelectedIndex = -1;
+        }
+
+        public RateWindow? CheckIfActiveCourseFinished()
+        {
+            Student? student = _studentsController.GetStudentById(_studentId);
+            if (student != null && student.ActiveCourseId != -1)
+            {
+                Course? course = _courseController.GetById(student.ActiveCourseId);
+                if (course != null)
+                {
+                    DateTime? start = GetStartDateTime(new CourseDTO(course));
+                    if (start.HasValue && start.Value.AddDays(course.DurationWeeks * 7) < DateTime.Now)
+                    {
+                        RateWindow rateWindow = new RateWindow(course.ProfessorId,"professor", _professorsController);
+                        _studentsController.FinishActiveCourse(_studentId, course.Language, course.Level);
+                        return rateWindow;
+                    }
+                }
+            }
+            return null;
         }
 
         public void ShowAllCourses()
@@ -146,6 +169,12 @@ namespace LangLang.RoleWindows.StudentViewModules
             _filtered = _availableCourses;
             _sorted = ApplySort(_filtered, _sortKey, _sortDir).ToList();
             ApplyFiltersSortAndPage();
+        }
+
+        public void ShowFinishedCourses()
+        {
+            StudentFinishedLevelsWindow studentFinishedLevelsWindow = new StudentFinishedLevelsWindow(_studentsController, _studentId);
+            studentFinishedLevelsWindow.Show();
         }
 
         public void SearchCourses()

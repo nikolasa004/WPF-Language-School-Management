@@ -4,6 +4,10 @@
       "English": 3,
       "German": 2
     },
+    "AverageRating": {
+      "Item1": 12,
+      "Item2": 2
+    },
     "FirstName": "Profesor",
     "LastName": "Profesoric",
     "Gender": 0,
@@ -19,6 +23,10 @@
       "English": 3,
       "German": 2
     },
+    "AverageRating": {
+      "Item1": 0,
+      "Item2": 0
+    },
     "FirstName": "Profesor",
     "LastName": "Profesoric",
     "Gender": 0,
@@ -32,6 +40,10 @@
   {
     "Languages": {
       "Spanish": 2
+    },
+    "AverageRating": {
+      "Item1": 0,
+      "Item2": 0
     },
     "FirstName": "Mitar",
     "LastName": "Mitrovic",
@@ -47,6 +59,10 @@
     "Languages": {
       "Spanish": 2
     },
+    "AverageRating": {
+      "Item1": 0,
+      "Item2": 0
+    },
     "FirstName": "Mitar",
     "LastName": "Mitrovic",
     "Gender": 0,
@@ -60,6 +76,10 @@
   {
     "Languages": {
       "Italian": 0
+    },
+    "AverageRating": {
+      "Item1": 0,
+      "Item2": 0
     },
     "FirstName": "Nikolica",
     "LastName": "Nikolic",

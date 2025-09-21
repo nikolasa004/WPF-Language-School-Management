@@ -31,6 +31,10 @@ namespace LangLang.Controller.Requests
         {
             _courseEnrollments.RemoveCourseEnrollment(courseEnrollmentId);
         }
+        public void DeleteByStudent(string studentId)
+        {
+            _courseEnrollments.RemoveEnrollmentsByStudent(studentId);
+        }
 
         public CourseEnrollment? GetCourseEnrollmentById(int id)
         {

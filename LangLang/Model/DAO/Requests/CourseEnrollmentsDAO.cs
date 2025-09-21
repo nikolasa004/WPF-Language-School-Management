@@ -53,6 +53,12 @@ namespace LangLang.Model.DAO.Requests
             CourseEnrollmentSubject.NotifyObservers();
             return courseEnrollment;
         }
+        public void RemoveEnrollmentsByStudent(string studentId)
+        {
+            _courseEnrollments.RemoveAll(ce => ce.StudentID == studentId);
+            _storage.Save(_courseEnrollments);
+            CourseEnrollmentSubject.NotifyObservers();
+        }
 
         public CourseEnrollment? GetCourseEnrollmentById(int id)
         {

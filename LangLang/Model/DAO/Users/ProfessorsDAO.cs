@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using LangLang.Observer;
 using LangLang.Model.Users;
+using System;
 
 namespace LangLang.Model.DAO.Users
 {
@@ -41,6 +42,7 @@ namespace LangLang.Model.DAO.Users
             oldProfessor.EducationLevel = professor.EducationLevel;
             oldProfessor.DateOfRegistration = professor.DateOfRegistration;
             oldProfessor.Languages = professor.Languages;
+            oldProfessor.AverageRating = professor.AverageRating;
 
             _storage.Save(_professors);
             ProfessorSubject.NotifyObservers();
@@ -61,6 +63,19 @@ namespace LangLang.Model.DAO.Users
         public Professor? GetProfessorById(string email)
         {
             return _professors.Find(p => p.Email == email);
+        }
+
+        public void AddRating(string professorEmail, int rating)
+        {
+            Professor? professor = GetProfessorById(professorEmail);
+            if (professor != null)
+            {
+                int totalRating = professor.AverageRating.Item1 + rating;
+                int numberOfRatings = professor.AverageRating.Item2 + 1;
+                professor.AverageRating = new Tuple<int, int>(totalRating, numberOfRatings);
+                _storage.Save(_professors);
+                ProfessorSubject.NotifyObservers();
+            }
         }
 
         public List<Professor> GetAllProfessors()

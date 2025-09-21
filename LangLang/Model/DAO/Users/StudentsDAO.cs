@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using LangLang.Observer;
 using LangLang.Model.Users;
+using LangLang.Model.Enums;
+using System;
 
 namespace LangLang.Model.DAO.Users
 {
@@ -42,6 +44,7 @@ namespace LangLang.Model.DAO.Users
             oldStudent.PenaltyPoints = student.PenaltyPoints;
             oldStudent.RequestedCourses = student.RequestedCourses;
             oldStudent.ActiveCourseId = student.ActiveCourseId;
+            oldStudent.FinishedCourses = student.FinishedCourses;
 
             _storage.Save(_students);
             StudentSubject.NotifyObservers();
@@ -71,6 +74,24 @@ namespace LangLang.Model.DAO.Users
             Student? student = GetStudentById(email);
             if (student == null) return new List<int>();
             return student.RequestedCourses;
+        }
+        public List<Tuple<Language, LanguageLevel>> GetFinishedCourses(string email)
+        {
+            Student? student = GetStudentById(email);
+            if (student == null) return new List<Tuple<Language, LanguageLevel>>();
+            return student.FinishedCourses;
+        }
+
+        public void FinishActiveCourse(string studentEmail, Language language, LanguageLevel level)
+        {
+            Student? student = GetStudentById(studentEmail);
+            if (student != null && student.ActiveCourseId != -1)
+            {
+                student.FinishedCourses.Add(new Tuple<Language, LanguageLevel>(language, level));
+                student.ActiveCourseId = -1;
+                _storage.Save(_students);
+                StudentSubject.NotifyObservers();
+            }
         }
     }
 }
