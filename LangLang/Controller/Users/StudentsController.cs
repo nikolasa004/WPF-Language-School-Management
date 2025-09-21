@@ -87,8 +87,9 @@ namespace LangLang.Controller.Users
             {
                 student.RequestedCourses.Remove(courseId);
                 student.ActiveCourseId = courseId;
-                Update(student); 
+                Update(student);
             }
+        }
         public int ApplyPenaltyDecayForAll()
         {
             return _students.ApplyMonthlyPenaltyDecayForAll(DateTime.Now);

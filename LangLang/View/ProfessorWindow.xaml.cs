@@ -222,7 +222,7 @@ namespace LangLang.RoleWindows
         }
 
 
-        private void StartStudent_Click(object sender, RoutedEventArgs e) { }
+        private void StartStudent_Click(object sender, SelectionChangedEventArgs e) 
         { 
             if(_examsView == null)
                 return;

@@ -25,5 +25,14 @@
     "Body": "ma bezi bre",
     "Date": "2025-09-22",
     "IsRead": false
+  },
+  {
+    "Id": 4,
+    "RecipientId": "student@gmail.com",
+    "SenderId": "profesor@gmail.com",
+    "Title": "You have been enrolled in English A1",
+    "Body": "You have been successfully enrolled in the course.\n\nCourse: English A1\nStart Date: 01.01.2025\nTime: 10:00\nDuration: 8 weeks\nIs Live: Yes",
+    "Date": "2025-09-22",
+    "IsRead": false
   }
 ]
