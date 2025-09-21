@@ -2,6 +2,7 @@
 using LangLang.Storage.Serialization;
 using System.Text.Json;
 using System.Collections.Generic;
+using System;
 
 namespace LangLang.Model.Users
 {
@@ -10,8 +11,8 @@ namespace LangLang.Model.Users
         public int PenaltyPoints { get; set; }
         public List<int> RequestedCourses { get; set; }
         public int ActiveCourseId { get; set; }
+        public List<Tuple<Language, LanguageLevel>> FinishedCourses { get; set; }
         // and a list of requested exams
-        // and a list of finished courses
         // and a list of finished exams
         // and active exam
 
@@ -20,17 +21,19 @@ namespace LangLang.Model.Users
             PenaltyPoints = 0;
             RequestedCourses = new List<int>();
             ActiveCourseId = -1;
+            FinishedCourses = new List<Tuple<Language, LanguageLevel>>();
         }
-        public Student(string firstName, string lastName, Gender gender, string dateOfBirth, string phoneNumber, string email, string password, EducationLevel educationLevel, string dateOfRegistration, int penaltyPoints, List<int> requestedCourses, int activeCourseId) : base(firstName, lastName, gender, dateOfBirth, phoneNumber, email, password, educationLevel, dateOfRegistration)
+        public Student(string firstName, string lastName, Gender gender, string dateOfBirth, string phoneNumber, string email, string password, EducationLevel educationLevel, string dateOfRegistration, int penaltyPoints, List<int> requestedCourses, int activeCourseId, List<Tuple<Language, LanguageLevel>> finishedCourses) : base(firstName, lastName, gender, dateOfBirth, phoneNumber, email, password, educationLevel, dateOfRegistration)
         {
             PenaltyPoints = penaltyPoints;
             RequestedCourses = requestedCourses;
             ActiveCourseId = activeCourseId;
+            FinishedCourses = finishedCourses;
         }
 
         public override string ToString()
         {
-            return base.ToString() + "\n" + "Penalty Points: " + PenaltyPoints+ "\n" + "Requested Courses: " + string.Join(", ", RequestedCourses) + "\n" + "Active Course ID: " + ActiveCourseId;
+            return base.ToString() + "\n" + "Penalty Points: " + PenaltyPoints+ "\n" + "Requested Courses: " + string.Join(", ", RequestedCourses) + "\n" + "Active Course ID: " + ActiveCourseId + "\n" + "Finished Courses: " + string.Join(", ", FinishedCourses);
         }
 
         public string ToJSON()
@@ -55,6 +58,7 @@ namespace LangLang.Model.Users
                 PenaltyPoints = student.PenaltyPoints;
                 RequestedCourses = student.RequestedCourses;
                 ActiveCourseId = student.ActiveCourseId;
+                FinishedCourses = student.FinishedCourses;
             }
         }
     }

@@ -23,6 +23,10 @@ namespace LangLang.Controller.Messages
         {
             _studentMessages.RemoveMessage(messageId);
         }
+        public void StudentDeleteByStudent(string  studentId)
+        {
+            _studentMessages.RemoveMessagesByUser(studentId);
+        }
         public void StudentUpdateReadStatus(int messageId)
         {
             _studentMessages.UpdateMessageReadStatus(messageId);

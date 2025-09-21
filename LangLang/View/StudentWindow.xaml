@@ -86,7 +86,7 @@
                                                 <Image Source="/GUIResources/star.png" Width="16" Height="16"/>
                                             </MenuItem.Icon>
                                         </MenuItem>
-                                        <MenuItem Header="Show finished courses">
+                                        <MenuItem Header="Show finished courses" Click="ShowFinishedCourses_Click">
                                             <MenuItem.Icon>
                                                 <Image Source="/GUIResources/star.png" Width="16" Height="16"/>
                                             </MenuItem.Icon>

@@ -3,6 +3,7 @@ using LangLang.DTO.Validators;
 using System.ComponentModel;
 using LangLang.Model.Users;
 using System.Collections.Generic;
+using System;
 
 namespace LangLang.DTO
 {
@@ -68,6 +69,7 @@ namespace LangLang.DTO
         public int PenaltyPoints { get; set; }=0;
         public List<int> RequestedCourses { get; set; }=new List<int>();
         public int ActiveCourseId { get; set; }=-1;
+        public List<Tuple<Language, LanguageLevel>> FinishedCourses { get; set; }=new List<Tuple<Language, LanguageLevel>>();
 
         public StudentDTO(){}
         public StudentDTO(Student student)
@@ -84,10 +86,11 @@ namespace LangLang.DTO
             PenaltyPoints = student.PenaltyPoints;
             RequestedCourses = student.RequestedCourses;
             ActiveCourseId = student.ActiveCourseId;
+            FinishedCourses = student.FinishedCourses;
         }
         public Student ToStudent()
         {
-            return new Student(FirstName,LastName,Gender,DateOfBirth,PhoneNumber,Email,Password,EducationLevel,DateOfRegistration,PenaltyPoints, RequestedCourses,ActiveCourseId);
+            return new Student(FirstName,LastName,Gender,DateOfBirth,PhoneNumber,Email,Password,EducationLevel,DateOfRegistration,PenaltyPoints, RequestedCourses,ActiveCourseId, FinishedCourses);
         }
 
         private readonly StudentDTOValidator validator = new StudentDTOValidator();

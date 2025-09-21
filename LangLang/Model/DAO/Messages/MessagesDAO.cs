@@ -49,6 +49,13 @@ namespace LangLang.Model.DAO.Messages
             MessageSubject.NotifyObservers();
             return message;
         }
+        public void RemoveMessagesByUser(string userId)
+        {
+            _messages.Remove(userId);
+            messages.RemoveAll(m => m.RecipientId == userId);
+            _storage.Save(messages);
+            MessageSubject.NotifyObservers();
+        }
         public void UpdateMessageReadStatus(int id)
         {
             Message? message = GetMessageById(id);

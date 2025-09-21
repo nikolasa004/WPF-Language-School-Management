@@ -3,6 +3,7 @@ using LangLang.DTO.Validators;
 using System.Collections.Generic;
 using System.ComponentModel;
 using LangLang.Model.Users;
+using System;
 
 namespace LangLang.DTO
 {
@@ -80,6 +81,7 @@ namespace LangLang.DTO
             get => languages;
             set => SetProperty(ref languages, value, nameof(Languages));
         }
+        public Tuple<int, int> AverageRating { get; set; } = new Tuple<int, int>(0, 0);
 
         public ProfessorDTO() { }
 
@@ -95,6 +97,7 @@ namespace LangLang.DTO
             dateOfRegistration = professor.DateOfRegistration;
             educationLevel = professor.EducationLevel;
             languages = new Dictionary<Language, LanguageLevel>(professor.Languages);
+            AverageRating = professor.AverageRating;
         }
 
         public Professor ToProfessor()
@@ -109,7 +112,8 @@ namespace LangLang.DTO
                 Password,
                 EducationLevel,
                 DateOfRegistration,
-                Languages
+                Languages,
+                AverageRating
             );
         }
 
