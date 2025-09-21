@@ -125,7 +125,12 @@ namespace LangLang.RoleWindows
         private void ExamsGrid_Sorting(object sender, DataGridSortingEventArgs e) => _examsView.GridSorting(sender, e);
         private void PrevPage_Click(object? sender, RoutedEventArgs e) => _examsView.PrevPage(sender, e);
         private void NextPage_Click(object? sender, RoutedEventArgs e) => _examsView.NextPage(sender, e);
-        private void PageSizeCombo_SelectionChanged(object sender, SelectionChangedEventArgs e) => _examsView.PageSizeChanged(sender, e, IsLoaded);
+        private void PageSizeCombo_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        { 
+            if(_examsView == null)
+                return;
+            _examsView.PageSizeChanged(sender, e, IsLoaded);
+        }
 
         private void AddExam_Click(object sender, RoutedEventArgs e) => _examsManage.OpenAddOverlay(this);
         private void SaveNewExam_Click(object sender, RoutedEventArgs e) => _examsManage.SaveNewExam(this);

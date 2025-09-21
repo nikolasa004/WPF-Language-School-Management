@@ -75,5 +75,10 @@ namespace LangLang.Controller.Users
         {
             _students.StudentSubject.Subscribe(observer);
         }
+
+        public int ApplyPenaltyDecayForAll()
+        {
+            return _students.ApplyMonthlyPenaltyDecayForAll(DateTime.Now);
+        }
     }
 }
