@@ -29,7 +29,21 @@ namespace LangLang
             Professor = new ProfessorDTO();
             professorsController = new ProfessorsController();
             authenticationController = new AuthenticationService(studentsController, professorsController, principalEmail, principalPassword);
+            try
+            {
+                studentsController.ApplyPenaltyDecayForAll();
+                // (opciono) Debug prikaz:
+                // MessageBox.Show($"Penalty decay applied.", "Info");
+            }
+            catch (Exception ex)
+            {
+                // Ako nešto pođe po zlu, prikaži poruku umesto tihog pada
+                MessageBox.Show(ex.Message, "Penalty decay error", MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
+        
         }
+
+
 
         private void OpenLoginPanel_Click(object sender, RoutedEventArgs e)
         {

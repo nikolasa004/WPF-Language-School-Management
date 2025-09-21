@@ -227,5 +227,7 @@ namespace LangLang.RoleWindows
             MessagesInboxWindow messagesInboxWindow = new MessagesInboxWindow(Student.Email, messagesController);
             messagesInboxWindow.Show();
         }
+
+        
     }
 }
