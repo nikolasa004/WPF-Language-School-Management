@@ -119,5 +119,17 @@ namespace LangLang.Controller.Users
         {
             _students.FinishActiveExam(studentEmail, language, level);
         }
+
+        public bool IsExamApplicationLocked(string studentEmail)
+         => _students.GetStudentById(studentEmail)?.IsExamApplicationLocked ?? false;
+
+        public void LockExamApplications(string studentEmail)
+            => _students.LockExamApplications(studentEmail);
+
+        public void UnlockExamApplications(string studentEmail)
+            => _students.UnlockExamApplications(studentEmail);
+
+        public void RecordExamDecision(string studentEmail, Language language, LanguageLevel level, bool passed)
+            => _students.RecordExamDecision(studentEmail, language, level, passed);
     }
 }

@@ -5,15 +5,13 @@ using LangLang.DTO;
 using LangLang.Model.Enums;
 using LangLang.Model.Requests;
 using LangLang.Model.TeachingActivities;
-
+using LangLang.View.StudentViewModules;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Globalization;
 using System.Linq;
-using LangLang.View.StudentViewModules;
-
 using System.Windows;
 using System.Windows.Controls;
 
@@ -99,7 +97,7 @@ namespace LangLang.RoleWindows.StudentViewModules
         public void ShowAllExams()
         {
             var all = _examController.GetAll();
-            _availableExams = GetAvailableExams(all); // koristi filter iz zadatka
+            _availableExams = GetAvailableExams(all);
             _filtered = _availableExams;
             _sorted = ApplySort(_filtered, _sortKey, _sortDir).ToList();
             ApplyFiltersSortAndPage();
@@ -123,65 +121,57 @@ namespace LangLang.RoleWindows.StudentViewModules
                 _availableExams = term != null ? new List<ExamTermDTO> { new ExamTermDTO(term) }
                                                : new List<ExamTermDTO>();
             }
-            else
-            {
-                _availableExams = new List<ExamTermDTO>();
-            }
+            else _availableExams = new List<ExamTermDTO>();
 
             _filtered = _availableExams;
             _sorted = ApplySort(_filtered, _sortKey, _sortDir).ToList();
             ApplyFiltersSortAndPage();
         }
 
+        public void ShowFinishedExams()
+        {
+            var win = new StudentFinishedExamsWindow(_studentsController, _studentId);
+            win.Show();
+        }
 
         public void SearchExams(object sender, RoutedEventArgs e) => ApplyFiltersSortAndPage(resetPage: true);
 
         // -------------------------
         // Helpers (load/filter/sort)
         // -------------------------
-        
-
         private List<ExamTermDTO> GetExamsByIds(List<int> examIds)
         {
-            List<ExamTermDTO> exams = new();
+            var exams = new List<ExamTermDTO>();
             foreach (int id in examIds)
             {
-                ExamTerm? exam = _examController.GetById(id);
-                if (exam != null)
-                    exams.Add(new ExamTermDTO(exam));
+                var exam = _examController.GetById(id);
+                if (exam != null) exams.Add(new ExamTermDTO(exam));
             }
             return exams;
         }
 
         private List<ExamTermDTO> ApplyCurrentFilters(List<ExamTermDTO> input)
         {
-            Language? lang = null;
-            LanguageLevel? level = null;
-
-            if (ExamLanguageCombo.SelectedItem is Language selLang) lang = selLang;
-            if (ExamLevelCombo.SelectedItem is LanguageLevel selLevel) level = selLevel;
+            Language? lang = ExamLanguageCombo.SelectedItem is Language l ? l : null;
+            LanguageLevel? level = ExamLevelCombo.SelectedItem is LanguageLevel lev ? lev : null;
 
             DateTime? from = ExamFromDate.SelectedDate?.Date;
             DateTime? to = ExamToDate.SelectedDate?.Date;
-
-            if (from.HasValue && to.HasValue && from.Value > to.Value)
-                (from, to) = (to, from);
+            if (from.HasValue && to.HasValue && from.Value > to.Value) (from, to) = (to, from);
 
             return GetFilterResults(input, lang, level, from, to);
         }
 
         private List<ExamTermDTO> GetFilterResults(List<ExamTermDTO> input, Language? lang, LanguageLevel? level, DateTime? from, DateTime? to)
         {
-            List<ExamTerm> inputRaw = input.Select(dto => dto.ToExamTerm()).ToList();
-            List<ExamTerm> resultRaw = _examController.SearchExamTerms(inputRaw, lang, level, from, to);
-            List<ExamTermDTO> result = resultRaw.Select(exam => new ExamTermDTO(exam)).ToList();
-            return result;
+            var inputRaw = input.Select(dto => dto.ToExamTerm()).ToList();
+            var resultRaw = _examController.SearchExamTerms(inputRaw, lang, level, from, to);
+            return resultRaw.Select(exam => new ExamTermDTO(exam)).ToList();
         }
 
         private IEnumerable<ExamTermDTO> ApplySort(IEnumerable<ExamTermDTO> source, string sortKey, ListSortDirection direction)
         {
             var key = NormalizeSortKey(sortKey);
-
             Func<ExamTermDTO, object> keySelector = key switch
             {
                 "Id" => exam => exam.Id,
@@ -193,17 +183,14 @@ namespace LangLang.RoleWindows.StudentViewModules
                 "Date" => exam => GetStartDateTime(exam) ?? DateTime.MinValue,
                 _ => exam => GetStartDateTime(exam) ?? DateTime.MinValue
             };
-
-            return direction == ListSortDirection.Ascending
-                ? source.OrderBy(keySelector)
-                : source.OrderByDescending(keySelector);
+            return direction == ListSortDirection.Ascending ? source.OrderBy(keySelector)
+                                                            : source.OrderByDescending(keySelector);
         }
 
         private static string NormalizeSortKey(string key)
         {
             if (string.IsNullOrWhiteSpace(key)) return "Date";
             key = key.Trim();
-
             return key.ToLower() switch
             {
                 "id" => "Id",
@@ -241,14 +228,10 @@ namespace LangLang.RoleWindows.StudentViewModules
             if (resetPage) _currentPage = 1;
             _currentPage = Math.Min(Math.Max(_currentPage, 1), totalPages);
 
-            var slice = _sorted
-                .Skip((_currentPage - 1) * _pageSize)
-                .Take(_pageSize)
-                .ToList();
+            var slice = _sorted.Skip((_currentPage - 1) * _pageSize).Take(_pageSize).ToList();
 
             _page.Clear();
-            foreach (var exam in slice)
-                _page.Add(exam);
+            foreach (var exam in slice) _page.Add(exam);
 
             if (ExamLanguageCombo.FindName("PagerTextExams") is TextBlock pager)
                 pager.Text = $"Page {_currentPage}/{totalPages}  ·  {(_sorted.Count == 1 ? "1 item" : _sorted.Count + " items")}";
@@ -261,28 +244,19 @@ namespace LangLang.RoleWindows.StudentViewModules
         {
             e.Handled = true;
 
-            foreach (var column in ExamsGrid.Columns)
-                column.SortDirection = null;
+            foreach (var column in ExamsGrid.Columns) column.SortDirection = null;
 
-            var key = e.Column.SortMemberPath ?? e.Column.Header?.ToString() ?? "Date";
-            key = NormalizeSortKey(key);
-
+            var key = NormalizeSortKey(e.Column.SortMemberPath ?? e.Column.Header?.ToString() ?? "Date");
             if (_sortKey.Equals(key, StringComparison.OrdinalIgnoreCase))
-                _sortDir = _sortDir == ListSortDirection.Ascending
-                         ? ListSortDirection.Descending
-                         : ListSortDirection.Ascending;
-            else
-            {
-                _sortKey = key;
-                _sortDir = ListSortDirection.Ascending;
-            }
+                _sortDir = _sortDir == ListSortDirection.Ascending ? ListSortDirection.Descending : ListSortDirection.Ascending;
+            else { _sortKey = key; _sortDir = ListSortDirection.Ascending; }
 
             e.Column.SortDirection = _sortDir;
             ApplyFiltersSortAndPage(resetPage: false);
         }
 
         // -------------------------
-        // Paging handlers (WPF event potpisi)
+        // Paging handlers
         // -------------------------
         public void PageSizeChanged(object sender, SelectionChangedEventArgs e)
         {
@@ -301,134 +275,155 @@ namespace LangLang.RoleWindows.StudentViewModules
 
         public void PrevPage(object sender, RoutedEventArgs e)
         {
-            if (_currentPage > 1)
-            {
-                _currentPage--;
-                ApplyFiltersSortAndPage(resetPage: false);
-            }
+            if (_currentPage <= 1) return;
+            _currentPage--;
+            ApplyFiltersSortAndPage(resetPage: false);
         }
 
         public void NextPage(object sender, RoutedEventArgs e)
         {
             var totalPages = Math.Max(1, (int)Math.Ceiling((double)_sorted.Count / _pageSize));
-            if (_currentPage < totalPages)
-            {
-                _currentPage++;
-                ApplyFiltersSortAndPage(resetPage: false);
-            }
+            if (_currentPage >= totalPages) return;
+            _currentPage++;
+            ApplyFiltersSortAndPage(resetPage: false);
         }
 
         // -------------------------
-        // Actions (apply / cancel)
+        // Actions: APPLY / CANCEL (split to helpers)
         // -------------------------
         public void RequestForExam()
         {
-            if (ExamsGrid.SelectedItem is not ExamTermDTO selectedExam)
-            {
-                MessageBox.Show("Please select an exam term to apply.", "No Selection",
-                    MessageBoxButton.OK, MessageBoxImage.Warning);
-                return;
-            }
-
-            var start = GetStartDateTime(selectedExam);
-            if (!start.HasValue || start.Value < DateTime.Now.AddDays(7))
-            {
-                MessageBox.Show("You can only apply to exam terms at least 7 days in advance.",
-                    "Application Not Allowed", MessageBoxButton.OK, MessageBoxImage.Warning);
-                return;
-            }
-
-            // 1) kreiraj ENROLLMENT zapis
-            int? newEnrollmentId = _enrollmentsController.Add(
-                new ExamEnrollment(
-                    0,
-                    _studentId,
-                    selectedExam.Id, // TeachingActivityID = ExamTerm.Id
-                    DateTime.Now.ToString("yyyy-MM-dd"),
-                    RequestStatus.Pending));
-
-            if (newEnrollmentId == null)
-            {
-                MessageBox.Show("Exam application could not be created (term may be full).",
-                    "Not Allowed", MessageBoxButton.OK, MessageBoxImage.Warning);
-                return;
-            }
-
-            // 2) U STUDENTA upisujemo TERM ID (ne enrollment id!)
-            _studentsController.AddExamRequest(_studentId, selectedExam.Id);
-
-            MessageBox.Show("Exam application submitted successfully!", "Success",
-                MessageBoxButton.OK, MessageBoxImage.Information);
-
-            // skloni termin iz available liste i osveži
-            _availableExams.RemoveAll(e => e.Id == selectedExam.Id);
-            ApplyFiltersSortAndPage(resetPage: true);
+            var selectedExam = GetSelectedExamOrWarn();
+            if (selectedExam == null) return;
+            if (!CanApplyToExam(selectedExam)) return;
+            if (!CreateEnrollment(selectedExam)) return;
+            AfterApplySuccess(selectedExam);
         }
 
         public void CancelRequestForExam()
         {
-            if (ExamsGrid.SelectedItem is not ExamTermDTO selectedExam)
+            var selectedExam = GetSelectedExamOrWarn();
+            if (selectedExam == null) return;
+            if (!CanCancel(selectedExam)) return;
+
+            var enrollment = FindEnrollmentForSelected(selectedExam.Id);
+            if (enrollment == null)
             {
-                MessageBox.Show("Please select an exam application to cancel.", "No Selection",
+                MessageBox.Show("Application record not found for this exam term.", "Error",
+                    MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+
+            if (!_enrollmentsController.CancelEnrollment(enrollment.ID))
+            {
+                MessageBox.Show("Too late to cancel this application.", "Cancellation Not Allowed",
                     MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 
-            if (GetStartDateTime(selectedExam) is DateTime start && start < DateTime.Now.AddDays(7))
-            {
-                MessageBox.Show("You can only cancel applications for exam terms that start in more than 7 days.",
-                    "Cancellation Not Allowed", MessageBoxButton.OK, MessageBoxImage.Warning);
-                return;
-            }
-
-            var confirm = MessageBox.Show(
-                "Are you sure you want to cancel the application for the selected exam term?",
-                "Confirm Cancellation", MessageBoxButton.YesNo, MessageBoxImage.Question);
-
-            if (confirm != MessageBoxResult.Yes) return;
-
-            // Student čuva TERM ID, pa moramo naći odgovarajući ENROLLMENT za (studentId, termId)
-            int termId = selectedExam.Id;
-
-            // jednostavno: pogledaj sve prijave za taj termin i nađi onu od ovog studenta
-            var enrollmentsForTerm = _enrollmentsController.GetAllExamEnrollments()
-                .Where(e => e.TeachingActivityID == termId && e.StudentID == _studentId)
-                .ToList();
-
-            if (enrollmentsForTerm.Count == 0)
-            {
-                MessageBox.Show("Application record not found for this exam term.",
-                    "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                return;
-            }
-
-            int enrollmentId = enrollmentsForTerm[0].ID;
-
-            bool ok = _enrollmentsController.CancelEnrollment(enrollmentId);
-            if (!ok)
-            {
-                MessageBox.Show("Too late to cancel this application.",
-                    "Cancellation Not Allowed", MessageBoxButton.OK, MessageBoxImage.Warning);
-                return;
-            }
-
-            // iz studenta ukloni TERM ID
-            _studentsController.RemoveExamRequest(_studentId, termId);
-
+            _studentsController.RemoveExamRequest(_studentId, selectedExam.Id);
             MessageBox.Show("Cancelled exam application successfully.", "Success",
                 MessageBoxButton.OK, MessageBoxImage.Information);
 
-            // opciono: vrati termin u available pa osveži
             if (!_availableExams.Any(e => e.Id == selectedExam.Id))
                 _availableExams.Add(selectedExam);
 
             ApplyFiltersSortAndPage(resetPage: true);
         }
 
+        // ---------- helpers for APPLY ----------
+        private ExamTermDTO? GetSelectedExamOrWarn()
+        {
+            if (ExamsGrid.SelectedItem is ExamTermDTO sel) return sel;
+            MessageBox.Show("Please select an exam term first.", "No Selection",
+                MessageBoxButton.OK, MessageBoxImage.Warning);
+            return null;
+        }
+
+        private bool CanApplyToExam(ExamTermDTO term)
+        {
+            var s = _studentsController.GetStudentById(_studentId);
+            if (s?.IsExamApplicationLocked == true)
+            {
+                MessageBox.Show("Exam applications are temporarily locked. Please wait for the director's decision.",
+                    "Locked", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return false;
+            }
+
+            if (_studentsController.GetActiveExamTermId(_studentId) != -1)
+            {
+                MessageBox.Show("You already have an active exam application.",
+                    "Not Allowed", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return false;
+            }
+
+            var start = GetStartDateTime(term);
+            if (!start.HasValue || start.Value <= DateTime.Now)
+            {
+                MessageBox.Show("You can only apply to future exam terms.",
+                    "Not Allowed", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return false;
+            }
+
+            var raw = _examController.GetById(term.Id);
+            if (raw == null || CountEnrolled(raw.Id) >= raw.MaxAttendees)
+            {
+                MessageBox.Show("This exam term is full.", "No seats",
+                    MessageBoxButton.OK, MessageBoxImage.Warning);
+                return false;
+            }
+
+            return true;
+        }
+
+        private bool CreateEnrollment(ExamTermDTO term)
+        {
+            int? newId = _enrollmentsController.Add(new ExamEnrollment(
+                0, _studentId, term.Id, DateTime.Now.ToString("yyyy-MM-dd"), RequestStatus.Pending));
+
+            if (newId == null)
+            {
+                MessageBox.Show("Could not create application (term may be full).",
+                    "Not Allowed", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return false;
+            }
+            return true;
+        }
+
+        private void AfterApplySuccess(ExamTermDTO term)
+        {
+            _studentsController.AddExamRequest(_studentId, term.Id);
+            MessageBox.Show("Exam application submitted successfully!", "Success",
+                MessageBoxButton.OK, MessageBoxImage.Information);
+
+            _availableExams.RemoveAll(e => e.Id == term.Id);
+            ApplyFiltersSortAndPage(resetPage: true);
+        }
+
+        // ---------- helpers for CANCEL ----------
+        private bool CanCancel(ExamTermDTO term)
+        {
+            if (GetStartDateTime(term) is DateTime start && start < DateTime.Now.AddDays(2))
+            {
+                MessageBox.Show("You can cancel only up to 2 days before the exam.",
+                    "Cancellation Not Allowed", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return false;
+            }
+            return true;
+        }
+
+        private ExamEnrollment? FindEnrollmentForSelected(int termId)
+        {
+            return _enrollmentsController.GetAllExamEnrollments()
+                .FirstOrDefault(e => e.TeachingActivityID == termId && e.StudentID == _studentId);
+        }
+
+        // -------------------------
+        // Availability (finished courses + capacity)
+        // -------------------------
         private int CountEnrolled(int termId)
         {
-            return _enrollmentsController
-                .GetAllExamEnrollments()
+            return _enrollmentsController.GetAllExamEnrollments()
                 .Count(e => e.TeachingActivityID == termId);
         }
 
@@ -438,8 +433,7 @@ namespace LangLang.RoleWindows.StudentViewModules
 
             var finishedCourses = _studentsController.GetFinishedCourses(_studentId);
             var allowed = new HashSet<(Language, LanguageLevel)>(
-                finishedCourses.Select(t => (t.Item1, t.Item2))
-            );
+                finishedCourses.Select(t => (t.Item1, t.Item2)));
 
             var requestedTermIds = _studentsController.GetRequestedExamTerms(_studentId);
 
@@ -448,32 +442,13 @@ namespace LangLang.RoleWindows.StudentViewModules
             {
                 var dto = new ExamTermDTO(exam);
                 var start = GetStartDateTime(dto);
-
-                if (!start.HasValue || start.Value <= now)
-                    continue;
-
-                if (!allowed.Contains((exam.Language, exam.Level)))
-                    continue;
-
-                if (requestedTermIds.Contains(exam.Id))
-                    continue;
-
-                if (CountEnrolled(exam.Id) >= exam.MaxAttendees)
-                    continue;
-
+                if (!start.HasValue || start.Value <= now) continue;
+                if (!allowed.Contains((exam.Language, exam.Level))) continue;
+                if (requestedTermIds.Contains(exam.Id)) continue;
+                if (CountEnrolled(exam.Id) >= exam.MaxAttendees) continue;
                 available.Add(dto);
             }
             return available;
         }
-
-
-
-
-        public void ShowFinishedExams()
-        {
-            var win = new StudentFinishedExamsWindow(_studentsController, _studentId);
-            win.Show(); 
-        }
-
     }
 }

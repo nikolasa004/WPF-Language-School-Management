@@ -51,6 +51,8 @@ namespace LangLang.Model.DAO.Users
             oldStudent.RequestedExamTerms = student.RequestedExamTerms;
             oldStudent.ActiveExamTermId = student.ActiveExamTermId;
             oldStudent.FinishedExams = student.FinishedExams;
+            oldStudent.IsExamApplicationLocked = student.IsExamApplicationLocked;
+
 
             _storage.Save(_students);
             StudentSubject.NotifyObservers();
@@ -227,5 +229,49 @@ namespace LangLang.Model.DAO.Users
             _storage.Save(_students);
             StudentSubject.NotifyObservers();
         }
+
+        public void LockExamApplications(string studentEmail)
+        {
+            var s = GetStudentById(studentEmail);
+            if (s == null) return;
+
+            s.IsExamApplicationLocked = true;
+            _storage.Save(_students);
+            StudentSubject.NotifyObservers();
+        }
+
+        public void UnlockExamApplications(string studentEmail)
+        {
+            var s = GetStudentById(studentEmail);
+            if (s == null) return;
+
+            s.IsExamApplicationLocked = false;
+            _storage.Save(_students);
+            StudentSubject.NotifyObservers();
+        }
+        public void RecordExamDecision(string studentEmail, Language language, LanguageLevel level, bool passed)
+        {
+            // 1) Ažuriraj stanje ispita
+            if (passed)
+            {
+                // koristi već postojeću metodu da doda u FinishedExams i očisti ActiveExamTermId
+                FinishActiveExam(studentEmail, language, level);
+            }
+            else
+            {
+                // nije položio — ukloni aktivni termin, može opet da se prijavi
+                ClearActiveExamTerm(studentEmail);
+            }
+
+            // 2) Otključaj prijave ispita
+            var s = GetStudentById(studentEmail);
+            if (s == null) return;
+
+            s.IsExamApplicationLocked = false;
+            _storage.Save(_students);
+            StudentSubject.NotifyObservers();
+        }
+
+
     }
 }

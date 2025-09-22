@@ -18,6 +18,8 @@ namespace LangLang.Model.Users
         public List<int> RequestedExamTerms { get; set; }
         public int ActiveExamTermId { get; set; }
         public List<Tuple<Language, LanguageLevel>> FinishedExams { get; set; }
+        public bool IsExamApplicationLocked { get; set; } = false;
+
 
         public Student() : base()
         {
@@ -45,7 +47,7 @@ namespace LangLang.Model.Users
 
         public override string ToString()
         {
-            return base.ToString() + "\n" + "Penalty Points: " + PenaltyPoints+ "\n" + "Requested Courses: " + string.Join(", ", RequestedCourses) + "\n" + "Active Course ID: " + ActiveCourseId + "\n" + "Finished Courses: " + string.Join(", ", FinishedCourses) + "\n" + "\nRequested Exam Terms: " + string.Join(", ", RequestedExamTerms)+ "\nActive Exam Term ID: " + ActiveExamTermId + "\nFinished Exams: " + string.Join(", ", FinishedExams) + "\n Last Penalty Processed At: " +  LastPenaltyProcessedAt;
+            return base.ToString() + "\n" + "Penalty Points: " + PenaltyPoints+ "\n" + "Requested Courses: " + string.Join(", ", RequestedCourses) + "\n" + "Active Course ID: " + ActiveCourseId + "\n" + "Finished Courses: " + string.Join(", ", FinishedCourses) + "\n" + "\nRequested Exam Terms: " + string.Join(", ", RequestedExamTerms)+ "\nActive Exam Term ID: " + ActiveExamTermId + "\nFinished Exams: " + string.Join(", ", FinishedExams) + "\n Last Penalty Processed At: " +  LastPenaltyProcessedAt+ "\n Is Exam Application Locked" + IsExamApplicationLocked;
         }
 
         public string ToJSON()
@@ -75,6 +77,7 @@ namespace LangLang.Model.Users
                 RequestedExamTerms = student.RequestedExamTerms ?? new List<int>();
                 ActiveExamTermId = student.ActiveExamTermId;
                 FinishedExams = student.FinishedExams ?? new List<Tuple<Language, LanguageLevel>>();
+                IsExamApplicationLocked = student.IsExamApplicationLocked;
             }
         }
     }
