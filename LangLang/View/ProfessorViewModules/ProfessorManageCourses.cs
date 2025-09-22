@@ -8,6 +8,7 @@ using System.Globalization;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Media;
 
 namespace LangLang.RoleWindows.ProfessorViewModules
 {
@@ -18,6 +19,10 @@ namespace LangLang.RoleWindows.ProfessorViewModules
 
         private readonly List<CourseDTO> _allCourses;
         private readonly ProfessorViewCourses _viewCourses;
+
+        
+
+
 
         private CourseDTO? _editingCourse = null;
 
@@ -85,8 +90,11 @@ namespace LangLang.RoleWindows.ProfessorViewModules
             _allCourses = allCourses;
             _viewCourses = viewCourses;
 
-            // Assign controls
-            AddCourseOverlay = addCourseOverlay;
+           
+
+
+        // Assign controls
+        AddCourseOverlay = addCourseOverlay;
             AddCourseLangCombo = addLangCombo;
             AddCourseLevelCombo = addLevelCombo;
             AddCourseMaxBox = addMaxBox;
@@ -386,5 +394,8 @@ namespace LangLang.RoleWindows.ProfessorViewModules
                 MessageBox.Show(ex.Message, "Cannot delete", MessageBoxButton.OK, MessageBoxImage.Warning);
             }
         }
+
+
     }
 }
+
