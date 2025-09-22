@@ -18,7 +18,7 @@
         "Level": 3,
         "IsLive": true,
         "MaxAttendees": 15,
-        "Date": "2025-09-12",
+        "Date": "2025-10-12",
         "StartAt": "14:00",
         "Duration": 240,
         "RoomId": "R202"
@@ -30,7 +30,7 @@
         "Level": 4,
         "IsLive": true,
         "MaxAttendees": 25,
-        "Date": "2025-09-20",
+        "Date": "2025-10-20",
         "StartAt": "09:00",
         "Duration": 240,
         "RoomId": "R105"
@@ -66,7 +66,7 @@
         "Level": 2,
         "IsLive": true,
         "MaxAttendees": 40,
-        "Date": "2025-09-13",
+        "Date": "2025-10-13",
         "StartAt": "11:15",
         "Duration": 240,
         "RoomId": "R200"
@@ -78,7 +78,7 @@
         "Level": 0,
         "IsLive": true,
         "MaxAttendees": 100,
-        "Date": "2025-09-06",
+        "Date": "2025-10-06",
         "StartAt": "11:15",
         "Duration": 240,
         "RoomId": "R104"
@@ -174,7 +174,7 @@
         "Level": 5,
         "IsLive": true,
         "MaxAttendees": 26,
-        "Date": "2025-09-22",
+        "Date": "2025-10-22",
         "StartAt": "15:00",
         "Duration": 240,
         "RoomId": "R106"
@@ -359,5 +359,4 @@
         "Duration": 240,
         "RoomId": "R303"
     }
-
 ]

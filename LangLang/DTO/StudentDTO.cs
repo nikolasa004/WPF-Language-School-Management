@@ -77,6 +77,10 @@ namespace LangLang.DTO
             get => lastPenaltyProcessedAt;
             set => SetProperty(ref lastPenaltyProcessedAt, value, nameof(LastPenaltyProcessedAt));
         }
+
+        public List<int> RequestedExamTerms { get; set; } = new List<int>();
+        public int ActiveExamTermId { get; set; } = -1;
+        public List<Tuple<Language, LanguageLevel>> FinishedExams { get; set; } = new List<Tuple<Language, LanguageLevel>>();
         public StudentDTO(){}
         public StudentDTO(Student student)
         {
@@ -94,10 +98,25 @@ namespace LangLang.DTO
             ActiveCourseId = student.ActiveCourseId;
             FinishedCourses = student.FinishedCourses;
             LastPenaltyProcessedAt = student.LastPenaltyProcessedAt;
+            RequestedExamTerms = student.RequestedExamTerms;
+            ActiveExamTermId = student.ActiveExamTermId;
+            FinishedExams = student.FinishedExams;
         }
         public Student ToStudent()
         {
-            return new Student(FirstName,LastName,Gender,DateOfBirth,PhoneNumber,Email,Password,EducationLevel,DateOfRegistration,PenaltyPoints, RequestedCourses,ActiveCourseId, FinishedCourses,LastPenaltyProcessedAt);
+            var s = new Student(
+                FirstName, LastName, Gender, DateOfBirth,
+                PhoneNumber, Email, Password, EducationLevel,
+                DateOfRegistration, PenaltyPoints,
+                RequestedCourses, ActiveCourseId, FinishedCourses,
+                LastPenaltyProcessedAt
+            );
+
+            s.RequestedExamTerms = RequestedExamTerms;
+            s.ActiveExamTermId = ActiveExamTermId;
+            s.FinishedExams = FinishedExams;
+
+            return s;
         }
 
         private readonly StudentDTOValidator validator = new StudentDTOValidator();

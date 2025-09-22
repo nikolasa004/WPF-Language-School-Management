@@ -14,9 +14,10 @@ namespace LangLang.Model.Users
         public List<int> RequestedCourses { get; set; }
         public int ActiveCourseId { get; set; }
         public List<Tuple<Language, LanguageLevel>> FinishedCourses { get; set; }
-        // and a list of requested exams
-        // and a list of finished exams
-        // and active exam
+        
+        public List<int> RequestedExamTerms { get; set; }
+        public int ActiveExamTermId { get; set; }
+        public List<Tuple<Language, LanguageLevel>> FinishedExams { get; set; }
 
         public Student() : base()
         {
@@ -25,6 +26,9 @@ namespace LangLang.Model.Users
             ActiveCourseId = -1;
             FinishedCourses = new List<Tuple<Language, LanguageLevel>>();
             LastPenaltyProcessedAt = DateTime.Now.ToString("yyyy-MM-dd");
+            RequestedExamTerms = new List<int>();
+            ActiveExamTermId = -1;
+            FinishedExams = new List<Tuple<Language, LanguageLevel>>();
         }
         public Student(string firstName, string lastName, Gender gender, string dateOfBirth, string phoneNumber, string email, string password, EducationLevel educationLevel, string dateOfRegistration, int penaltyPoints, List<int> requestedCourses, int activeCourseId, List<Tuple<Language, LanguageLevel>> finishedCourses, string lastPenaltyProcessedAt) : base(firstName, lastName, gender, dateOfBirth, phoneNumber, email, password, educationLevel, dateOfRegistration)
         {
@@ -33,11 +37,15 @@ namespace LangLang.Model.Users
             ActiveCourseId = activeCourseId;
             FinishedCourses = finishedCourses;
             LastPenaltyProcessedAt = lastPenaltyProcessedAt;
+
+            RequestedExamTerms = new List<int>();
+            ActiveExamTermId = -1;
+            FinishedExams = new List<Tuple<Language, LanguageLevel>>();
         }
 
         public override string ToString()
         {
-            return base.ToString() + "\n" + "Penalty Points: " + PenaltyPoints+ "\n" + "Requested Courses: " + string.Join(", ", RequestedCourses) + "\n" + "Active Course ID: " + ActiveCourseId + "\n" + "Finished Courses: " + string.Join(", ", FinishedCourses) + "\n" + "Last Penalty Processed At: " + LastPenaltyProcessedAt;
+            return base.ToString() + "\n" + "Penalty Points: " + PenaltyPoints+ "\n" + "Requested Courses: " + string.Join(", ", RequestedCourses) + "\n" + "Active Course ID: " + ActiveCourseId + "\n" + "Finished Courses: " + string.Join(", ", FinishedCourses) + "\n" + "\nRequested Exam Terms: " + string.Join(", ", RequestedExamTerms)+ "\nActive Exam Term ID: " + ActiveExamTermId + "\nFinished Exams: " + string.Join(", ", FinishedExams) + "\n Last Penalty Processed At: " +  LastPenaltyProcessedAt;
         }
 
         public string ToJSON()
@@ -64,6 +72,9 @@ namespace LangLang.Model.Users
                 ActiveCourseId = student.ActiveCourseId;
                 FinishedCourses = student.FinishedCourses;
                 LastPenaltyProcessedAt = student.LastPenaltyProcessedAt;
+                RequestedExamTerms = student.RequestedExamTerms ?? new List<int>();
+                ActiveExamTermId = student.ActiveExamTermId;
+                FinishedExams = student.FinishedExams ?? new List<Tuple<Language, LanguageLevel>>();
             }
         }
     }
