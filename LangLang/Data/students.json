@@ -1,23 +1,33 @@
 [
-  {
-    "PenaltyPoints": 1,
-    "LastPenaltyProcessedAt": "2025-09-01",
-    "RequestedCourses": [],
-    "ActiveCourseId": 1,
-    "FinishedCourses": [
-      {
-        "Item1": 0,
-        "Item2": 0
-      }
-    ],
-    "FirstName": "Student",
-    "LastName": "Studentic",
-    "Gender": 0,
-    "DateOfBirth": "1990-09-13",
-    "PhoneNumber": "123",
-    "Email": "student@gmail.com",
-    "Password": "123",
-    "EducationLevel": 0,
-    "DateOfRegistration": "2025-09-21"
-  }
+    {
+        "PenaltyPoints": 0,
+        "LastPenaltyProcessedAt": "2025-09-01",
+        "RequestedCourses": [ 1 ],
+        "ActiveCourseId": -1,
+        "FinishedCourses": [
+            {
+                "Item1": 0,
+                "Item2": 0
+            }
+        ],
+        "RequestedExamTerms": [],
+        "ActiveExamTermId": -1,
+        "FinishedExams": [
+            {
+                "Item1": 0,
+                "Item2": 1
+            }
+        ],
+        "IsExamApplicationLocked": false,
+        "FirstName": "Student",
+        "LastName": "Studentic",
+        "Gender": 0,
+        "DateOfBirth": "1990-09-13",
+        "PhoneNumber": "123",
+        "Email": "student@gmail.com",
+        "Password": "123",
+        "EducationLevel": 0,
+        "DateOfRegistration": "2025-09-21"
+    }
 ]
+

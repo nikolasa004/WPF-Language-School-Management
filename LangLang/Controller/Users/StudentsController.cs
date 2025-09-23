@@ -94,5 +94,56 @@ namespace LangLang.Controller.Users
         {
             return _students.ApplyMonthlyPenaltyDecayForAll(DateTime.Now);
         }
+        public List<int> GetRequestedExamTerms(string email)
+        {
+            return _students.GetRequestedExamTerms(email);
+        }
+
+        public int GetActiveExamTermId(string email)
+        {
+            return _students.GetActiveExamTermId(email);
+        }
+
+        public List<Tuple<Language, LanguageLevel>> GetFinishedExams(string email)
+        {
+            return _students.GetFinishedExams(email);
+        }
+
+        public void AddExamRequest(string studentEmail, int examTermId)
+        {
+            _students.AddExamRequest(studentEmail, examTermId);
+        }
+
+        public void RemoveExamRequest(string studentEmail, int examTermId)
+        {
+            _students.RemoveExamRequest(studentEmail, examTermId);
+        }
+
+        public void SetActiveExamTerm(string studentEmail, int examTermId)
+        {
+            _students.SetActiveExamTerm(studentEmail, examTermId);
+        }
+
+        public void ClearActiveExamTerm(string studentEmail)
+        {
+            _students.ClearActiveExamTerm(studentEmail);
+        }
+
+        public void FinishActiveExam(string studentEmail, Language language, LanguageLevel level)
+        {
+            _students.FinishActiveExam(studentEmail, language, level);
+        }
+
+        public bool IsExamApplicationLocked(string studentEmail)
+         => _students.GetStudentById(studentEmail)?.IsExamApplicationLocked ?? false;
+
+        public void LockExamApplications(string studentEmail)
+            => _students.LockExamApplications(studentEmail);
+
+        public void UnlockExamApplications(string studentEmail)
+            => _students.UnlockExamApplications(studentEmail);
+
+        public void RecordExamDecision(string studentEmail, Language language, LanguageLevel level, bool passed)
+            => _students.RecordExamDecision(studentEmail, language, level, passed);
     }
 }

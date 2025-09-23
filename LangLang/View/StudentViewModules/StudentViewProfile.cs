@@ -19,6 +19,7 @@ namespace LangLang.RoleWindows.StudentViewModules
         private readonly CourseController courseController;
         private readonly CourseEnrollmentsController enrollmentsController;
         private readonly MessagesController messagesController;
+        private readonly ExamEnrollmentsController examEnrollmentsController;
 
         private StudentDTO Student;
 
@@ -43,12 +44,14 @@ namespace LangLang.RoleWindows.StudentViewModules
         private Label PenaltyPointsLabel = null!;
         private Label JoinedDateLabel = null!;
 
-        public StudentViewProfile(StudentDTO student, StudentsController studentsController, CourseController courseController, CourseEnrollmentsController courseEnrollmentsController, MessagesController messagesController, TextBox firstNameBox, TextBox lastNameBox, RadioButton maleRadioButton, RadioButton femaleRadioButton, DatePicker birthDatePicker, TextBox phoneBox, TextBox emailBox, TextBox passwordTextBox, ComboBox educationComboBox)
+           
+        public StudentViewProfile(StudentDTO student, StudentsController studentsController, CourseController courseController, CourseEnrollmentsController courseEnrollmentsController, ExamEnrollmentsController examEnrollmentsController, MessagesController messagesController, TextBox firstNameBox, TextBox lastNameBox, RadioButton maleRadioButton, RadioButton femaleRadioButton, DatePicker birthDatePicker, TextBox phoneBox, TextBox emailBox, TextBox passwordTextBox, ComboBox educationComboBox)
         {
             Student = student;
             this.studentsController = studentsController;
             this.courseController = courseController;
             enrollmentsController = courseEnrollmentsController;
+            this.examEnrollmentsController = examEnrollmentsController; 
             this.messagesController= messagesController;
             FirstNameBox = firstNameBox;
             LastNameBox = lastNameBox;
@@ -134,7 +137,7 @@ namespace LangLang.RoleWindows.StudentViewModules
                 studentsController.Delete(Student.Email);
                 messagesController.StudentDeleteByStudent(Student.Email);
                 enrollmentsController.DeleteByStudent(Student.Email);
-                //here should be also deletion of student from active courses if any
+                examEnrollmentsController.DeleteByStudent(Student.Email);
                 MessageBox.Show("Your account has been deleted successfully.");
                 return true;
             }

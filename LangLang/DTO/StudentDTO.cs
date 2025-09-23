@@ -17,59 +17,68 @@ namespace LangLang.DTO
             return true;
         }
 
-        private string firstName=string.Empty;
+        private string firstName = string.Empty;
         public string FirstName
         {
             get => firstName;
             set => SetProperty(ref firstName, value, nameof(FirstName));
         }
-        private string lastName=string.Empty;
+
+        private string lastName = string.Empty;
         public string LastName
         {
             get => lastName;
             set => SetProperty(ref lastName, value, nameof(LastName));
         }
+
         private Gender gender;
         public Gender Gender
         {
-            get=>gender;
-            set=> SetProperty(ref gender, value, nameof(Gender));
+            get => gender;
+            set => SetProperty(ref gender, value, nameof(Gender));
         }
-        private string dateOfBirth=string.Empty;
+
+        private string dateOfBirth = string.Empty;
         public string DateOfBirth
         {
-            get=> dateOfBirth;
-            set=> SetProperty(ref dateOfBirth, value, nameof(DateOfBirth));
+            get => dateOfBirth;
+            set => SetProperty(ref dateOfBirth, value, nameof(DateOfBirth));
         }
-        private string phoneNumber=string.Empty;
+
+        private string phoneNumber = string.Empty;
         public string PhoneNumber
         {
-            get=> phoneNumber;
-            set=> SetProperty(ref phoneNumber, value, nameof(PhoneNumber));
+            get => phoneNumber;
+            set => SetProperty(ref phoneNumber, value, nameof(PhoneNumber));
         }
-        public string Email { get; set; }=string.Empty;
-        private string password=string.Empty;
+
+        public string Email { get; set; } = string.Empty;
+
+        private string password = string.Empty;
         public string Password
-        {  
-            get=> password;
-            set=> SetProperty(ref password, value, nameof(Password));
+        {
+            get => password;
+            set => SetProperty(ref password, value, nameof(Password));
         }
+
         private EducationLevel educationLevel;
         public EducationLevel EducationLevel
         {
-            get=> educationLevel;
-            set=> SetProperty(ref educationLevel, value, nameof(EducationLevel));
+            get => educationLevel;
+            set => SetProperty(ref educationLevel, value, nameof(EducationLevel));
         }
-        private string dateOfRegistration=string.Empty;
+
+        private string dateOfRegistration = string.Empty;
         public string DateOfRegistration
         {
-            get=> dateOfRegistration;
-            set=> SetProperty(ref dateOfRegistration, value, nameof(DateOfRegistration));
+            get => dateOfRegistration;
+            set => SetProperty(ref dateOfRegistration, value, nameof(DateOfRegistration));
         }
-        public int PenaltyPoints { get; set; }=0;
-        public List<int> RequestedCourses { get; set; }=new List<int>();
-        public int ActiveCourseId { get; set; }=-1;
-        public List<Tuple<Language, LanguageLevel>> FinishedCourses { get; set; }=new List<Tuple<Language, LanguageLevel>>();
+
+        public int PenaltyPoints { get; set; } = 0;
+        public List<int> RequestedCourses { get; set; } = new List<int>();
+        public int ActiveCourseId { get; set; } = -1;
+        public List<Tuple<Language, LanguageLevel>> FinishedCourses { get; set; } = new List<Tuple<Language, LanguageLevel>>();
 
         private string lastPenaltyProcessedAt = string.Empty; // očekujemo format "yyyy-MM-dd"
         public string LastPenaltyProcessedAt
@@ -77,7 +86,16 @@ namespace LangLang.DTO
             get => lastPenaltyProcessedAt;
             set => SetProperty(ref lastPenaltyProcessedAt, value, nameof(LastPenaltyProcessedAt));
         }
-        public StudentDTO(){}
+
+        public List<int> RequestedExamTerms { get; set; } = new List<int>();
+        public int ActiveExamTermId { get; set; } = -1;
+        public List<Tuple<Language, LanguageLevel>> FinishedExams { get; set; } = new List<Tuple<Language, LanguageLevel>>();
+
+        // ⬇️ NEW: globalni lock za prijave ispita (tačka 8a/8b)
+        public bool IsExamApplicationLocked { get; set; } = false;
+
+        public StudentDTO() { }
+
         public StudentDTO(Student student)
         {
             firstName = student.FirstName;
@@ -89,15 +107,38 @@ namespace LangLang.DTO
             password = student.Password;
             educationLevel = student.EducationLevel;
             dateOfRegistration = student.DateOfRegistration;
+
             PenaltyPoints = student.PenaltyPoints;
             RequestedCourses = student.RequestedCourses;
             ActiveCourseId = student.ActiveCourseId;
             FinishedCourses = student.FinishedCourses;
+
             LastPenaltyProcessedAt = student.LastPenaltyProcessedAt;
+
+            RequestedExamTerms = student.RequestedExamTerms;
+            ActiveExamTermId = student.ActiveExamTermId;
+            FinishedExams = student.FinishedExams;
+
+            // ⬇️ NEW: mapiranje iz modela
+            IsExamApplicationLocked = student.IsExamApplicationLocked;
         }
+
         public Student ToStudent()
         {
-            return new Student(FirstName,LastName,Gender,DateOfBirth,PhoneNumber,Email,Password,EducationLevel,DateOfRegistration,PenaltyPoints, RequestedCourses,ActiveCourseId, FinishedCourses,LastPenaltyProcessedAt);
+            var s = new Student(
+                FirstName, LastName, Gender, DateOfBirth,
+                PhoneNumber, Email, Password, EducationLevel,
+                DateOfRegistration, PenaltyPoints,
+                RequestedCourses, ActiveCourseId, FinishedCourses,
+                LastPenaltyProcessedAt
+            );
+
+            s.RequestedExamTerms = RequestedExamTerms;
+            s.ActiveExamTermId = ActiveExamTermId;
+            s.FinishedExams = FinishedExams;
+            s.IsExamApplicationLocked = IsExamApplicationLocked;
+
+            return s;
         }
 
         private readonly StudentDTOValidator validator = new StudentDTOValidator();
