@@ -31,7 +31,6 @@ namespace LangLang.DTO
             set => SetProperty(ref tempActivityGrade, value, nameof(TempActivityGrade));
         }
         // Privremena svojstva za unos ocena u DataGrid-u
-        private string firstName=string.Empty;
         private string firstName = string.Empty;
         public string FirstName
         {

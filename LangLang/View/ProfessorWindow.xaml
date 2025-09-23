@@ -692,7 +692,7 @@
 
 
 
-
+        <!-- ================== EXAMS PANEL ================== -->
         <Grid x:Name="ExamsPanel" Visibility="Collapsed" Background="Transparent">
             <!-- TOP (Auto) / MIDDLE (*) / BOTTOM (Auto) -->
             <Grid.RowDefinitions>
@@ -888,6 +888,12 @@
                 <DataGrid.Resources>
                     <Style TargetType="DataGridColumnHeader" BasedOn="{StaticResource DGHeaderStyle}"/>
                     <Style TargetType="DataGridCell"         BasedOn="{StaticResource DGCellStyle}"/>
+
+                    <!-- Converters for the custom exam button in each row -->
+                    <conv:ExamButtonContentConverter x:Key="ButtonContentConverter"/>
+                    <conv:ExamButtonEnabledConverter x:Key="ButtonEnabledConverter"/>
+                    <conv:ExamButtonBackgroundConverter x:Key="ButtonBackgroundConverter"/>
+                    <conv:ExamButtonStateConverter x:Key="ButtonStateConverter"/>
                 </DataGrid.Resources>
                 <DataGrid.Columns>
                     <DataGridTextColumn Header="ID"        Binding="{Binding Id}"            SortMemberPath="Id"           Width="60"/>
@@ -897,7 +903,7 @@
                     <DataGridTextColumn Header="Start"     Binding="{Binding StartAt}"       SortMemberPath="StartAt"      Width="80"/>
                     <DataGridTextColumn Header="Room"      Binding="{Binding RoomId}"        SortMemberPath="RoomId"       Width="80"/>
                     <DataGridTextColumn Header="Max"       Binding="{Binding MaxAttendees}"  SortMemberPath="MaxAttendees" Width="80"/>
-                    <DataGridTemplateColumn Header="Actions" Width="180">
+                    <DataGridTemplateColumn Header="Actions" Width="250">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
@@ -906,10 +912,34 @@
                                             <ImageBrush ImageSource="/GUIResources/loginButtonBackground.png"/>
                                         </Button.Background>
                                     </Button>
-                                    <Button Content="Cancel" Style="{StaticResource FancyButtonStyle}" Width="80" Height="30" Margin="6,0,0,0" Click="CancelExam_Click">
+                                    <Button Content="Cancel" Style="{StaticResource FancyButtonStyle}" Width="70" Height="30" Margin="6,0,0,0" Click="CancelExam_Click">
                                         <Button.Background>
                                             <ImageBrush ImageSource="/GUIResources/loginButtonBackground.png"/>
                                         </Button.Background>
+                                    </Button>
+                                    <Button x:Name="CustomExamButton"
+                                        Width="70"
+                                        Height="30"
+                                        Margin="6,0,0,0"
+                                        Click="CustomExamButton_Click"
+                                        Content="{Binding Path=., Converter={StaticResource ButtonContentConverter}}"
+                                        IsEnabled="{Binding Path=., Converter={StaticResource ButtonEnabledConverter}}"
+                                        Tag="{Binding Path=., Converter={StaticResource ButtonStateConverter}}">
+                                        <Button.Style>
+                                            <Style TargetType="Button" BasedOn="{StaticResource FancyButtonStyle}">
+                                                <Setter Property="Background">
+                                                    <Setter.Value>
+                                                        <ImageBrush ImageSource="/GUIResources/loginButtonBackground.png"/>
+                                                    </Setter.Value>
+                                                </Setter>
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding Path=., Converter={StaticResource ButtonEnabledConverter}}" Value="False">
+                                                        <Setter Property="Background" Value="Gray"/>
+                                                        <Setter Property="Opacity" Value="0.5"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Button.Style>
                                     </Button>
                                 </StackPanel>
                             </DataTemplate>

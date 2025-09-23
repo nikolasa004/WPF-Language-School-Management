@@ -8,9 +8,11 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Markup;
 using LangLang.Controller.Messages;
+using LangLang.Controller.Services;
 using LangLang.Controller.TeachingActivities;
 using LangLang.Controller.Users;
 using LangLang.DTO;
+using LangLang.Model.Enums;
 using LangLang.Model.Users;
 using LangLang.RoleWindows.ProfessorExamModules;
 using LangLang.RoleWindows.ProfessorViewModules;
@@ -50,6 +52,9 @@ namespace LangLang.RoleWindows
         private readonly string _professorId;
 
         private ProfessorOngoingCourses _ongoingView;
+
+        private ProfessorActionsExam _examActions;
+        private readonly ExamButtonService _examButtonService = new ExamButtonService();
 
 
         public ProfessorWindow(Professor professor, ProfessorsController professorsController)
@@ -137,11 +142,13 @@ namespace LangLang.RoleWindows
                                  .Select(s => new StudentDTO(s))
                                  .ToList();
             _unenrollRequestsView = new ProfessorUnenrollRequests(
-    UnenrollRequestsGrid,   
-    _studentController,
-    _courseController,
-    _messagesController
-);
+                UnenrollRequestsGrid,   
+                _studentController,
+                _courseController,
+                _messagesController
+            );
+
+            _examActions = new ProfessorActionsExam();
         }
         private ProfessorStartCourses _studentsView;
 
@@ -159,6 +166,27 @@ namespace LangLang.RoleWindows
             _examsView.InitFilters(new CultureInfo("sr-RS"), this.Language);
             _examsView.ReloadAll();
         }
+        private void CustomExamButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender is Button button && button.DataContext is ExamTermDTO exam)
+            {
+                switch (button.Tag)
+                {
+                    case ExamButtonState.Start:
+                        _examActions.StartExam();
+                        break;
+
+                    case ExamButtonState.Open:
+                        _examActions.OpenExam();
+                        break;
+
+                    case ExamButtonState.Finish:
+                        _examActions.FinishExam();
+                        break;
+                }
+            }
+        }
+
 
         private void OngoingCourseButton_Click(object sender, RoutedEventArgs e)
         {
