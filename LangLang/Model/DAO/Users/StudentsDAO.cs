@@ -4,7 +4,7 @@ using LangLang.Observer;
 using LangLang.Model.Users;
 using LangLang.Model.Enums;
 using System;
-using System.Globalization;   // ⬅️ DODATO (zbog parsiranja "yyyy-MM-dd")
+using System.Globalization;
 
 namespace LangLang.Model.DAO.Users
 {
@@ -17,7 +17,6 @@ namespace LangLang.Model.DAO.Users
 
         public StudentsDAO()
         {
-            // ostaje kao u originalu
             _storage = new Storage<Student>("students.json");
             _students = _storage.Load();
             StudentSubject = new Subject();
@@ -48,7 +47,12 @@ namespace LangLang.Model.DAO.Users
             oldStudent.RequestedCourses = student.RequestedCourses;
             oldStudent.ActiveCourseId = student.ActiveCourseId;
             oldStudent.FinishedCourses = student.FinishedCourses;
-            oldStudent.LastPenaltyProcessedAt = student.LastPenaltyProcessedAt; // ⬅️ DODATO
+            oldStudent.LastPenaltyProcessedAt = student.LastPenaltyProcessedAt; 
+            oldStudent.RequestedExamTerms = student.RequestedExamTerms;
+            oldStudent.ActiveExamTermId = student.ActiveExamTermId;
+            oldStudent.FinishedExams = student.FinishedExams;
+            oldStudent.IsExamApplicationLocked = student.IsExamApplicationLocked;
+
 
             _storage.Save(_students);
             StudentSubject.NotifyObservers();
@@ -95,15 +99,10 @@ namespace LangLang.Model.DAO.Users
             }
         }
 
-        // ------------------------------
-        //  PENALTY DATE / MONTHLY DECAY
-        // ------------------------------
-
         private static DateTime MonthStart(DateTime d) => new DateTime(d.Year, d.Month, 1);
 
         private static DateTime ParseMonthString(string? s, DateTime fallbackNow)
         {
-            // očekujemo "yyyy-MM-dd"; normalizujemo na 1. u mesecu
             if (!string.IsNullOrWhiteSpace(s) &&
                 DateTime.TryParseExact(s, "yyyy-MM-dd", CultureInfo.InvariantCulture,
                                        DateTimeStyles.None, out var dt))
@@ -120,11 +119,6 @@ namespace LangLang.Model.DAO.Users
             return Math.Max(0, (b.Year - a.Year) * 12 + (b.Month - a.Month));
         }
 
-        /// <summary>
-        /// Svim studentima smanjuje PenaltyPoints za broj pređenih meseci (max do 0)
-        /// i postavlja LastPenaltyProcessedAt na tekući mesec (yyyy-MM-01).
-        /// Vraća broj studenata kod kojih je bilo izmene.
-        /// </summary>
         public int ApplyMonthlyPenaltyDecayForAll(DateTime now)
         {
             int changed = 0;
@@ -141,7 +135,7 @@ namespace LangLang.Model.DAO.Users
                     s.PenaltyPoints -= dec;
                 }
 
-                s.LastPenaltyProcessedAt = monthStamp; // zaključamo na tekući mesec
+                s.LastPenaltyProcessedAt = monthStamp;
                 changed++;
             }
 
@@ -153,5 +147,131 @@ namespace LangLang.Model.DAO.Users
 
             return changed;
         }
+
+
+        public List<int> GetRequestedExamTerms(string email)
+        {
+            var s = GetStudentById(email);
+            return s?.RequestedExamTerms ?? new List<int>();
+        }
+
+        public int GetActiveExamTermId(string email)
+        {
+            var s = GetStudentById(email);
+            return s?.ActiveExamTermId ?? -1;
+        }
+
+        public List<Tuple<Language, LanguageLevel>> GetFinishedExams(string email)
+        {
+            var s = GetStudentById(email);
+            return s?.FinishedExams ?? new List<Tuple<Language, LanguageLevel>>();
+        }
+
+        public void AddExamRequest(string studentEmail, int examTermId)
+        {
+            var s = GetStudentById(studentEmail);
+            if (s == null) return;
+
+            if (!s.RequestedExamTerms.Contains(examTermId))
+                s.RequestedExamTerms.Add(examTermId);
+
+            if (s.ActiveExamTermId == -1)
+                s.ActiveExamTermId = examTermId;
+
+            _storage.Save(_students);
+            StudentSubject.NotifyObservers();
+        }
+
+        public void RemoveExamRequest(string studentEmail, int examTermId)
+        {
+            var s = GetStudentById(studentEmail);
+            if (s == null) return;
+
+            s.RequestedExamTerms.Remove(examTermId);
+            if (s.ActiveExamTermId == examTermId)
+                s.ActiveExamTermId = -1;
+
+            _storage.Save(_students);
+            StudentSubject.NotifyObservers();
+        }
+
+        public void SetActiveExamTerm(string studentEmail, int examTermId)
+        {
+            var s = GetStudentById(studentEmail);
+            if (s == null) return;
+
+            s.ActiveExamTermId = examTermId;
+            if (!s.RequestedExamTerms.Contains(examTermId))
+                s.RequestedExamTerms.Add(examTermId);
+
+            _storage.Save(_students);
+            StudentSubject.NotifyObservers();
+        }
+
+        public void ClearActiveExamTerm(string studentEmail)
+        {
+            var s = GetStudentById(studentEmail);
+            if (s == null) return;
+
+            s.ActiveExamTermId = -1;
+            _storage.Save(_students);
+            StudentSubject.NotifyObservers();
+        }
+
+        public void FinishActiveExam(string studentEmail, Language language, LanguageLevel level)
+        {
+            var s = GetStudentById(studentEmail);
+            if (s == null) return;
+
+            s.FinishedExams.Add(new Tuple<Language, LanguageLevel>(language, level));
+            s.ActiveExamTermId = -1;
+
+            _storage.Save(_students);
+            StudentSubject.NotifyObservers();
+        }
+
+        public void LockExamApplications(string studentEmail)
+        {
+            var s = GetStudentById(studentEmail);
+            if (s == null) return;
+
+            s.IsExamApplicationLocked = true;
+            _storage.Save(_students);
+            StudentSubject.NotifyObservers();
+        }
+
+        public void UnlockExamApplications(string studentEmail)
+        {
+            var s = GetStudentById(studentEmail);
+            if (s == null) return;
+
+            s.IsExamApplicationLocked = false;
+            _storage.Save(_students);
+            StudentSubject.NotifyObservers();
+        }
+        public void RecordExamDecision(string studentEmail, Language language, LanguageLevel level, bool passed)
+        {
+            // 1) Ažuriraj stanje ispita
+            if (passed)
+            {
+                // koristi već postojeću metodu da doda u FinishedExams i očisti ActiveExamTermId
+                FinishActiveExam(studentEmail, language, level);
+            }
+            else
+            {
+                // nije položio — ukloni aktivni termin, može opet da se prijavi
+                ClearActiveExamTerm(studentEmail);
+            }
+
+            // 2) Otključaj prijave ispita
+            var s = GetStudentById(studentEmail);
+            if (s == null) return;
+
+            s.IsExamApplicationLocked = false;
+            _storage.Save(_students);
+            StudentSubject.NotifyObservers();
+        }
+
+
     }
 }
