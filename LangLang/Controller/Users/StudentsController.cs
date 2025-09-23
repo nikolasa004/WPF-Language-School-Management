@@ -65,6 +65,35 @@ namespace LangLang.Controller.Users
         {
             return _students.ApplyMonthlyPenaltyDecayForAll(DateTime.Now);
         }
+
+        public void RemoveFromCourse(string studentEmail, int courseId)
+        {
+            var student = GetStudentById(studentEmail);
+            if (student == null) return;
+
+            if (student.RequestedCourses.Contains(courseId))
+            {
+                student.RequestedCourses.Remove(courseId);
+            }
+
+            if (student.ActiveCourseId == courseId)
+            {
+                student.ActiveCourseId = -1;
+            }
+
+            Update(student);
+        }
+
+        public void AddPenaltyPoint(string studentEmail)
+        {
+            var student = GetStudentById(studentEmail);
+            if (student == null) return;
+
+            student.PenaltyPoints += 1;
+            student.LastPenaltyProcessedAt = DateTime.Now.ToString("yyyy-MM-dd");
+
+            Update(student);
+        }
         public List<int> GetRequestedExamTerms(string email)
         {
             return _students.GetRequestedExamTerms(email);

@@ -14,12 +14,17 @@ using LangLang.DTO;
 using LangLang.Model.Users;
 using LangLang.RoleWindows.ProfessorExamModules;
 using LangLang.RoleWindows.ProfessorViewModules;
+using LangLang.View.ProfessorViewModules;
 
 namespace LangLang.RoleWindows
 {
     public partial class ProfessorWindow : Window
     {
         private readonly MessagesController _messagesController;
+
+        private ProfessorFinishCourse _finishCourseView;
+
+        private ProfessorUnenrollRequests _unenrollRequestsView;
 
         private readonly StudentsController _studentController;
         private List<StudentDTO> _allStudents;
@@ -43,6 +48,9 @@ namespace LangLang.RoleWindows
         private readonly ExamTermsController _examController = new();
         private readonly CourseController _courseController = new();
         private readonly string _professorId;
+
+        private ProfessorOngoingCourses _ongoingView;
+
 
         public ProfessorWindow(Professor professor, ProfessorsController professorsController)
         {
@@ -123,6 +131,17 @@ namespace LangLang.RoleWindows
             _allStudents = studentsController.GetAllStudents()
                              .Select(s => new StudentDTO(s))
                              .ToList();
+
+            _studentController = new StudentsController();
+            _allStudents = _studentController.GetAllStudents()
+                                 .Select(s => new StudentDTO(s))
+                                 .ToList();
+            _unenrollRequestsView = new ProfessorUnenrollRequests(
+    UnenrollRequestsGrid,   
+    _studentController,
+    _courseController,
+    _messagesController
+);
         }
         private ProfessorStartCourses _studentsView;
 
@@ -141,12 +160,96 @@ namespace LangLang.RoleWindows
             _examsView.ReloadAll();
         }
 
+        private void OngoingCourseButton_Click(object sender, RoutedEventArgs e)
+        {
+            if ((sender as FrameworkElement)?.DataContext is CourseDTO course)
+            {
+                _currentCourseId = course.Id;
+                OngoingCoursePanel.Visibility = Visibility.Visible;
+
+                _ongoingView = new ProfessorOngoingCourses(
+                    _allStudents,
+                    StudentsGridProfessor,          
+                    _currentCourseId,
+                    course,
+                    _messagesController
+                );
+            }
+        }
+
+        private void CloseOngoingCourse_Click(object sender, RoutedEventArgs e) {
+            OngoingCoursePanel.Visibility = Visibility.Collapsed;
+        }
+
+        private void FinishCourse_Click(object sender, RoutedEventArgs e)
+        {
+            FinishCoursePanel.Visibility = Visibility.Visible;
+
+       
+            _finishCourseView = new ProfessorFinishCourse(_allStudents, FinishCourseGrid, _currentCourseId);
+        }
+
+        private void BackToOngoingCourse_Click(object sender, RoutedEventArgs e)
+        {
+            FinishCoursePanel.Visibility = Visibility.Collapsed;
+        }
+
+        private void ConfirmFinishCourse_Click(object sender, RoutedEventArgs e)
+        {
+            if (_finishCourseView != null)
+            {
+                bool success = _finishCourseView.FinishCourseAndGradeStudents(_currentCourseId, _courseController, FinishCourseGrid, _studentController);
+
+                if (success)
+                {
+                    MessageBox.Show("Course successfully finished and grades recorded.");
+                    FinishCoursePanel.Visibility = Visibility.Collapsed;
+
+                  
+                    _finishCourseView.RefreshStudents(new List<StudentDTO>());
+                }
+            }
+        }
+        private void ExpelStudent_Click(object sender, RoutedEventArgs e)
+        {
+            if (_ongoingView != null)
+            {
+                _ongoingView.ExpelStudent_Click(sender, e);
+            }
+        }
+
+        private void GivePenaltyPoints_Click(object sender, RoutedEventArgs e)
+        {
+            if (_ongoingView != null)
+            {
+                _ongoingView.AddPenalty_Click(sender, e);
+            }
+        }
+
+
         private void CloseExamsPanel_Click(object sender, RoutedEventArgs e)
         {
             ExamsPanel.Visibility = Visibility.Collapsed;
             AddCourseOverlay.Visibility = Visibility.Collapsed;
             MainPanel.Visibility = Visibility.Visible;
         }
+        private void ViewUnenrollmentRequests_Click(object sender, RoutedEventArgs e) {
+            UnenrollRequestsPanel.Visibility = Visibility.Visible;
+        }
+        private void ApproveUnenroll_Click(object sender, RoutedEventArgs e)
+        {
+            _unenrollRequestsView?.ApproveUnenroll_Click(sender, e);
+        }
+
+        private void RejectUnenroll_Click(object sender, RoutedEventArgs e)
+        {
+            _unenrollRequestsView?.RejectUnenroll_Click(sender, e);
+        }
+
+        private void CloseUnenrollRequests_Click(object sender, RoutedEventArgs e) {
+            UnenrollRequestsPanel.Visibility = Visibility.Collapsed;
+        }
+
 
         private void FindYourExams_Click(object sender, RoutedEventArgs e) => _examsView.ApplyFiltersSortAndPage(true);
         private void ExamsGrid_Sorting(object sender, DataGridSortingEventArgs e) => _examsView.GridSorting(sender, e);

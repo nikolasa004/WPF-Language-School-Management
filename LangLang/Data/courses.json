@@ -5,6 +5,12 @@
       1,
       2
     ],
+    "Grades": {
+      "student@gmail.com": {
+        "Knowledge": 8,
+        "Activity": 8
+      }
+    },
     "Id": 1,
     "ProfessorId": "profesor@gmail.com",
     "Language": 0,
@@ -22,6 +28,7 @@
       1,
       3
     ],
+    "Grades": {},
     "Id": 2,
     "ProfessorId": "profesor@gmail.com",
     "Language": 1,
@@ -39,6 +46,7 @@
       2,
       4
     ],
+    "Grades": {},
     "Id": 3,
     "ProfessorId": "profesor@gmail.com",
     "Language": 2,
@@ -55,6 +63,7 @@
     "Days": [
       2
     ],
+    "Grades": {},
     "Id": 4,
     "ProfessorId": "profesor@gmail.com",
     "Language": 3,
@@ -72,6 +81,7 @@
       1,
       3
     ],
+    "Grades": {},
     "Id": 5,
     "ProfessorId": "profesor@gmail.com",
     "Language": 4,
@@ -88,6 +98,7 @@
     "Days": [
       5
     ],
+    "Grades": {},
     "Id": 7,
     "ProfessorId": "profesor@gmail.com",
     "Language": 6,
@@ -105,6 +116,7 @@
       1,
       3
     ],
+    "Grades": {},
     "Id": 8,
     "ProfessorId": "profesor@gmail.com",
     "Language": 7,
@@ -122,6 +134,7 @@
       2,
       3
     ],
+    "Grades": {},
     "Id": 9,
     "ProfessorId": "profesor@gmail.com",
     "Language": 6,

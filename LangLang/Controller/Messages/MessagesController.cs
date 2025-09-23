@@ -49,5 +49,10 @@ namespace LangLang.Controller.Messages
         {
             return _studentMessages.GetMessagesByRecipientId(email);
         }
+
+        public List<Message> GetAllProfessorMessages()
+{
+    return _professorMessages.GetAllMessages(); 
+}
     }
 }

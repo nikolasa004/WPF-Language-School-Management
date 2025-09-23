@@ -34,5 +34,50 @@
     "Body": "You have been successfully enrolled in the course.\n\nCourse: English A1\nStart Date: 01.01.2025\nTime: 10:00\nDuration: 8 weeks\nIs Live: Yes",
     "Date": "2025-09-22",
     "IsRead": false
+  },
+  {
+    "Id": 5,
+    "RecipientId": "student@gmail.com",
+    "SenderId": "profesor@gmail.com",
+    "Title": "You have been expelled from English A1",
+    "Body": "izbacen si",
+    "Date": "2025-09-22",
+    "IsRead": false
+  },
+  {
+    "Id": 6,
+    "RecipientId": "student@gmail.com",
+    "SenderId": "profesor@gmail.com",
+    "Title": "You have received a penalty point in English A1",
+    "Body": "previse roksujes decko",
+    "Date": "2025-09-22",
+    "IsRead": false
+  },
+  {
+    "Id": 7,
+    "RecipientId": "student@gmail.com",
+    "SenderId": "profesor@gmail.com",
+    "Title": "You have received a penalty point in English A1",
+    "Body": "aaaa",
+    "Date": "2025-09-22",
+    "IsRead": false
+  },
+  {
+    "Id": 8,
+    "RecipientId": "student@gmail.com",
+    "SenderId": "profesor@gmail.com",
+    "Title": "You have been expelled from English A1",
+    "Body": "aaaa",
+    "Date": "2025-09-22",
+    "IsRead": false
+  },
+  {
+    "Id": 9,
+    "RecipientId": "student@gmail.com",
+    "SenderId": "profesor@gmail.com",
+    "Title": "You have received a penalty point in English A1",
+    "Body": "44",
+    "Date": "2025-09-22",
+    "IsRead": false
   }
 ]
