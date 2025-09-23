@@ -7,5 +7,23 @@
     "Body": "Sibirski plavac me zalio ledenim cajem.",
     "Date": "2025-09-21",
     "IsRead": false
+  },
+  {
+    "Id": 2,
+    "RecipientId": "profesor@gmail.com",
+    "SenderId": "student@gmail.com",
+    "Title": "Your request for German A2 was rejected",
+    "Body": "decko ti si lud",
+    "Date": "2025-09-21",
+    "IsRead": false
+  },
+  {
+    "Id": 3,
+    "RecipientId": "profesor@gmail.com",
+    "SenderId": "student@gmail.com",
+    "Title": "Your request for French B1 was rejected",
+    "Body": "ae pali",
+    "Date": "2025-09-22",
+    "IsRead": false
   }
 ]

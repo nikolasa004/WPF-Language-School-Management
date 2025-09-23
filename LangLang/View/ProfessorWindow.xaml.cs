@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Globalization;
 using System.Linq;
 using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Markup;
+using LangLang.Controller.Messages;
 using LangLang.Controller.TeachingActivities;
 using LangLang.Controller.Users;
 using LangLang.DTO;
@@ -17,6 +19,14 @@ namespace LangLang.RoleWindows
 {
     public partial class ProfessorWindow : Window
     {
+        private readonly MessagesController _messagesController;
+
+        private readonly StudentsController _studentController;
+        private List<StudentDTO> _allStudents;
+        private readonly ObservableCollection<StudentDTO> _studentsObservable = new();
+        private int _currentCourseId;
+     
+
         private ProfessorViewProfile _profileView;
 
         private ProfessorViewCourses professorViewCourses;
@@ -37,6 +47,8 @@ namespace LangLang.RoleWindows
         public ProfessorWindow(Professor professor, ProfessorsController professorsController)
         {
             InitializeComponent();
+
+            _messagesController = new MessagesController(); 
 
             var sr = new CultureInfo("sr-RS");
             Thread.CurrentThread.CurrentCulture = sr;
@@ -77,11 +89,14 @@ namespace LangLang.RoleWindows
             _allCourses = _courseController.GetMyCourses(_professorId)
                   .Select(c => new CourseDTO(c)).ToList();
 
+
             professorViewCourses = new ProfessorViewCourses(
                 _allCourses,
                 CourseLanguageCombo, CourseLevelCombo, CourseOnlineCombo, CourseWeeksBox,
                 CourseFromDate, CourseToDate, CoursesGrid);
             professorViewCourses.ApplyFiltersSortAndPageForCourses();
+
+            
 
             _manageCourses = new ProfessorManageCourses(
                 _professorId,
@@ -103,6 +118,18 @@ namespace LangLang.RoleWindows
                 EditCourseMonCheckBox, EditCourseTueCheckBox, EditCourseWedCheckBox,
                 EditCourseThuCheckBox, EditCourseFriCheckBox, EditCourseSatCheckBox, EditCourseSunCheckBox,
                 EditCourseDurationWeeksBox);
+
+            StudentsController studentsController = new StudentsController();
+            _allStudents = studentsController.GetAllStudents()
+                             .Select(s => new StudentDTO(s))
+                             .ToList();
+        }
+        private ProfessorStartCourses _studentsView;
+
+        private void RejectStudent_Click(object sender, RoutedEventArgs e)
+        {
+            if (_studentsView != null)
+                _studentsView.RejectStudent_Click(sender, e);
         }
         private void ExamsButton_Click(object sender, RoutedEventArgs e)
         {
@@ -126,6 +153,76 @@ namespace LangLang.RoleWindows
         private void PrevPage_Click(object? sender, RoutedEventArgs e) => _examsView.PrevPage(sender, e);
         private void NextPage_Click(object? sender, RoutedEventArgs e) => _examsView.NextPage(sender, e);
         private void PageSizeCombo_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (_examsView == null)
+                return;
+            _examsView.PageSizeChanged(sender, e, IsLoaded);
+            
+        }
+        private void StartCourseButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender is Button btn && btn.DataContext is CourseDTO course)
+            {
+              
+                if (DateTime.TryParseExact(course.Date, "dd.MM.yyyy", CultureInfo.InvariantCulture,
+                                           DateTimeStyles.None, out DateTime courseDate))
+                {
+                    var daysUntilStart = (courseDate - DateTime.Now.Date).TotalDays;
+                    if (daysUntilStart > 7)
+                    {
+                        MessageBox.Show("Cannot view students more than 7 days before the course starts.",
+                                        "Info", MessageBoxButton.OK, MessageBoxImage.Information);
+                        return;
+                    }
+                }
+                else
+                {
+                    MessageBox.Show("Invalid course date.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return;
+                }
+
+         
+                bool courseAlreadyStarted = _allStudents.Any(s => s.ActiveCourseId == course.Id);
+                if (courseAlreadyStarted)
+                {
+                    MessageBox.Show("This course has already been started. You cannot modify student requests.",
+                                    "Course Already Started", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return;
+                }
+
+                _currentCourseId = course.Id;
+
+                StartCourseOverlay.Visibility = Visibility.Visible;
+
+                _studentsView = new ProfessorStartCourses(
+                    _allStudents.Where(s => s.RequestedCourses.Contains(_currentCourseId)).ToList(),
+                    StudentsGrid,
+                    _currentCourseId,
+                    course,
+                    _messagesController
+                );
+            }
+        }
+
+
+
+        private void CloseStartCourse_Click(object sender, RoutedEventArgs e)
+        {
+            StartCourseOverlay.Visibility = Visibility.Collapsed;
+
+        }
+
+        private void StartCourse_Click(object sender, RoutedEventArgs e)
+        {
+            if (_studentsView != null)
+            {
+                _studentsView.StartCourse_Click(sender, e);
+                StartCourseOverlay.Visibility = Visibility.Collapsed;
+            }
+        }
+
+
+        private void StartStudent_Click(object sender, SelectionChangedEventArgs e) 
         { 
             if(_examsView == null)
                 return;
@@ -147,7 +244,22 @@ namespace LangLang.RoleWindows
         private void DeleteCourse_Click(object sender, RoutedEventArgs e) { if ((sender as FrameworkElement)?.DataContext is CourseDTO course) _manageCourses.DeleteCourse(course); }
         private void SaveEditedCourse_Click(object sender, RoutedEventArgs e) => _manageCourses.SaveEditedCourse();
         private void AddCourseButton_Click(object sender, RoutedEventArgs e) => _manageCourses.OpenAddCourseOverlay();
-        private void EditCourse_Click(object sender, RoutedEventArgs e) { if ((sender as FrameworkElement)?.DataContext is CourseDTO course) _manageCourses.OpenEditCourseOverlay(course); }
+        private void EditCourse_Click(object sender, RoutedEventArgs e)
+        {
+            if ((sender as FrameworkElement)?.DataContext is CourseDTO course)
+            {
+
+                bool courseAlreadyStarted = _allStudents.Any(s => s.ActiveCourseId == course.Id);
+                if (courseAlreadyStarted)
+                {
+                    MessageBox.Show("This course has already been started. Editing is not allowed.",
+                                    "Course Already Started", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return;
+                }
+
+                _manageCourses.OpenEditCourseOverlay(course);
+            }
+        }
         private void CancelEditCourse_Click(object sender, RoutedEventArgs e) => _manageCourses.CloseEditCourseOverlay();
         private void CoursesSearch_Click(object sender, RoutedEventArgs e) => professorViewCourses.SearchCourses(sender, e);
         private void PrevPageCourses_Click(object sender, RoutedEventArgs e) => professorViewCourses.PrevPageForCourses(sender, e);
@@ -161,6 +273,7 @@ namespace LangLang.RoleWindows
                 professorViewCourses?.InitCourseFilters();
                 CoursesPanel.Visibility = Visibility.Visible;
                 MainPanel.Visibility = Visibility.Collapsed;
+              
             }
             catch (Exception ex)
             {

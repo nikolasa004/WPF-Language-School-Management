@@ -22,22 +22,43 @@ namespace LangLang.View
             InitializeComponent();
             MessageLabel.Content = label;
         }
-
         private void SendButton_Click(object sender, RoutedEventArgs e)
         {
-            MessageBoxResult result = MessageBox.Show("Are you sure you want to unenroll from this course? Without a good reason, you will receive a penalty point.", "Unenroll from course", MessageBoxButton.YesNo, MessageBoxImage.Question);
+            MessageBoxResult result = MessageBoxResult.Yes;
+
+            if (type == "professor")
+            {
+                result = MessageBox.Show(
+                    "Are you sure you want to unenroll from this course? Without a good reason, you will receive a penalty point.",
+                    "Unenroll from course",
+                    MessageBoxButton.YesNo,
+                    MessageBoxImage.Question);
+            }
+            else if (type == "student")
+            {
+                result = MessageBox.Show(
+                    "Are you sure you want to send this message?",
+                    "Send Message",
+                    MessageBoxButton.YesNo,
+                    MessageBoxImage.Question);
+            }
+
             if (result == MessageBoxResult.Yes)
             {
-                Message message = new Message();
-                message.RecipientId = recipientId;
-                message.SenderId = senderId;
-                message.Title = title;
-                message.Body = MessageTextBox.Text;
+                Message message = new Message
+                {
+                    RecipientId = recipientId,
+                    SenderId = senderId,
+                    Title = title,
+                    Body = MessageTextBox.Text
+                };
+
                 if (type == "student")
                     messagesController.StudentAdd(message);
                 else
                     messagesController.ProfessorAdd(message);
             }
+
             Close();
         }
     }
