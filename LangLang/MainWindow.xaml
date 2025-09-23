@@ -70,7 +70,8 @@
                 FontSize="50" 
                 Foreground="#FF0B0B0B" 
                 BorderThickness="0"
-                Click="OpenLoginPanel_Click">
+                Tag="1"
+                Click="ChangePanel_Click">
                         <Button.Background>
                             <ImageBrush ImageSource="/GUIResources/LoginButtonBackground.png"/>
                         </Button.Background>
@@ -86,7 +87,8 @@
                 FontSize="50" 
                 Foreground="#FF0B0B0B" 
                 BorderThickness="0"
-                Click="OpenRegisterPanel_Click">
+                Tag="2"
+                Click="ChangePanel_Click">
                         <Button.Background>
                             <ImageBrush ImageSource="/GUIResources/LoginButtonBackground.png"/>
                         </Button.Background>
@@ -117,7 +119,7 @@
                         </Button>
 
                         <!-- Back button -->
-                        <Button Style="{StaticResource FancyButtonStyle}" Content="Back" Width="125" Height="70" FontSize="23" FontFamily="Script MT Bold" BorderThickness="0" Click="CloseLoginPanel_Click" Margin="-85,0,60,0">
+                        <Button Style="{StaticResource FancyButtonStyle}" Content="Back" Width="125" Height="70" FontSize="23" FontFamily="Script MT Bold" BorderThickness="0" Tag="0" Click="ChangePanel_Click" Margin="-85,0,60,0">
                             <Button.Background>
                                 <ImageBrush ImageSource="/GUIResources/LoginButtonBackground.png"/>
                             </Button.Background>
@@ -191,7 +193,7 @@
                     </Button>
 
                     <!-- Back Button -->
-                    <Button Style="{StaticResource FancyButtonStyle}" Content="Back" Height="50" Width="100" FontSize="16" Grid.Row="8" Grid.Column="0" Grid.ColumnSpan="2" HorizontalAlignment="Center" Margin="-125,20,0,0" FontFamily="Script MT Bold" Click="CloseRegisterPanel_Click">
+                    <Button Style="{StaticResource FancyButtonStyle}" Content="Back" Height="50" Width="100" FontSize="16" Grid.Row="8" Grid.Column="0" Grid.ColumnSpan="2" HorizontalAlignment="Center" Margin="-125,20,0,0" FontFamily="Script MT Bold" Tag="0" Click="ChangePanel_Click">
                         <Button.Background>
                             <ImageBrush ImageSource="/GUIResources/LoginButtonBackground.png"/>
                         </Button.Background>

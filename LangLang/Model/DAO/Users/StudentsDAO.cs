@@ -5,6 +5,7 @@ using LangLang.Model.Users;
 using LangLang.Model.Enums;
 using System;
 using System.Globalization;
+using LangLang.Model.DAO.Users.DAOHelpers;
 
 namespace LangLang.Model.DAO.Users
 {
@@ -13,6 +14,8 @@ namespace LangLang.Model.DAO.Users
         private readonly List<Student> _students;
         private readonly Storage<Student> _storage;
 
+        private StudentsCourseDAO studentsCourseDAO;
+
         public Subject StudentSubject;
 
         public StudentsDAO()
@@ -20,16 +23,15 @@ namespace LangLang.Model.DAO.Users
             _storage = new Storage<Student>("students.json");
             _students = _storage.Load();
             StudentSubject = new Subject();
+            studentsCourseDAO = new StudentsCourseDAO(this);
         }
 
         public Student AddStudent(Student student)
         {
             _students.Add(student);
-            _storage.Save(_students);
-            StudentSubject.NotifyObservers();
+            SaveChanges();
             return student;
         }
-
         public Student? UpdateStudent(Student student)
         {
             Student? oldStudent = GetStudentById(student.Email);
@@ -52,51 +54,49 @@ namespace LangLang.Model.DAO.Users
             oldStudent.ActiveExamTermId = student.ActiveExamTermId;
             oldStudent.FinishedExams = student.FinishedExams;
             oldStudent.IsExamApplicationLocked = student.IsExamApplicationLocked;
-
-
-            _storage.Save(_students);
-            StudentSubject.NotifyObservers();
+            SaveChanges();
             return oldStudent;
         }
-
         public Student? RemoveStudent(string email)
         {
             Student? student = GetStudentById(email);
             if (student == null) return null;
 
             _students.Remove(student);
-            _storage.Save(_students);
-            StudentSubject.NotifyObservers();
+            SaveChanges();
             return student;
         }
-
         public Student? GetStudentById(string email) => _students.Find(s => s.Email == email);
         public List<Student> GetAllStudents() => _students;
+        public void SaveChanges()
+        {
+            _storage.Save(_students);
+            StudentSubject.NotifyObservers();
+        }
 
         public List<int> GetRequestedCourses(string email)
         {
-            Student? student = GetStudentById(email);
-            if (student == null) return new List<int>();
-            return student.RequestedCourses;
+            return studentsCourseDAO.GetRequestedCourses(email);
         }
-
         public List<Tuple<Language, LanguageLevel>> GetFinishedCourses(string email)
         {
-            Student? student = GetStudentById(email);
-            if (student == null) return new List<Tuple<Language, LanguageLevel>>();
-            return student.FinishedCourses;
+            return studentsCourseDAO.GetFinishedCourses(email);
         }
-
         public void FinishActiveCourse(string studentEmail, Language language, LanguageLevel level)
         {
-            Student? student = GetStudentById(studentEmail);
-            if (student != null && student.ActiveCourseId != -1)
-            {
-                student.FinishedCourses.Add(new Tuple<Language, LanguageLevel>(language, level));
-                student.ActiveCourseId = -1;
-                _storage.Save(_students);
-                StudentSubject.NotifyObservers();
-            }
+            studentsCourseDAO.FinishActiveCourse(studentEmail, language, level);
+        }
+        public void StartCourse(string studentEmail, int courseId)
+        {
+            studentsCourseDAO.StartCourse(studentEmail, courseId);
+        }
+        public void AddCourseRequest(string studentEmail, int courseId)
+        {
+            studentsCourseDAO.AddCourseRequest(studentEmail, courseId);
+        }
+        public void RemoveCourseRequest(string studentEmail, int courseId)
+        {
+            studentsCourseDAO.RemoveCourseRequest(studentEmail, courseId);
         }
 
         private static DateTime MonthStart(DateTime d) => new DateTime(d.Year, d.Month, 1);
