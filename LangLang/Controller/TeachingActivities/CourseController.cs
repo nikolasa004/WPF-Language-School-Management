@@ -126,6 +126,8 @@ namespace LangLang.Controller.TeachingActivities
         }
 
         public Course? GetById(int id) => _dao.GetCourseById(id);
+
+ 
         public List<Course> GetAll() => _dao.GetAllCourses();
 
         private static void EnsureValidBasics(Course c)
@@ -229,6 +231,15 @@ namespace LangLang.Controller.TeachingActivities
                     result.Add(course);
             }
             return result;
+        }
+        public void AddGrade(int courseId, string studentId, int exam, int homework)
+        {
+            var course = _dao.GetCourseById(courseId);
+            if (course == null)
+                throw new InvalidOperationException($"Course with id {courseId} not found.");
+
+            course.Grades[studentId] = new Grade(exam, homework);
+            _dao.UpdateCourse(course);
         }
     }
 

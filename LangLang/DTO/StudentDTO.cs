@@ -16,7 +16,22 @@ namespace LangLang.DTO
             OnPropertyChanged(propertyName);
             return true;
         }
+        // Privremena svojstva za unos ocena u DataGrid-u
+        private string tempKnowledgeGrade = string.Empty;
+        public string TempKnowledgeGrade
+        {
+            get => tempKnowledgeGrade;
+            set => SetProperty(ref tempKnowledgeGrade, value, nameof(TempKnowledgeGrade));
+        }
 
+        private string tempActivityGrade = string.Empty;
+        public string TempActivityGrade
+        {
+            get => tempActivityGrade;
+            set => SetProperty(ref tempActivityGrade, value, nameof(TempActivityGrade));
+        }
+        // Privremena svojstva za unos ocena u DataGrid-u
+        private string firstName=string.Empty;
         private string firstName = string.Empty;
         public string FirstName
         {
