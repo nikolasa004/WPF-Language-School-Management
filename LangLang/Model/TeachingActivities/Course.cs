@@ -12,6 +12,9 @@ namespace LangLang.Model.TeachingActivities
 
         public List<DayOfWeek> Days { get; set; } = new List<DayOfWeek>();
 
+
+        public Dictionary<string, Grade> Grades { get; set; } = new Dictionary<string, Grade>();
+
         public Course() : base()
         {
             Duration = 90;
@@ -47,7 +50,7 @@ namespace LangLang.Model.TeachingActivities
         {
             string daysStr = Days.Count > 0 ? string.Join(", ", Days) : "N/A";
             return base.ToString() +
-                   $", DurationWeeks: {DurationWeeks}, Days: {daysStr}";
+                   $", DurationWeeks: {DurationWeeks}, Days: {daysStr}, Ocene: {Grades.Count}";
         }
 
         public string ToJSON()
@@ -76,6 +79,7 @@ namespace LangLang.Model.TeachingActivities
                 DurationWeeks = course.DurationWeeks;
                 Duration = 90;
                 RoomId = course.RoomId;
+                Grades = course.Grades; 
             }
         }
     }

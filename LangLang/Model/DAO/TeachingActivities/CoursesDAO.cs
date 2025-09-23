@@ -87,6 +87,9 @@ namespace LangLang.Model.DAO.TeachingActivity
             old.DurationWeeks = course.DurationWeeks;
             old.Days = course.Days;
             old.Duration = 90; // kurs uvek 90min
+            old.Grades = course.Grades.ToDictionary(
+    kvp => kvp.Key,
+    kvp => new Grade(kvp.Value.Knowledge, kvp.Value.Activity));
 
             SaveAllIso();
             CourseSubject.NotifyObservers();
@@ -135,7 +138,8 @@ namespace LangLang.Model.DAO.TeachingActivity
                 RoomId = src.RoomId,
                 Duration = 90,
                 DurationWeeks = src.DurationWeeks,
-                Days = new List<DayOfWeek>(src.Days)
+                Days = new List<DayOfWeek>(src.Days),
+                Grades = src.Grades.ToDictionary(k => k.Key, v => new Grade(v.Value.Knowledge, v.Value.Activity))
             };
         }
 

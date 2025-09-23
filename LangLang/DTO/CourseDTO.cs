@@ -52,6 +52,14 @@ namespace LangLang.DTO
         private string? roomId;
         public string? RoomId { get => roomId; set => SetProperty(ref roomId, value, nameof(RoomId)); }
 
+
+        private Dictionary<string, Grade> grades = new();
+        public Dictionary<string, Grade> Grades
+        {
+            get => grades;
+            set => SetProperty(ref grades, value, nameof(Grades));
+        }
+
         public CourseDTO() { }
 
         public CourseDTO(Course course)
@@ -67,11 +75,15 @@ namespace LangLang.DTO
             DurationWeeks = course.DurationWeeks;
             Days = course.Days ?? new List<DayOfWeek>();
             RoomId = course.RoomId;
+            Grades = course.Grades ?? new Dictionary<string, Grade>(); 
         }
 
         public Course ToCourse()
         {
-            return new Course(Id, ProfessorId, Language, Level, IsLive, MaxAttendees, Date, StartAt, Days, DurationWeeks, RoomId);
+            return new Course(Id, ProfessorId, Language, Level, IsLive, MaxAttendees, Date, StartAt, Days, DurationWeeks, RoomId)
+            {
+                Grades = this.Grades
+            };
         }
 
         private readonly CourseDTOValidator validator = new CourseDTOValidator();
