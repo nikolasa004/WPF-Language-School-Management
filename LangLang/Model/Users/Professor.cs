@@ -55,8 +55,6 @@ namespace LangLang.Model.Users
                 DateOfRegistration = professor.DateOfRegistration;
                 Languages = professor.Languages ?? new Dictionary<Language, LanguageLevel>();
                 AverageRating = professor.AverageRating;
-                if (professor.AverageRating == null)
-                    professor.AverageRating = new Tuple<int, int>(0, 0);
             }
         }
     }

@@ -35,23 +35,28 @@ namespace LangLang.View
             foreach (Message message in messages)
             {
                 MessageListPanel.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
-
-                Button btn = new Button{Height = 60, Margin = new Thickness(0, 0, 0, 5), Padding = new Thickness(0), Style = (Style)FindResource("FancyButtonStyle")};
-                btn.Click += MessageRow_Click;
-                btn.Background = new ImageBrush{ImageSource = new BitmapImage(new Uri("pack://application:,,,/GUIResources/topBarButtonBackground.png"))};
-                btn.Tag = message;
-
-                StackPanel btnContent = new StackPanel{Orientation = Orientation.Horizontal,VerticalAlignment = VerticalAlignment.Center,HorizontalAlignment = HorizontalAlignment.Left};
-                Ellipse indicator = new Ellipse{Width = 16,Height = 16,Fill = message.IsRead ? Brushes.Green : Brushes.Red,Margin = new Thickness(10, 0, 10, 0),VerticalAlignment = VerticalAlignment.Center};
-                TextBlock title = new TextBlock{Text = message.Title,Foreground = Brushes.White,FontFamily = new FontFamily("Script MT Bold"),FontSize = 20,VerticalAlignment = VerticalAlignment.Center};
-                btnContent.Children.Add(indicator);
-                btnContent.Children.Add(title);
-                btn.Content = btnContent;
+                Button btn = MakeButton(message);
 
                 Grid.SetRow(btn, row);
                 MessageListPanel.Children.Add(btn);
                 row++;
             }
+        }
+        private Button MakeButton(Message message)
+        {
+            Button btn=new Button { Height = 60, Margin = new Thickness(0, 0, 0, 5), Padding = new Thickness(0), Style = (Style)FindResource("FancyButtonStyle") };
+            btn.Click += MessageRow_Click;
+            btn.Background = new ImageBrush { ImageSource = new BitmapImage(new Uri("pack://application:,,,/GUIResources/topBarButtonBackground.png")) };
+            btn.Tag = message;
+
+            StackPanel btnContent = new StackPanel { Orientation = Orientation.Horizontal, VerticalAlignment = VerticalAlignment.Center, HorizontalAlignment = HorizontalAlignment.Left };
+            Ellipse indicator = new Ellipse { Width = 16, Height = 16, Fill = message.IsRead ? Brushes.Green : Brushes.Red, Margin = new Thickness(10, 0, 10, 0), VerticalAlignment = VerticalAlignment.Center };
+            TextBlock title = new TextBlock { Text = message.Title, Foreground = Brushes.White, FontFamily = new FontFamily("Script MT Bold"), FontSize = 20, VerticalAlignment = VerticalAlignment.Center };
+            btnContent.Children.Add(indicator);
+            btnContent.Children.Add(title);
+            btn.Content = btnContent;
+
+            return btn;
         }
 
         private void BackToInbox_Click(object sender, RoutedEventArgs e)
@@ -62,10 +67,7 @@ namespace LangLang.View
 
         private void MessageRow_Click(object sender, RoutedEventArgs e)
         {
-            Button btn=(Button)sender;
-            StackPanel content = (StackPanel)btn.Content;
-            Ellipse indicator = (Ellipse)content.Children[0];
-            indicator.Fill = Brushes.Green;
+            Button btn=ReadMessage(sender);
 
             Message message = (Message)btn.Tag;
             DetailTitle.Text = message.Title;
@@ -76,6 +78,14 @@ namespace LangLang.View
             MessageDetailPanel.Visibility = Visibility.Visible;
             message.IsRead = true;
             _messagesController.StudentUpdateReadStatus(message.Id);
+        }
+        private Button ReadMessage(object sender)
+        {
+            Button btn=(Button)sender;
+            StackPanel content = (StackPanel)btn.Content;
+            Ellipse indicator = (Ellipse)content.Children[0];
+            indicator.Fill = Brushes.Green;
+            return btn;
         }
 
         private void DeleteRead_Click(object sender, RoutedEventArgs e)

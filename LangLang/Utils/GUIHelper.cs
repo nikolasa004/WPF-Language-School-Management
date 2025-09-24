@@ -39,13 +39,13 @@ namespace LangLang.Utils
                 "Id" => course => course.Id,
                 "Language" => course => course.Language.ToString(),
                 "Level" => course => (int)course.Level,
-                "ProfessorId" => course => course.ProfessorId ?? "",
+                "ProfessorId" => course => course.ProfessorId,
                 "DurationWeeks" => course => course.DurationWeeks,
-                "FormattedDays" => course => course.DaysFormatted ?? "",
+                "FormattedDays" => course => course.DaysFormatted,
                 "IsLive" => course => course.IsLive,
                 "RoomId" => course => course.RoomId ?? "",
                 "MaxAttendees" => course => course.MaxAttendees ?? 0,
-                "StartAt" => course => course.StartAt ?? "",
+                "StartAt" => course => course.StartAt,
                 "Date" => course => GetCourseDate(course) ?? DateTime.MinValue,
                 _ => course => GetCourseDate(course) ?? DateTime.MinValue
             };
