@@ -45,6 +45,8 @@ namespace LangLang.RoleWindows
         private ProfessorManageExams _examsManage;
 
         private ProfessorStartExam _examStartView;
+        private ProfessorOngoingExam _examOngoingExam;
+
 
         public ProfessorDTO Professor { get; set; }
         public ProfessorDTO UpdateProfessor { get; set; }
@@ -57,7 +59,7 @@ namespace LangLang.RoleWindows
         private ProfessorOngoingCourses _ongoingView;
 
         private ProfessorActionsExam _examActions;
-        private readonly ExamButtonService _examButtonService = new ExamButtonService();
+
 
 
         public ProfessorWindow(Professor professor, ProfessorsController professorsController)
@@ -188,7 +190,11 @@ namespace LangLang.RoleWindows
                         break;
 
                     case ExamButtonState.Open:
-                        _examActions.OpenExam();
+                        _examOngoingExam = new ProfessorOngoingExam(
+                        _allStudents.Where(s => s.ActiveExamTermId == exam.Id).ToList(),
+                        OngoingExamGrid, _studentController
+                        );
+                        OngoingExamOverlay.Visibility = Visibility.Visible;
                         break;
 
                     case ExamButtonState.Finish:
@@ -209,6 +215,22 @@ namespace LangLang.RoleWindows
             {
                 StartExamOverlay.Visibility = Visibility.Collapsed;
 
+            }
+        }
+        private void CloseOngoingExam_Click(object sender, RoutedEventArgs e)
+        {
+            OngoingExamOverlay.Visibility = Visibility.Collapsed;
+        }
+
+        private void BanStudent_Click(object sender, RoutedEventArgs e)
+        {
+            if (OngoingExamGrid.SelectedItem is StudentDTO selectedStudent)
+            {
+                _examOngoingExam.BanStudent(selectedStudent);
+            }
+            else
+            {
+                MessageBox.Show("Please select a student to ban.");
             }
         }
 
