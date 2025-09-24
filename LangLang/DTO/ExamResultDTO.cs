@@ -94,7 +94,6 @@ namespace LangLang.DTO
             ListeningPoints = examResult.ListeningPoints;
             SpeakingPoints = examResult.SpeakingPoints;
         }
-
         public ExamResult ToExamResult()
         {
             return new ExamResult(Exam.Id, Student.Email, ReadingPoints, WritingPoints, ListeningPoints, SpeakingPoints)
