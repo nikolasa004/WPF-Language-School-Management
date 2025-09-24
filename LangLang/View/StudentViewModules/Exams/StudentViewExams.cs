@@ -349,8 +349,6 @@ namespace LangLang.View.StudentViewModules.Exams
                     "Locked", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return false;
             }
-            MessageBox.Show($"The value is: {term}");
-            MessageBox.Show($"The value is: {term.IsLocked}");
 
             if (term.IsLocked == true)
             {

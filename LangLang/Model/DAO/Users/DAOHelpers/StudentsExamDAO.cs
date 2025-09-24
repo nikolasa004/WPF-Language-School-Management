@@ -35,8 +35,6 @@ namespace LangLang.Model.DAO.Users.DAOHelpers
 
             if (!s.RequestedExamTerms.Contains(examTermId))
                 s.RequestedExamTerms.Add(examTermId);
-            if (s.ActiveExamTermId == -1)
-                s.ActiveExamTermId = examTermId;
             _studentsDAO.SaveChanges();
         }
         public void RemoveExamRequest(string studentEmail, int examTermId)
@@ -90,6 +88,7 @@ namespace LangLang.Model.DAO.Users.DAOHelpers
             if (s == null) return;
 
             s.IsExamApplicationLocked = false;
+            s.ActiveExamTermId = -1;
             _studentsDAO.SaveChanges();
         }
         public void RecordExamDecision(string studentEmail, Language language, LanguageLevel level, bool passed)

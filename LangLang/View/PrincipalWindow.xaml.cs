@@ -4,7 +4,9 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using LangLang.Controller.Users;
+using LangLang.DTO;
 using LangLang.Model;
+using LangLang.View.PrincipalViewModules;
 
 namespace LangLang.RoleWindows
 {
@@ -12,6 +14,7 @@ namespace LangLang.RoleWindows
     {
         private ProfessorsController _professorsController;
         private PrincipalProfessorView _professorView;
+        private PrincipalExamView _principalExamView;
         private PrincipalProfessorManager _professorManager;
 
         public PrincipalWindow(ProfessorsController _professorsController)
@@ -107,7 +110,27 @@ namespace LangLang.RoleWindows
         }
         private void ExamsButton_Click(object sender, RoutedEventArgs e)
         {
-            //TODO
+            PrincipalExamOverlay.Visibility = Visibility.Visible;
+
+            _principalExamView = new PrincipalExamView(ExamTermsGrid);
+        }
+        private void ClosePrincipalExam_Click(object sender, RoutedEventArgs e)
+        {
+            PrincipalExamOverlay.Visibility = Visibility.Collapsed;
+        }
+        public void ConfirmResults_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender is Button btn && btn.DataContext is ExamTermDTO exam)
+            {
+                MessageBox.Show(
+                    $"Results for {exam.Language} {exam.Level} exam on {exam.Date} at {exam.StartAt} confirmed.",
+                    "Confirm Results",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Information
+                );
+                _principalExamView.ConfirmResult(exam.Id);
+                _principalExamView.RefreshExams();
+            }
         }
 
         private void ReportsButton_Click(object sender, RoutedEventArgs e)

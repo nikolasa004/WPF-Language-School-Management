@@ -57,6 +57,12 @@ namespace LangLang.Model.DAO.TeachingActivity
             return result;
         }
 
+        public ExamResult? GetByExamAndStudent(int examId, string studentId)
+        {
+            return _examResults
+                .FirstOrDefault(r => r.ExamId == examId && r.StudentId == studentId);
+        }
+
         public List<ExamResult> GetAllExamResults()
             => _examResults;
 
