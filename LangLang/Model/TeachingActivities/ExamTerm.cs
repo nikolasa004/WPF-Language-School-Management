@@ -13,6 +13,7 @@ namespace LangLang.Model.TeachingActivities
 {
     public class ExamTerm: ProfessorTeachingActivity, ISerializable
     {
+       public bool IsLocked { get; set; }
         public ExamTerm() : base() 
         {
             
@@ -23,7 +24,7 @@ namespace LangLang.Model.TeachingActivities
 
         public ExamTerm(int id,string professorId,Language language,LanguageLevel level,int maxAttendees,string? date,string? startAt,string? roomId): base(id, professorId, language, level, true, maxAttendees, date, startAt, 240, roomId)
         {
-        
+            IsLocked = false;
         }
 
         public override string ToString()
@@ -55,6 +56,7 @@ namespace LangLang.Model.TeachingActivities
                 Date = exam.Date;
                 StartAt = exam.StartAt;
                 RoomId = exam.RoomId;
+                IsLocked = exam.IsLocked;
             }
         }
     }

@@ -18,6 +18,7 @@ namespace LangLang.DTO
         }
         private string firstName=string.Empty;
         public string FirstName{get => firstName;set { SetProperty(ref firstName, value, nameof(FirstName)); }}
+
         private string lastName = string.Empty;
         public string LastName{get => lastName;set { SetProperty(ref lastName, value, nameof(LastName)); }}
         private Gender gender;

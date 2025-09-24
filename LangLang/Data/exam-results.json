@@ -1,0 +1,24 @@
+[
+  {
+    "Id": 1,
+    "ExamId": 0,
+    "StudentId": "student@gmail.com",
+    "ReadingPoints": 30,
+    "WritingPoints": 30,
+    "ListeningPoints": 20,
+    "SpeakingPoints": 25,
+    "TotalPoints": 105,
+    "Passed": false
+  },
+  {
+    "Id": 2,
+    "ExamId": 0,
+    "StudentId": "uki@gmail.com",
+    "ReadingPoints": 0,
+    "WritingPoints": 0,
+    "ListeningPoints": 0,
+    "SpeakingPoints": 0,
+    "TotalPoints": 0,
+    "Passed": false
+  }
+]

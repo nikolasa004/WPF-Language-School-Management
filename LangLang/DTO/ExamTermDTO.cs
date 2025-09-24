@@ -42,6 +42,7 @@ namespace LangLang.DTO
         }
 
         public bool IsLive { get; set; } = true;
+        public bool IsLocked { get; set; }
 
         private int maxAttendees;
         public int MaxAttendees
@@ -107,6 +108,7 @@ namespace LangLang.DTO
             StartAt = string.Empty;
             Duration = 240;
             RoomId = string.Empty;
+            IsLocked = false;
         }
         public ExamTermDTO(ExamTerm examTerm)
         {
@@ -120,13 +122,15 @@ namespace LangLang.DTO
             StartAt = examTerm.StartAt ?? string.Empty;
             Duration = examTerm.Duration = 240;
             RoomId = examTerm.RoomId ?? string.Empty;
+            IsLocked = examTerm.IsLocked;
         }
         public ExamTerm ToExamTerm()
         {
             return new ExamTerm(Id, ProfessorId, Language, Level, MaxAttendees, Date, StartAt, RoomId)
             {
                 IsLive = IsLive,
-                Duration = Duration
+                Duration = Duration,
+                IsLocked = IsLocked
             };
         }
         public string Error => string.Empty;
