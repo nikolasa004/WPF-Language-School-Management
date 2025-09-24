@@ -37,7 +37,7 @@ namespace LangLang.Controller.Services
             var daysDifference = timeDifference.TotalDays;
 
             // Exam has completely finished (past end time)
-            if (now > examEndDateTime)
+            if (now > examEndDateTime && exam.IsLocked == false)
             {
                 return new ExamButtonInfo(ExamButtonState.Finish, "Finish", true);
             }
@@ -49,7 +49,7 @@ namespace LangLang.Controller.Services
             }
 
             // 5 days or less before exam
-            if (daysDifference <= 5 && daysDifference > 0)
+            if (daysDifference <= 5 && daysDifference > 0 && exam.IsLocked == false)
             {
                 return new ExamButtonInfo(ExamButtonState.Start, "Start", true);
             }

@@ -1006,6 +1006,88 @@
 
         </Grid>
 
+        <!-- ================== START EXAM OVERLAY ================== -->
+        <Grid x:Name="StartExamOverlay" Visibility="Collapsed" Background="Transparent" Panel.ZIndex="999">
+            <Border CornerRadius="10" Padding="18" Width="850" MinHeight="500"
+            HorizontalAlignment="Center" VerticalAlignment="Center"
+            BorderBrush="#B8860B" BorderThickness="2">
+                <Border.Background>
+                    <ImageBrush ImageSource="/GUIResources/loginBackground.jpg" Stretch="Fill"/>
+                </Border.Background>
+
+                <Grid Margin="6">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <!-- Title -->
+                        <RowDefinition Height="*"/>
+                        <!-- DataGrid -->
+                        <RowDefinition Height="Auto"/>
+                        <!-- Buttons -->
+                    </Grid.RowDefinitions>
+
+                    <!-- Title -->
+                    <TextBlock Grid.Row="0" Text="Students Enrolled for Exam"
+                       Foreground="Gold"
+                       FontSize="22"
+                       FontFamily="Script MT Bold"
+                       HorizontalAlignment="Center"
+                       Margin="0,20,0,8"/>
+
+                    <!-- Students DataGrid -->
+                    <DataGrid Grid.Row="1"
+                    x:Name="ExamStudentsGrid"
+                    ItemsSource="{Binding StudentObservable}"
+                    AutoGenerateColumns="False"
+                    CanUserAddRows="False"
+                    CanUserDeleteRows="False"
+                    IsReadOnly="True"
+                    CanUserSortColumns="True"
+                    VerticalAlignment="Stretch"
+                    Background="#66000000"
+                    Foreground="White"
+                    FontFamily="Script MT Bold"
+                    GridLinesVisibility="None"
+                    HeadersVisibility="Column"
+                    RowBackground="#33000000"
+                    AlternatingRowBackground="#22000000"
+                    BorderBrush="#00000000">
+
+                        <DataGrid.Resources>
+                            <Style TargetType="DataGridColumnHeader" BasedOn="{StaticResource DGHeaderStyle}"/>
+                            <Style TargetType="DataGridCell" BasedOn="{StaticResource DGCellStyle}"/>
+                        </DataGrid.Resources>
+
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="First Name"  Binding="{Binding FirstName}"   Width="*" />
+                            <DataGridTextColumn Header="Last Name"   Binding="{Binding LastName}"    Width="*" />
+                            <DataGridTextColumn Header="Gender"      Binding="{Binding Gender}"      Width="100"/>
+                            <DataGridTextColumn Header="Email"       Binding="{Binding Email}"       Width="*" />
+                            <DataGridTextColumn Header="Phone"       Binding="{Binding PhoneNumber}" Width="*" />
+                            <DataGridTextColumn Header="Penalty"     Binding="{Binding PenaltyPoints}" Width="100"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+
+                    <!-- Bottom Buttons -->
+                    <StackPanel Grid.Row="2" Orientation="Horizontal"
+                        HorizontalAlignment="Center" Margin="0,6,0,0">
+                        <Button Content="Close" Width="140" Height="38" Margin="8"
+                        Click="CloseStartExam_Click" Style="{StaticResource FancyButtonStyle}">
+                            <Button.Background>
+                                <ImageBrush ImageSource="/GUIResources/loginButtonBackground.png"/>
+                            </Button.Background>
+                        </Button>
+                        <Button Content="Confirm List" Width="200" Height="38" Margin="8"
+                        Click="StartExam_Click" Style="{StaticResource FancyButtonStyle}">
+                            <Button.Background>
+                                <ImageBrush ImageSource="/GUIResources/loginButtonBackground.png"/>
+                            </Button.Background>
+                        </Button>
+                    </StackPanel>
+                </Grid>
+            </Border>
+        </Grid>
+        <!-- ================== /START EXAM OVERLAY ================== -->
+
         <!-- ================== ADD EXAM OVERLAY (gold theme, same background as main window) ================== -->
         <Grid x:Name="AddExamOverlay" Visibility="Collapsed" Background="Transparent" Panel.ZIndex="999">
             <!-- Local resources just for this overlay -->

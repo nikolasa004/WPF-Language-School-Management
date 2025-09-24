@@ -13,6 +13,7 @@ using LangLang.Controller.TeachingActivities;
 using LangLang.Controller.Users;
 using LangLang.DTO;
 using LangLang.Model.Enums;
+using LangLang.Model.TeachingActivities;
 using LangLang.Model.Users;
 using LangLang.RoleWindows.ProfessorExamModules;
 using LangLang.RoleWindows.ProfessorViewModules;
@@ -42,6 +43,8 @@ namespace LangLang.RoleWindows
 
         private ProfessorViewExams _examsView;
         private ProfessorManageExams _examsManage;
+
+        private ProfessorStartExam _examStartView;
 
         public ProfessorDTO Professor { get; set; }
         public ProfessorDTO UpdateProfessor { get; set; }
@@ -151,6 +154,7 @@ namespace LangLang.RoleWindows
             _examActions = new ProfessorActionsExam();
         }
         private ProfessorStartCourses _studentsView;
+        private ProfessorStartExam _startExamView;
 
         private void RejectStudent_Click(object sender, RoutedEventArgs e)
         {
@@ -173,7 +177,14 @@ namespace LangLang.RoleWindows
                 switch (button.Tag)
                 {
                     case ExamButtonState.Start:
-                        _examActions.StartExam();
+                        _examStartView = new ProfessorStartExam(
+                        _allStudents.Where(s => s.RequestedExamTerms.Contains(exam.Id) && !s.IsExamApplicationLocked).ToList(),
+                        ExamStudentsGrid,
+                            exam.Id,
+                            _studentController,
+                            _examController
+                        );
+                        StartExamOverlay.Visibility = Visibility.Visible;
                         break;
 
                     case ExamButtonState.Open:
@@ -187,6 +198,19 @@ namespace LangLang.RoleWindows
             }
         }
 
+        private void CloseStartExam_Click(object sender, RoutedEventArgs e)
+        {
+            StartExamOverlay.Visibility = Visibility.Collapsed;
+        }
+
+        private void StartExam_Click(object sender, RoutedEventArgs e)
+        {
+            if (_examStartView?.ConfirmExamStart() == true)
+            {
+                StartExamOverlay.Visibility = Visibility.Collapsed;
+
+            }
+        }
 
         private void OngoingCourseButton_Click(object sender, RoutedEventArgs e)
         {

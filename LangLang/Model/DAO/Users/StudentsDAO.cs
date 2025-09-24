@@ -175,9 +175,6 @@ namespace LangLang.Model.DAO.Users
             if (!s.RequestedExamTerms.Contains(examTermId))
                 s.RequestedExamTerms.Add(examTermId);
 
-            if (s.ActiveExamTermId == -1)
-                s.ActiveExamTermId = examTermId;
-
             _storage.Save(_students);
             StudentSubject.NotifyObservers();
         }

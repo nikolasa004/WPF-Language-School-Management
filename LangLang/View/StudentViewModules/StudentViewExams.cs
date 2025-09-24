@@ -349,6 +349,15 @@ namespace LangLang.RoleWindows.StudentViewModules
                     "Locked", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return false;
             }
+            MessageBox.Show($"The value is: {term}");
+            MessageBox.Show($"The value is: {term.IsLocked}");
+
+            if (term.IsLocked == true)
+            {
+                MessageBox.Show("Exam applications for this exams are locked.",
+                    "Locked", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return false;
+            }
 
             if (_studentsController.GetActiveExamTermId(_studentId) != -1)
             {

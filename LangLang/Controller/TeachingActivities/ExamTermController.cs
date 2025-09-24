@@ -100,6 +100,25 @@ namespace LangLang.Controller.TeachingActivities
         {
             return _dao.RemoveExamTerm(id);
         }
+        public ExamTerm? LockExamTerm(int examId)
+        {
+            var exam = _dao.GetExamTermById(examId);
+            if (exam == null)
+                throw new InvalidOperationException("Exam term not found.");
+
+            exam.IsLocked = true;
+            return _dao.UpdateExamTerm(exam);
+        }
+
+        public ExamTerm? UnlockExamTerm(int examId)
+        {
+            var exam = _dao.GetExamTermById(examId);
+            if (exam == null)
+                throw new InvalidOperationException("Exam term not found.");
+
+            exam.IsLocked = false;
+            return _dao.UpdateExamTerm(exam);
+        }
 
         public ExamTerm? GetById(int id) => _dao.GetExamTermById(id);
         public List<ExamTerm> GetAll() => _dao.GetAllExamTerms();
