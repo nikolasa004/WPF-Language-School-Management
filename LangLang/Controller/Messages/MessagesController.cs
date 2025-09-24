@@ -45,7 +45,7 @@ namespace LangLang.Controller.Messages
             _professorMessages.UpdateMessageReadStatus(messageId);
         }
 
-        public List<Message>? GetStudentMessagesById(string email)
+        public List<Message> GetStudentMessagesById(string email)
         {
             return _studentMessages.GetMessagesByRecipientId(email);
         }

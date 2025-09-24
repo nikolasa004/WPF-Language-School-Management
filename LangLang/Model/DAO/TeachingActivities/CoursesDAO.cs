@@ -87,9 +87,7 @@ namespace LangLang.Model.DAO.TeachingActivity
             old.DurationWeeks = course.DurationWeeks;
             old.Days = course.Days;
             old.Duration = 90; // kurs uvek 90min
-            old.Grades = course.Grades.ToDictionary(
-    kvp => kvp.Key,
-    kvp => new Grade(kvp.Value.Knowledge, kvp.Value.Activity));
+            old.Grades = course.Grades.ToDictionary(kvp => kvp.Key, kvp => new Grade(kvp.Value.Knowledge, kvp.Value.Activity));
 
             SaveAllIso();
             CourseSubject.NotifyObservers();
@@ -108,21 +106,17 @@ namespace LangLang.Model.DAO.TeachingActivity
             return course;
         }
 
-        public Course? GetCourseById(int id)
-            => _courses.Find(c => c.Id == id);
+        public Course? GetCourseById(int id) => _courses.Find(c => c.Id == id);
 
-        public List<Course> GetAllCourses()
-            => _courses;
+        public List<Course> GetAllCourses() => _courses;
 
-        public List<Course> GetCoursesByProfessor(string professorId)
-            => _courses.FindAll(c => c.ProfessorId == professorId);
+        public List<Course> GetCoursesByProfessor(string professorId) => _courses.FindAll(c => c.ProfessorId == professorId);
 
         private void SaveAllIso()
         {
             var isoCopy = _courses.Select(CloneWithIsoDate).ToList();
             _storage.Save(isoCopy);
         }
-
         private static Course CloneWithIsoDate(Course src)
         {
             return new Course
@@ -142,7 +136,6 @@ namespace LangLang.Model.DAO.TeachingActivity
                 Grades = src.Grades.ToDictionary(k => k.Key, v => new Grade(v.Value.Knowledge, v.Value.Activity))
             };
         }
-
         private static string ToIsoOrKeep(string? date)
         {
             if (string.IsNullOrWhiteSpace(date)) return date ?? string.Empty;
@@ -154,7 +147,6 @@ namespace LangLang.Model.DAO.TeachingActivity
                 return any.ToString(IsoDateFmt, CultureInfo.InvariantCulture);
             return date;
         }
-
         private static string ToSrOrKeep(string? date)
         {
             if (string.IsNullOrWhiteSpace(date)) return date ?? string.Empty;
@@ -168,4 +160,3 @@ namespace LangLang.Model.DAO.TeachingActivity
         }
     }
 }
-

@@ -3,15 +3,13 @@ using LangLang.Controller.Requests;
 using LangLang.Controller.TeachingActivities;
 using LangLang.Controller.Users;
 using LangLang.DTO;
-using LangLang.Model.Enums;
 using LangLang.Model.TeachingActivities;
-using LangLang.Model.Users;
 using System;
 using System.Globalization;
 using System.Windows;
 using System.Windows.Controls;
 
-namespace LangLang.RoleWindows.StudentViewModules
+namespace LangLang.View.StudentViewModules.Profile
 {
     class StudentViewProfile
     {
@@ -22,16 +20,6 @@ namespace LangLang.RoleWindows.StudentViewModules
         private readonly ExamEnrollmentsController examEnrollmentsController;
 
         private StudentDTO Student;
-
-        private TextBox FirstNameBox;
-        private TextBox LastNameBox;
-        private RadioButton MaleRadioButton;
-        private RadioButton FemaleRadioButton;
-        private DatePicker BirthDatePicker;
-        private TextBox PhoneBox;
-        private TextBox EmailBox;
-        private TextBox PasswordTextBox;
-        private ComboBox EducationComboBox;
 
         private Label NameLabel = null!;
         private Label SurnameLabel = null!;
@@ -44,8 +32,7 @@ namespace LangLang.RoleWindows.StudentViewModules
         private Label PenaltyPointsLabel = null!;
         private Label JoinedDateLabel = null!;
 
-           
-        public StudentViewProfile(StudentDTO student, StudentsController studentsController, CourseController courseController, CourseEnrollmentsController courseEnrollmentsController, ExamEnrollmentsController examEnrollmentsController, MessagesController messagesController, TextBox firstNameBox, TextBox lastNameBox, RadioButton maleRadioButton, RadioButton femaleRadioButton, DatePicker birthDatePicker, TextBox phoneBox, TextBox emailBox, TextBox passwordTextBox, ComboBox educationComboBox)
+        public StudentViewProfile(StudentDTO student, StudentsController studentsController, CourseController courseController, CourseEnrollmentsController courseEnrollmentsController, ExamEnrollmentsController examEnrollmentsController, MessagesController messagesController)
         {
             Student = student;
             this.studentsController = studentsController;
@@ -53,15 +40,6 @@ namespace LangLang.RoleWindows.StudentViewModules
             enrollmentsController = courseEnrollmentsController;
             this.examEnrollmentsController = examEnrollmentsController; 
             this.messagesController= messagesController;
-            FirstNameBox = firstNameBox;
-            LastNameBox = lastNameBox;
-            MaleRadioButton = maleRadioButton;
-            FemaleRadioButton = femaleRadioButton;
-            BirthDatePicker = birthDatePicker;
-            PhoneBox = phoneBox;
-            EmailBox = emailBox;
-            PasswordTextBox = passwordTextBox;
-            EducationComboBox = educationComboBox;
         }
         public void SetLabels(Label nameLabel, Label surnameLabel, Label genderLabel, Label birthDateLabel, Label phoneLabel, Label emailLabel, Label educationLabel, Label currentCourseLabel, Label penaltyPointsLabel, Label joinedDateLabel)
         {
@@ -77,8 +55,10 @@ namespace LangLang.RoleWindows.StudentViewModules
             JoinedDateLabel = joinedDateLabel;
         }
 
-        public void InformationUpdate()
+        public void InformationUpdate(bool fromEdit=false, StudentDTO? updatedStudent=null)
         {
+            if (fromEdit && updatedStudent != null)
+                Student = updatedStudent;
             NameLabel.Content = "Name: " + Student.FirstName;
             SurnameLabel.Content = "Surname: " + Student.LastName;
             GenderLabel.Content = "Gender: " + Student.Gender;
@@ -95,38 +75,6 @@ namespace LangLang.RoleWindows.StudentViewModules
             DateTime joinedDate = DateTime.ParseExact(Student.DateOfRegistration, "yyyy-MM-dd", CultureInfo.InvariantCulture);
             string joinedDateString = joinedDate.ToString("dd.MM.yyyy");
             JoinedDateLabel.Content = "Joined Date: " + joinedDateString;
-        }
-
-        public void SetStudentData()
-        {
-            FirstNameBox.Text = Student.FirstName;
-            LastNameBox.Text = Student.LastName;
-            if (Student.Gender == Gender.Male)
-                MaleRadioButton.IsChecked = true;
-            else
-                FemaleRadioButton.IsChecked = true;
-            BirthDatePicker.SelectedDate = DateTime.ParseExact(Student.DateOfBirth, "yyyy-MM-dd", CultureInfo.InvariantCulture);
-            PhoneBox.Text = Student.PhoneNumber;
-            EmailBox.Text = Student.Email;
-            PasswordTextBox.Text = Student.Password;
-            EducationComboBox.SelectedItem = Student.EducationLevel;
-        }
-        public bool SaveEditChanges(StudentDTO UpdateStudent)
-        {
-            if (UpdateStudent.IsValid)
-            {
-                Student student = UpdateStudent.ToStudent();
-                Student = new StudentDTO(student);
-
-                studentsController.Update(student);
-
-                InformationUpdate();
-
-                MessageBox.Show("Update was successful!", "Update successful", MessageBoxButton.OK, MessageBoxImage.Information);
-
-                return true;
-            }
-            return false;
         }
         public bool DeleteProfile()
         {
