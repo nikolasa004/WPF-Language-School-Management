@@ -18,40 +18,16 @@ namespace LangLang.DTO.Validators
             nameof(CourseDTO.MaxAttendees)
         };
 
-        public string Validate(CourseDTO course, string propertyName)
+        public string Validate(CourseDTO course, string propertyName) => propertyName switch
         {
-            switch (propertyName)
-            {
-                case nameof(CourseDTO.Language):
-                    break;
-                case nameof(CourseDTO.Level):
-                    break;
-                case nameof(CourseDTO.Date):
-                    if (string.IsNullOrWhiteSpace(course.Date) ||
-                        !DateTime.TryParseExact(course.Date, "dd.MM.yyyy", Sr, DateTimeStyles.None, out _))
-                        return "Invalid course start date (dd.MM.yyyy).";
-                    break;
-                case nameof(CourseDTO.StartAt):
-                    if (string.IsNullOrWhiteSpace(course.StartAt) ||
-                        !TimeSpan.TryParseExact(course.StartAt, "hh\\:mm", CultureInfo.InvariantCulture, out _))
-                        return "Invalid start time (HH:mm).";
-                    break;
-                case nameof(CourseDTO.DurationWeeks):
-                    if (course.DurationWeeks <= 0)
-                        return "DurationWeeks must be greater than 0.";
-                    break;
-                case nameof(CourseDTO.Days):
-                    if (course.Days == null || course.Days.Count == 0)
-                        return "Course must have at least one day of week.";
-                    break;
-                case nameof(CourseDTO.MaxAttendees):
-                    if (course.IsLive && (!course.MaxAttendees.HasValue || course.MaxAttendees.Value <= 0))
-                        return "For live courses, MaxAttendees must be greater than 0.";
-                    break;
-            }
+            nameof(CourseDTO.Date) => string.IsNullOrWhiteSpace(course.Date) || !DateTime.TryParseExact(course.Date, "dd.MM.yyyy", Sr, DateTimeStyles.None, out _) ? "Invalid course start date (dd.MM.yyyy)." : string.Empty,
+            nameof(CourseDTO.StartAt) =>string.IsNullOrWhiteSpace(course.StartAt) || !TimeSpan.TryParseExact(course.StartAt, "hh\\:mm", CultureInfo.InvariantCulture, out _)? "Invalid start time (HH:mm)." : string.Empty,
+            nameof(CourseDTO.DurationWeeks) =>course.DurationWeeks <= 0 ? "DurationWeeks must be greater than 0." : string.Empty,
+            nameof(CourseDTO.Days) =>(course.Days == null || course.Days.Count == 0) ? "Course must have at least one day of week." : string.Empty,
+            nameof(CourseDTO.MaxAttendees) =>(course.IsLive && (!course.MaxAttendees.HasValue || course.MaxAttendees.Value <= 0))? "For live courses, MaxAttendees must be greater than 0." : string.Empty,
 
-            return string.Empty;
-        }
+            _ => string.Empty
+        };
 
         public bool IsValid(CourseDTO course)
         {

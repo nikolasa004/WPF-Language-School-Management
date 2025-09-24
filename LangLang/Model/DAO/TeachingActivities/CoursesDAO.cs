@@ -76,23 +76,21 @@ namespace LangLang.Model.DAO.TeachingActivity
             var old = GetCourseById(course.Id);
             if (old is null) return null;
 
-            old.ProfessorId = course.ProfessorId;
-            old.Language = course.Language;
-            old.Level = course.Level;
-            old.IsLive = course.IsLive;
-            old.MaxAttendees = course.MaxAttendees;
+            foreach (var prop in typeof(Course).GetProperties())
+            {
+                if (!prop.CanWrite) continue;
+                if (prop.Name is nameof(Course.Id) or nameof(Course.Duration) or nameof(Course.Grades)) continue;
+                prop.SetValue(old, prop.GetValue(course));
+            }
             old.Date = ToSrOrKeep(course.Date);
-            old.StartAt = course.StartAt;
-            old.RoomId = course.RoomId;
-            old.DurationWeeks = course.DurationWeeks;
-            old.Days = course.Days;
-            old.Duration = 90; // kurs uvek 90min
-            old.Grades = course.Grades.ToDictionary(kvp => kvp.Key, kvp => new Grade(kvp.Value.Knowledge, kvp.Value.Activity));
+            old.Duration = 90;
+            old.Grades = course.Grades.ToDictionary(kvp => kvp.Key,kvp => new Grade(kvp.Value.Knowledge, kvp.Value.Activity));
 
             SaveAllIso();
             CourseSubject.NotifyObservers();
             return old;
         }
+
 
         public Course? RemoveCourse(int id)
         {

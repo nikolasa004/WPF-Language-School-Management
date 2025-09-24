@@ -5,6 +5,7 @@ using System.Linq;
 using LangLang.Model.DAO.TeachingActivity;
 using LangLang.Model.TeachingActivities;
 using LangLang.Model.Users;
+using LangLang.Utils;
 
 namespace LangLang.Controller.TeachingActivities
 {
@@ -52,38 +53,56 @@ namespace LangLang.Controller.TeachingActivities
 
             return items.OrderBy(c => TryGetFirstStartDate(c)).ToList();
         }
-
-        public List<Course> SearchCourses(List<Course> input, Model.Enums.Language? language, Model.Enums.LanguageLevel? level, bool? isLive, int weeks, DateTime? fromDate, DateTime? toDate)
+        public List<Course> SearchCourses(List<Course> input, CoursesSearchFilter courseFilter, DateTime? fromDate, DateTime? toDate)
         {
             var items = input.AsEnumerable();
-            if (language is not null) items = items.Where(t => t.Language == language);
-            if (level is not null) items = items.Where(t => t.Level == level);
-            if (fromDate.HasValue ^ toDate.HasValue)
-            {
-                var exact = (fromDate ?? toDate)!.Value.Date;
-                fromDate = exact;
-                toDate = exact;
-            }
-            if (fromDate.HasValue && toDate.HasValue)
-            {
-                var from = fromDate.Value.Date;
-                var to = toDate.Value.Date;
-                if (from > to) (from, to) = (to, from);
-                items = items.Where(t =>
-                {
-                    var start = TryGetFirstStartDate(t);
-                    if (!start.HasValue) return false;
-                    var d = start.Value.Date;
-                    return d >= from && d <= to;
-                });
-            }
-            if (isLive!= null)
-                items = items.Where(t => t.IsLive == isLive);
-            if (weeks > 0)
-                items = items.Where(t => t.DurationWeeks == weeks);
+
+            items = ApplyLanguageFilter(items, courseFilter.Language);
+            items = ApplyLevelFilter(items, courseFilter.Level);
+            (fromDate, toDate) = NormalizeDates(fromDate, toDate);
+            items = ApplyDateFilter(items, fromDate, toDate);
+            items = ApplyLiveFilter(items, courseFilter.IsLive);
+            items = ApplyWeeksFilter(items, courseFilter.Weeks);
 
             return items.OrderBy(t => TryGetFirstStartDate(t)).ToList();
         }
+        private IEnumerable<Course> ApplyLanguageFilter(IEnumerable<Course> items, Model.Enums.Language? language)
+        {
+            return language is not null ? items.Where(t => t.Language == language) : items;
+        }
+        private IEnumerable<Course> ApplyLevelFilter(IEnumerable<Course> items, Model.Enums.LanguageLevel? level)
+        {
+            return level is not null ? items.Where(t => t.Level == level) : items;
+        }
+        private (DateTime?, DateTime?) NormalizeDates(DateTime? fromDate, DateTime? toDate)
+        {
+            if (fromDate.HasValue ^ toDate.HasValue)
+            {
+                var exact = (fromDate ?? toDate)!.Value.Date;
+                return (exact, exact);
+            }
+            return (fromDate, toDate);
+        }
+        private IEnumerable<Course> ApplyDateFilter(IEnumerable<Course> items, DateTime? fromDate, DateTime? toDate)
+        {
+            if (!fromDate.HasValue || !toDate.HasValue)
+                return items;
+
+            var from = fromDate.Value.Date;
+            var to = toDate.Value.Date;
+            if (from > to) (from, to) = (to, from);
+
+            return items.Where(t =>{var start = TryGetFirstStartDate(t);if (!start.HasValue) return false;var d = start.Value.Date; return d >= from && d <= to;});
+        }
+        private IEnumerable<Course> ApplyLiveFilter(IEnumerable<Course> items, bool? isLive)
+        {
+            return isLive != null ? items.Where(t => t.IsLive == isLive) : items;
+        }
+        private IEnumerable<Course> ApplyWeeksFilter(IEnumerable<Course> items, int weeks)
+        {
+            return weeks > 0 ? items.Where(t => t.DurationWeeks == weeks) : items;
+        }
+
 
         public Course Create(Course course)
         {

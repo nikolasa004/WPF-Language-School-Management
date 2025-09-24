@@ -2,6 +2,7 @@
 using LangLang.DTO;
 using LangLang.Model.Enums;
 using LangLang.Model.TeachingActivities;
+using LangLang.Utils;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -113,7 +114,7 @@ namespace LangLang.RoleWindows.ProfessorViewModules
             if (int.TryParse(CourseWeeksBox.Text, out var parsedWeeks) && parsedWeeks > 0)
                 weeks = parsedWeeks;
 
-            return GetFilterResults(input, lang, level, isLive, weeks, from, to);
+            return GetFilterResults(input, new CoursesSearchFilter(lang,level,isLive,weeks), from, to);
         }
 
         private bool? CheckLiveFilter()
@@ -127,10 +128,10 @@ namespace LangLang.RoleWindows.ProfessorViewModules
             return null;
         }
 
-        private List<CourseDTO> GetFilterResults(List<CourseDTO> input, Language? lang, LanguageLevel? level, bool? isLive, int weeks, DateTime? from, DateTime? to)
+        private List<CourseDTO> GetFilterResults(List<CourseDTO> input, CoursesSearchFilter courseFilter, DateTime? from, DateTime? to)
         {
             List<Course> inputRaw = input.Select(dto => dto.ToCourse()).ToList();
-            List<Course> resultRaw = _courseController.SearchCourses(inputRaw, lang, level, isLive, weeks, from, to);
+            List<Course> resultRaw = _courseController.SearchCourses(inputRaw, courseFilter, from, to);
             return resultRaw.Select(course => new CourseDTO(course)).ToList();
         }
 

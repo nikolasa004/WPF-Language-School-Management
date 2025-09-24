@@ -33,19 +33,16 @@ namespace LangLang.View.StudentViewModules.Courses
 
         public RateWindow? CheckIfActiveCourseFinished()
         {
-            Student? student = _studentsController.GetStudentById(_studentId);
-            if (student != null && student.ActiveCourseId != -1)
+            Student? student = _studentsController.GetStudentById(_studentId)!;
+            if (student.ActiveCourseId != -1)
             {
-                Course? course = _courseController.GetById(student.ActiveCourseId);
-                if (course != null)
+                Course? course = _courseController.GetById(student.ActiveCourseId)!;
+                DateTime? start = GUIHelper.GetCourseDate(new CourseDTO(course));
+                if (start.HasValue && start.Value.AddDays(course.DurationWeeks * 7) < DateTime.Now)
                 {
-                    DateTime? start = GUIHelper.GetCourseDate(new CourseDTO(course));
-                    if (start.HasValue && start.Value.AddDays(course.DurationWeeks * 7) < DateTime.Now)
-                    {
-                        RateWindow rateWindow = new RateWindow(course.ProfessorId, "professor", _professorsController);
-                        _studentsController.FinishActiveCourse(_studentId, course.Language, course.Level);
-                        return rateWindow;
-                    }
+                    RateWindow rateWindow = new RateWindow(course.ProfessorId, "professor", _professorsController);
+                    _studentsController.FinishActiveCourse(_studentId, course.Language, course.Level);
+                    return rateWindow;
                 }
             }
             return null;
@@ -100,13 +97,12 @@ namespace LangLang.View.StudentViewModules.Courses
         }
         public void ShowActiveCourse()
         {
-            Student? student = _studentsController.GetStudentById(_studentId);
+            Student? student = _studentsController.GetStudentById(_studentId)!;
             _availableCourses.Clear();
-            if (student != null && student.ActiveCourseId != -1)
+            if (student.ActiveCourseId != -1)
             {
-                Course? course = _courseController.GetById(student.ActiveCourseId);
-                if (course != null)
-                    _availableCourses.Add(new CourseDTO(course));
+                Course? course = _courseController.GetById(student.ActiveCourseId)!;
+                _availableCourses.Add(new CourseDTO(course));
             }
             _filtered.Clear();
             _filtered.AddRange(_availableCourses);

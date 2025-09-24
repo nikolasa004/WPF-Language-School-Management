@@ -72,17 +72,7 @@ namespace LangLang.View.StudentViewModules.Courses
                 MessageBoxResult result = MessageBox.Show("Are you sure you want to cancel enrollment request for the selected course?", "Confirm Cancellation", MessageBoxButton.YesNo, MessageBoxImage.Question);
                 if (result == MessageBoxResult.Yes)
                 {
-                    List<int> courseRequests = _studentsController.GetRequestedCourses(_studentId);
-                    int courseRequestId = -1;
-                    foreach (int requestId in courseRequests)
-                    {
-                        CourseEnrollment? courseRequest = _enrollmentsController.GetCourseEnrollmentById(requestId);
-                        if (courseRequest != null && courseRequest.TeachingActivityID == selectedCourse.Id)
-                        {
-                            courseRequestId = courseRequest.ID;
-                            break;
-                        }
-                    }
+                    int courseRequestId=GetRequestFromCourse(selectedCourse.Id);
 
                     _enrollmentsController.Delete(courseRequestId);
                     _studentsController.RemoveCourseRequest(_studentId, courseRequestId);
@@ -95,23 +85,36 @@ namespace LangLang.View.StudentViewModules.Courses
                 MessageBox.Show("Please select a course request to cancel.", "No Selection", MessageBoxButton.OK, MessageBoxImage.Warning);
             return false;
         }
+        public int GetRequestFromCourse(int selectedCourseId)
+        {
+            List<int> courseRequests = _studentsController.GetRequestedCourses(_studentId);
+            int courseRequestId = -1;
+            foreach (int requestId in courseRequests)
+            {
+                CourseEnrollment? courseRequest = _enrollmentsController.GetCourseEnrollmentById(requestId)!;
+                if (courseRequest.TeachingActivityID == selectedCourseId)
+                {
+                    courseRequestId = courseRequest.ID;
+                    break;
+                }
+            }
+
+            return courseRequestId;
+        }
         public void UnenrollRequestCourse()
         {
             string professorId = string.Empty;
             Course? course = null;
-            Student? student = _studentsController.GetStudentById(_studentId);
-            if (student != null && student.ActiveCourseId != -1)
+            Student? student = _studentsController.GetStudentById(_studentId)!;
+            if (student.ActiveCourseId != -1)
             {
-                course = _courseController.GetById(student.ActiveCourseId);
-                if (course != null)
+                course = _courseController.GetById(student.ActiveCourseId)!;
+                if (GUIHelper.GetCourseDate(new CourseDTO(course)) is DateTime start && start.AddDays(7) > DateTime.Now)
                 {
-                    if (GUIHelper.GetCourseDate(new CourseDTO(course)) is DateTime start && start.AddDays(7) > DateTime.Now)
-                    {
-                        MessageBox.Show("You can onln send unenrollment request for course that is going on for more than 7 days.", "Unenrollment Not Allowed", MessageBoxButton.OK, MessageBoxImage.Warning);
-                        return;
-                    }
-                    professorId = course.ProfessorId;
+                    MessageBox.Show("You can only send unenrollment request for course that is going on for more than 7 days.", "Unenrollment Not Allowed", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return;
                 }
+                professorId = course.ProfessorId;
             }
 
             MessageSendWindow messageWindow = new MessageSendWindow(_studentId, "Unenrollment Request", "Please provide a reason for unenrolling from the course:", professorId, _messagesController, "professor");

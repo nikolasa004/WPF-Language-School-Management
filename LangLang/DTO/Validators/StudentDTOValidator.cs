@@ -9,59 +9,19 @@ namespace LangLang.DTO.Validators
         private readonly Regex _phoneRegex = new Regex(@"^[0-9\+]+$");
         private readonly Regex _emailRegex = new Regex(@"^[^@\s]+@[^@\s]+\.[^@\s]+$");
         private readonly string[] _validatedProperties ={ "FirstName", "LastName", "DateOfBirth", "PhoneNumber", "Email", "Password" };
-        public string Validate(StudentDTO student, string propertyName)
+        public string Validate(StudentDTO student, string propertyName) => propertyName switch
         {
-            switch (propertyName)
-            {
-                case nameof(StudentDTO.FirstName):
-                    if (string.IsNullOrWhiteSpace(student.FirstName))
-                        return "Please enter your first name.";
-                    if (!_nameRegex.IsMatch(student.FirstName))
-                        return "First name can only contain letters.";
-                    break;
+            nameof(StudentDTO.FirstName) =>string.IsNullOrWhiteSpace(student.FirstName) ? "Please enter your first name." :!_nameRegex.IsMatch(student.FirstName) ? "First name can only contain letters." :string.Empty,
+            nameof(StudentDTO.LastName) =>string.IsNullOrWhiteSpace(student.LastName) ? "Please enter your last name." :!_nameRegex.IsMatch(student.LastName) ? "Last name can only contain letters." :string.Empty,
+            nameof(StudentDTO.DateOfBirth) =>student.DateOfBirth == null ? "Please select your birth date." :!DateTime.TryParse(student.DateOfBirth, out var birthDate) ? "Invalid date format." :birthDate > DateTime.Now ? "Birth date cannot be in the future." :
+            birthDate < DateTime.Now.AddYears(-120) ? "Birth date cannot be more than 120 years ago." : birthDate > DateTime.Now.AddYears(-18) ? "You must be at least 18 years old to register." :string.Empty,
+            nameof(StudentDTO.PhoneNumber) =>string.IsNullOrWhiteSpace(student.PhoneNumber) ? "Please enter your phone number." :!_phoneRegex.IsMatch(student.PhoneNumber) ? "Phone number can only contain digits and '+' sign." :string.Empty,
+            nameof(StudentDTO.Email) =>string.IsNullOrWhiteSpace(student.Email) ? "Please enter your email." :!_emailRegex.IsMatch(student.Email) ? "Please enter a valid email address." :string.Empty,
+            nameof(StudentDTO.Password) =>string.IsNullOrWhiteSpace(student.Password) ? "Please enter your password." :string.Empty,
 
-                case nameof(StudentDTO.LastName):
-                    if (string.IsNullOrWhiteSpace(student.LastName))
-                        return "Please enter your last name.";
-                    if (!_nameRegex.IsMatch(student.LastName))
-                        return "Last name can only contain letters.";
-                    break;
+            _ => string.Empty
+        };
 
-                case nameof(StudentDTO.DateOfBirth):
-                    if (student.DateOfBirth == null)
-                        return "Please select your birth date.";
-                    if (!DateTime.TryParse(student.DateOfBirth, out var birthDate))
-                        return "Invalid date format.";
-                    if (birthDate > DateTime.Now)
-                        return "Birth date cannot be in the future.";
-                    if (birthDate < DateTime.Now.AddYears(-120))
-                        return "Birth date cannot be more than 120 years ago.";
-                    if (birthDate > DateTime.Now.AddYears(-18))
-                        return "You must be at least 18 years old to register.";
-                    break;
-
-                case nameof(StudentDTO.PhoneNumber):
-                    if (string.IsNullOrWhiteSpace(student.PhoneNumber))
-                        return "Please enter your phone number.";
-                    if (!_phoneRegex.IsMatch(student.PhoneNumber))
-                        return "Phone number can only contain digits and '+' sign.";
-                    break;
-
-                case nameof(StudentDTO.Email):
-                    if (string.IsNullOrWhiteSpace(student.Email))
-                        return "Please enter your email.";
-                    if (!_emailRegex.IsMatch(student.Email))
-                        return "Please enter a valid email address.";
-                    break;
-
-                case nameof(StudentDTO.Password):
-                    if (string.IsNullOrWhiteSpace(student.Password))
-                        return "Please enter your password.";
-                    break;
-            }
-
-            return string.Empty;
-        }
 
         public bool IsValid(StudentDTO student)
         {

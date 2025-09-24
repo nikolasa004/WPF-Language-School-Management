@@ -25,23 +25,10 @@ namespace LangLang.View
         private void SendButton_Click(object sender, RoutedEventArgs e)
         {
             MessageBoxResult result = MessageBoxResult.Yes;
-
             if (type == "professor")
-            {
-                result = MessageBox.Show(
-                    "Are you sure you want to unenroll from this course? Without a good reason, you will receive a penalty point.",
-                    "Unenroll from course",
-                    MessageBoxButton.YesNo,
-                    MessageBoxImage.Question);
-            }
+                result = MessageBox.Show( "Are you sure you want to unenroll from this course? Without a good reason, you will receive a penalty point.","Unenroll from course",MessageBoxButton.YesNo,MessageBoxImage.Question);
             else if (type == "student")
-            {
-                result = MessageBox.Show(
-                    "Are you sure you want to send this message?",
-                    "Send Message",
-                    MessageBoxButton.YesNo,
-                    MessageBoxImage.Question);
-            }
+                result = MessageBox.Show("Are you sure you want to send this message?","Send Message",MessageBoxButton.YesNo,MessageBoxImage.Question);
 
             if (result == MessageBoxResult.Yes)
             {
@@ -58,7 +45,6 @@ namespace LangLang.View
                 else
                     messagesController.ProfessorAdd(message);
             }
-
             Close();
         }
     }
