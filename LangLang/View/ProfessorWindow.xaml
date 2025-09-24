@@ -672,7 +672,7 @@
                     <StackPanel Grid.Row="2" Orientation="Horizontal"
                 HorizontalAlignment="Center" Margin="0,6,0,0">
                         <Button Content="Back" Width="140" Height="38" Margin="8"
-                    Click="BackToOngoingCourse_Click" Style="{StaticResource FancyButtonStyle}">
+                    Click="CloseFinishCourse_Click" Style="{StaticResource FancyButtonStyle}">
                             <Button.Background>
                                 <ImageBrush ImageSource="/GUIResources/loginButtonBackground.png"/>
                             </Button.Background>
@@ -692,7 +692,7 @@
 
 
 
-
+        <!-- ================== EXAMS PANEL ================== -->
         <Grid x:Name="ExamsPanel" Visibility="Collapsed" Background="Transparent">
             <!-- TOP (Auto) / MIDDLE (*) / BOTTOM (Auto) -->
             <Grid.RowDefinitions>
@@ -888,6 +888,12 @@
                 <DataGrid.Resources>
                     <Style TargetType="DataGridColumnHeader" BasedOn="{StaticResource DGHeaderStyle}"/>
                     <Style TargetType="DataGridCell"         BasedOn="{StaticResource DGCellStyle}"/>
+
+                    <!-- Converters for the custom exam button in each row -->
+                    <conv:ExamButtonContentConverter x:Key="ButtonContentConverter"/>
+                    <conv:ExamButtonEnabledConverter x:Key="ButtonEnabledConverter"/>
+                    <conv:ExamButtonBackgroundConverter x:Key="ButtonBackgroundConverter"/>
+                    <conv:ExamButtonStateConverter x:Key="ButtonStateConverter"/>
                 </DataGrid.Resources>
                 <DataGrid.Columns>
                     <DataGridTextColumn Header="ID"        Binding="{Binding Id}"            SortMemberPath="Id"           Width="60"/>
@@ -897,7 +903,7 @@
                     <DataGridTextColumn Header="Start"     Binding="{Binding StartAt}"       SortMemberPath="StartAt"      Width="80"/>
                     <DataGridTextColumn Header="Room"      Binding="{Binding RoomId}"        SortMemberPath="RoomId"       Width="80"/>
                     <DataGridTextColumn Header="Max"       Binding="{Binding MaxAttendees}"  SortMemberPath="MaxAttendees" Width="80"/>
-                    <DataGridTemplateColumn Header="Actions" Width="180">
+                    <DataGridTemplateColumn Header="Actions" Width="250">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
@@ -906,10 +912,34 @@
                                             <ImageBrush ImageSource="/GUIResources/loginButtonBackground.png"/>
                                         </Button.Background>
                                     </Button>
-                                    <Button Content="Cancel" Style="{StaticResource FancyButtonStyle}" Width="80" Height="30" Margin="6,0,0,0" Click="CancelExam_Click">
+                                    <Button Content="Cancel" Style="{StaticResource FancyButtonStyle}" Width="70" Height="30" Margin="6,0,0,0" Click="CancelExam_Click">
                                         <Button.Background>
                                             <ImageBrush ImageSource="/GUIResources/loginButtonBackground.png"/>
                                         </Button.Background>
+                                    </Button>
+                                    <Button x:Name="CustomExamButton"
+                                        Width="70"
+                                        Height="30"
+                                        Margin="6,0,0,0"
+                                        Click="CustomExamButton_Click"
+                                        Content="{Binding Path=., Converter={StaticResource ButtonContentConverter}}"
+                                        IsEnabled="{Binding Path=., Converter={StaticResource ButtonEnabledConverter}}"
+                                        Tag="{Binding Path=., Converter={StaticResource ButtonStateConverter}}">
+                                        <Button.Style>
+                                            <Style TargetType="Button" BasedOn="{StaticResource FancyButtonStyle}">
+                                                <Setter Property="Background">
+                                                    <Setter.Value>
+                                                        <ImageBrush ImageSource="/GUIResources/loginButtonBackground.png"/>
+                                                    </Setter.Value>
+                                                </Setter>
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding Path=., Converter={StaticResource ButtonEnabledConverter}}" Value="False">
+                                                        <Setter Property="Background" Value="Gray"/>
+                                                        <Setter Property="Opacity" Value="0.5"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Button.Style>
                                     </Button>
                                 </StackPanel>
                             </DataTemplate>
@@ -975,6 +1005,253 @@
             </Grid>
 
         </Grid>
+
+        <!-- ================== START EXAM OVERLAY ================== -->
+        <Grid x:Name="StartExamOverlay" Visibility="Collapsed" Background="Transparent" Panel.ZIndex="999">
+            <Border CornerRadius="10" Padding="18" Width="850" MinHeight="500"
+            HorizontalAlignment="Center" VerticalAlignment="Center"
+            BorderBrush="#B8860B" BorderThickness="2">
+                <Border.Background>
+                    <ImageBrush ImageSource="/GUIResources/loginBackground.jpg" Stretch="Fill"/>
+                </Border.Background>
+
+                <Grid Margin="6">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <!-- Title -->
+                        <RowDefinition Height="*"/>
+                        <!-- DataGrid -->
+                        <RowDefinition Height="Auto"/>
+                        <!-- Buttons -->
+                    </Grid.RowDefinitions>
+
+                    <!-- Title -->
+                    <TextBlock Grid.Row="0" Text="Students Enrolled for Exam"
+                       Foreground="Gold"
+                       FontSize="22"
+                       FontFamily="Script MT Bold"
+                       HorizontalAlignment="Center"
+                       Margin="0,20,0,8"/>
+
+                    <!-- Students DataGrid -->
+                    <DataGrid Grid.Row="1"
+                    x:Name="ExamStudentsGrid"
+                    ItemsSource="{Binding StudentObservable}"
+                    AutoGenerateColumns="False"
+                    CanUserAddRows="False"
+                    CanUserDeleteRows="False"
+                    IsReadOnly="True"
+                    CanUserSortColumns="True"
+                    VerticalAlignment="Stretch"
+                    Background="#66000000"
+                    Foreground="White"
+                    FontFamily="Script MT Bold"
+                    GridLinesVisibility="None"
+                    HeadersVisibility="Column"
+                    RowBackground="#33000000"
+                    AlternatingRowBackground="#22000000"
+                    BorderBrush="#00000000">
+
+                        <DataGrid.Resources>
+                            <Style TargetType="DataGridColumnHeader" BasedOn="{StaticResource DGHeaderStyle}"/>
+                            <Style TargetType="DataGridCell" BasedOn="{StaticResource DGCellStyle}"/>
+                        </DataGrid.Resources>
+
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="First Name"  Binding="{Binding FirstName}"   Width="*" />
+                            <DataGridTextColumn Header="Last Name"   Binding="{Binding LastName}"    Width="*" />
+                            <DataGridTextColumn Header="Gender"      Binding="{Binding Gender}"      Width="100"/>
+                            <DataGridTextColumn Header="Email"       Binding="{Binding Email}"       Width="*" />
+                            <DataGridTextColumn Header="Phone"       Binding="{Binding PhoneNumber}" Width="*" />
+                            <DataGridTextColumn Header="Penalty"     Binding="{Binding PenaltyPoints}" Width="100"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+
+                    <!-- Bottom Buttons -->
+                    <StackPanel Grid.Row="2" Orientation="Horizontal"
+                        HorizontalAlignment="Center" Margin="0,6,0,0">
+                        <Button Content="Close" Width="140" Height="38" Margin="8"
+                        Click="CloseStartExam_Click" Style="{StaticResource FancyButtonStyle}">
+                            <Button.Background>
+                                <ImageBrush ImageSource="/GUIResources/loginButtonBackground.png"/>
+                            </Button.Background>
+                        </Button>
+                        <Button Content="Confirm List" Width="200" Height="38" Margin="8"
+                        Click="StartExam_Click" Style="{StaticResource FancyButtonStyle}">
+                            <Button.Background>
+                                <ImageBrush ImageSource="/GUIResources/loginButtonBackground.png"/>
+                            </Button.Background>
+                        </Button>
+                    </StackPanel>
+                </Grid>
+            </Border>
+        </Grid>
+        <!-- ================== /START EXAM OVERLAY ================== -->
+
+        <!-- ================== ONGOING EXAM OVERLAY ================== -->
+        <Grid x:Name="OngoingExamOverlay" Visibility="Collapsed" Background="Transparent" Panel.ZIndex="999">
+            <Border CornerRadius="10" Padding="18" Width="850" MinHeight="500"
+        HorizontalAlignment="Center" VerticalAlignment="Center"
+        BorderBrush="#B8860B" BorderThickness="2">
+                <Border.Background>
+                    <ImageBrush ImageSource="/GUIResources/loginBackground.jpg" Stretch="Fill"/>
+                </Border.Background>
+
+                <Grid Margin="6">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <!-- Title -->
+                        <RowDefinition Height="*"/>
+                        <!-- DataGrid -->
+                        <RowDefinition Height="Auto"/>
+                        <!-- Buttons -->
+                    </Grid.RowDefinitions>
+
+                    <!-- Title -->
+                    <TextBlock Grid.Row="0" Text="Ongoing Exam - Students"
+               Foreground="Gold"
+               FontSize="22"
+               FontFamily="Script MT Bold"
+               HorizontalAlignment="Center"
+               Margin="0,20,0,8"/>
+
+                    <!-- Students DataGrid -->
+                    <DataGrid Grid.Row="1"
+                x:Name="OngoingExamGrid"
+                ItemsSource="{Binding StudentObservable}"
+                AutoGenerateColumns="False"
+                CanUserAddRows="False"
+                CanUserDeleteRows="False"
+                IsReadOnly="True"
+                CanUserSortColumns="True"
+                VerticalAlignment="Stretch"
+                Background="#66000000"
+                Foreground="White"
+                FontFamily="Script MT Bold"
+                GridLinesVisibility="None"
+                HeadersVisibility="Column"
+                RowBackground="#33000000"
+                AlternatingRowBackground="#22000000"
+                BorderBrush="#00000000">
+
+                        <DataGrid.Resources>
+                            <Style TargetType="DataGridColumnHeader" BasedOn="{StaticResource DGHeaderStyle}"/>
+                            <Style TargetType="DataGridCell" BasedOn="{StaticResource DGCellStyle}"/>
+                        </DataGrid.Resources>
+
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="First Name"  Binding="{Binding FirstName}"   Width="*" />
+                            <DataGridTextColumn Header="Last Name"   Binding="{Binding LastName}"    Width="*" />
+                            <DataGridTextColumn Header="Gender"      Binding="{Binding Gender}"      Width="100"/>
+                            <DataGridTextColumn Header="Email"       Binding="{Binding Email}"       Width="*" />
+                            <DataGridTextColumn Header="Phone"       Binding="{Binding PhoneNumber}" Width="*" />
+                            <DataGridTextColumn Header="Penalty"     Binding="{Binding PenaltyPoints}" Width="100"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+
+                    <!-- Bottom Buttons -->
+                    <StackPanel Grid.Row="2" Orientation="Horizontal"
+                HorizontalAlignment="Center" Margin="0,6,0,0">
+                        <Button Content="Close" Width="140" Height="38" Margin="8"
+                    Click="CloseOngoingExam_Click" Style="{StaticResource FancyButtonStyle}">
+                            <Button.Background>
+                                <ImageBrush ImageSource="/GUIResources/loginButtonBackground.png"/>
+                            </Button.Background>
+                        </Button>
+                        <Button Content="Ban Selected" Width="200" Height="38" Margin="8"
+                    Click="BanStudent_Click" Style="{StaticResource FancyButtonStyle}">
+                            <Button.Background>
+                                <ImageBrush ImageSource="/GUIResources/loginButtonBackground.png"/>
+                            </Button.Background>
+                        </Button>
+                    </StackPanel>
+                </Grid>
+            </Border>
+        </Grid>
+        <!-- ================== /ONGOING EXAM OVERLAY ================== -->
+
+        <!-- ================== FINISH EXAM OVERLAY ================== -->
+        <Grid x:Name="FinishExamOverlay" Visibility="Collapsed" Background="Transparent" Panel.ZIndex="999">
+            <Border CornerRadius="10" Padding="18" Width="850" MinHeight="500"
+            HorizontalAlignment="Center" VerticalAlignment="Center"
+            BorderBrush="#B8860B" BorderThickness="2">
+                <Border.Background>
+                    <ImageBrush ImageSource="/GUIResources/loginBackground.jpg" Stretch="Fill"/>
+                </Border.Background>
+
+                <Grid Margin="6">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <!-- Title -->
+                        <RowDefinition Height="*"/>
+                        <!-- DataGrid -->
+                        <RowDefinition Height="Auto"/>
+                        <!-- Buttons -->
+                    </Grid.RowDefinitions>
+
+                    <!-- Title -->
+                    <TextBlock Grid.Row="0" Text="Exam Results Entry"
+                       Foreground="Gold"
+                       FontSize="22"
+                       FontFamily="Script MT Bold"
+                       HorizontalAlignment="Center"
+                       Margin="0,20,0,8"/>
+
+                    <!-- Students Results DataGrid -->
+                    <DataGrid Grid.Row="1"
+                      x:Name="FinishExamGrid"
+                      AutoGenerateColumns="False"
+                      CanUserAddRows="False"
+                      CanUserDeleteRows="False"
+                      IsReadOnly="False"
+                      CanUserSortColumns="True"
+                      VerticalAlignment="Stretch"
+                      Background="#66000000"
+                      Foreground="White"
+                      FontFamily="Script MT Bold"
+                      GridLinesVisibility="None"
+                      HeadersVisibility="Column"
+                      RowBackground="#33000000"
+                      AlternatingRowBackground="#22000000"
+                      BorderBrush="#00000000">
+
+                        <DataGrid.Resources>
+                            <Style TargetType="DataGridColumnHeader" BasedOn="{StaticResource DGHeaderStyle}"/>
+                            <Style TargetType="DataGridCell" BasedOn="{StaticResource DGCellStyle}"/>
+                        </DataGrid.Resources>
+
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="First Name" Binding="{Binding Student.FirstName}" Width="*" IsReadOnly="True"/>
+                            <DataGridTextColumn Header="Last Name" Binding="{Binding Student.LastName}" Width="*" IsReadOnly="True"/>
+                            <DataGridTextColumn Header="Reading (0-60)" Binding="{Binding ReadingPoints}" Width="120"/>
+                            <DataGridTextColumn Header="Writing (0-60)" Binding="{Binding WritingPoints}" Width="120"/>
+                            <DataGridTextColumn Header="Listening (0-40)" Binding="{Binding ListeningPoints}" Width="120"/>
+                            <DataGridTextColumn Header="Speaking (0-50)" Binding="{Binding SpeakingPoints}" Width="120"/>
+                            <DataGridTextColumn Header="Total" Binding="{Binding TotalPoints, Mode=OneWay}" Width="100" IsReadOnly="True"/>
+                            <DataGridCheckBoxColumn Header="Passed" Binding="{Binding Passed, Mode=OneWay}" IsReadOnly="True"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+
+                    <!-- Bottom Buttons -->
+                    <StackPanel Grid.Row="2" Orientation="Horizontal"
+                        HorizontalAlignment="Center" Margin="0,6,0,0">
+                        <Button Content="Close" Width="140" Height="38" Margin="8"
+                        Click="CloseFinishExam_Click" Style="{StaticResource FancyButtonStyle}">
+                            <Button.Background>
+                                <ImageBrush ImageSource="/GUIResources/loginButtonBackground.png"/>
+                            </Button.Background>
+                        </Button>
+                        <Button Content="Save Results" Width="200" Height="38" Margin="8"
+                        Click="SaveExamResults_Click" Style="{StaticResource FancyButtonStyle}">
+                            <Button.Background>
+                                <ImageBrush ImageSource="/GUIResources/loginButtonBackground.png"/>
+                            </Button.Background>
+                        </Button>
+                    </StackPanel>
+                </Grid>
+            </Border>
+        </Grid>
+        <!-- ================== /FINISH EXAM OVERLAY ================== -->
 
         <!-- ================== ADD EXAM OVERLAY (gold theme, same background as main window) ================== -->
         <Grid x:Name="AddExamOverlay" Visibility="Collapsed" Background="Transparent" Panel.ZIndex="999">

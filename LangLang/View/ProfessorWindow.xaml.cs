@@ -8,9 +8,12 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Markup;
 using LangLang.Controller.Messages;
+using LangLang.Controller.Services;
 using LangLang.Controller.TeachingActivities;
 using LangLang.Controller.Users;
 using LangLang.DTO;
+using LangLang.Model.Enums;
+using LangLang.Model.TeachingActivities;
 using LangLang.Model.Users;
 using LangLang.RoleWindows.ProfessorExamModules;
 using LangLang.RoleWindows.ProfessorViewModules;
@@ -40,6 +43,12 @@ namespace LangLang.RoleWindows
 
         private ProfessorViewExams _examsView;
         private ProfessorManageExams _examsManage;
+
+        private readonly ExamResultsController _examResultController;
+        private ProfessorStartExam _examStartView;
+        private ProfessorOngoingExam _examOngoingView;
+        private ProfessorFinishExam? _examFinishView;
+
 
         public ProfessorDTO Professor { get; set; }
         public ProfessorDTO UpdateProfessor { get; set; }
@@ -133,15 +142,16 @@ namespace LangLang.RoleWindows
                              .ToList();
 
             _studentController = new StudentsController();
+            _examResultController = new ExamResultsController();
             _allStudents = _studentController.GetAllStudents()
                                  .Select(s => new StudentDTO(s))
                                  .ToList();
             _unenrollRequestsView = new ProfessorUnenrollRequests(
-    UnenrollRequestsGrid,   
-    _studentController,
-    _courseController,
-    _messagesController
-);
+                UnenrollRequestsGrid,   
+                _studentController,
+                _courseController,
+                _messagesController
+            );
         }
         private ProfessorStartCourses _studentsView;
 
@@ -158,6 +168,84 @@ namespace LangLang.RoleWindows
 
             _examsView.InitFilters(new CultureInfo("sr-RS"), this.Language);
             _examsView.ReloadAll();
+        }
+        private void CustomExamButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender is Button button && button.DataContext is ExamTermDTO exam)
+            {
+                switch (button.Tag)
+                {
+                    case ExamButtonState.Start:
+                        _examStartView = new ProfessorStartExam(
+                        _allStudents.Where(s => s.RequestedExamTerms.Contains(exam.Id) && !s.IsExamApplicationLocked).ToList(),
+                        ExamStudentsGrid, exam.Id, _studentController, _examController);
+                        StartExamOverlay.Visibility = Visibility.Visible;
+                        break;
+
+                    case ExamButtonState.Open:
+                        _examOngoingView = new ProfessorOngoingExam(
+                        _allStudents.Where(s => s.ActiveExamTermId == exam.Id).ToList(),
+                        OngoingExamGrid, _studentController);
+                        OngoingExamOverlay.Visibility = Visibility.Visible;
+                        break;
+
+                    case ExamButtonState.Finish:
+                        _examFinishView = new ProfessorFinishExam(exam, _allStudents.Where(s => s.ActiveExamTermId == exam.Id).ToList(),
+                         FinishExamGrid, _examResultController, _examController);
+                        FinishExamOverlay.Visibility = Visibility.Visible;
+                        break;
+                }
+            }
+        }
+
+        private void CloseStartExam_Click(object sender, RoutedEventArgs e)
+        {
+            StartExamOverlay.Visibility = Visibility.Collapsed;
+        }
+
+        private void StartExam_Click(object sender, RoutedEventArgs e)
+        {
+            if (_examStartView?.ConfirmExamStart() == true)
+            {
+                StartExamOverlay.Visibility = Visibility.Collapsed;
+
+            }
+        }
+
+        private void CloseFinishExam_Click(object sender, RoutedEventArgs e)
+        {
+            FinishExamOverlay.Visibility = Visibility.Collapsed;
+        }
+
+        private void SaveExamResults_Click(object sender, RoutedEventArgs e)
+        {
+            if (_examFinishView == null)
+            {
+                MessageBox.Show("Exam results view is not initialized.");
+                return;
+            }
+
+            _examFinishView.SaveResults();
+
+            FinishExamOverlay.Visibility = Visibility.Collapsed;
+            
+        }
+
+        private void CloseOngoingExam_Click(object sender, RoutedEventArgs e)
+        {
+            OngoingExamOverlay.Visibility = Visibility.Collapsed;
+        }
+
+        private void BanStudent_Click(object sender, RoutedEventArgs e)
+        {
+            if (OngoingExamGrid.SelectedItem is StudentDTO selectedStudent)
+            {
+                _examOngoingView.BanStudent(selectedStudent);
+            }
+            else
+            {
+                MessageBox.Show("Please select a student to ban.");
+            }
         }
 
         private void OngoingCourseButton_Click(object sender, RoutedEventArgs e)
@@ -189,9 +277,10 @@ namespace LangLang.RoleWindows
             _finishCourseView = new ProfessorFinishCourse(_allStudents, FinishCourseGrid, _currentCourseId);
         }
 
-        private void BackToOngoingCourse_Click(object sender, RoutedEventArgs e)
+        private void CloseFinishCourse_Click(object sender, RoutedEventArgs e)
         {
             FinishCoursePanel.Visibility = Visibility.Collapsed;
+            _examsView.ReloadAll();
         }
 
         private void ConfirmFinishCourse_Click(object sender, RoutedEventArgs e)
