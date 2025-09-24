@@ -1,14 +1,19 @@
-﻿using LangLang.Controller.TeachingActivities;
+﻿using LangLang.Controller.Messages;
+using LangLang.Controller.Requests;
+using LangLang.Controller.TeachingActivities;
 using LangLang.Controller.Users;
 using LangLang.DTO;
 using LangLang.Model.Users;
-using LangLang.RoleWindows.StudentViewModules;
+using LangLang.Utils;
 using LangLang.View;
+using LangLang.View.StudentViewModules;
+using LangLang.View.StudentViewModules.Courses;
+using LangLang.View.StudentViewModules.Exams;
+using LangLang.View.StudentViewModules.Profile;
+using System;
+using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
-using LangLang.Controller.Messages;
-using LangLang.Controller.Requests;
-using System;
 
 namespace LangLang.RoleWindows
 {
@@ -18,115 +23,48 @@ namespace LangLang.RoleWindows
         public StudentDTO UpdateStudent { get; set; }
 
         private StudentsController studentsController;
-
-        // --- Courses
-        private CourseController courseController;
-        private CourseEnrollmentsController enrollmentsController;
-
-        // --- Exams (NEW)
-        private ExamTermsController examController;
-        private ExamEnrollmentsController examEnrollmentsController;
-
-        private MessagesController messagesController;
+        private CourseController courseController=new CourseController();
+        private CourseEnrollmentsController enrollmentsController=new CourseEnrollmentsController();
+        private ExamTermsController examController=new ExamTermsController();
+        private ExamEnrollmentsController examEnrollmentsController=new ExamEnrollmentsController();
+        private MessagesController messagesController=new MessagesController();
 
         private StudentViewExams studentViewExams;
         private StudentViewCourses studentViewCourses;
         private StudentViewProfile studentViewProfile;
+        private StudentViewEdit studentViewEdit;
+        private StudentViewTeaching studentViewTeaching;
 
-        private string currentCoursePanel = string.Empty;
-        private string currentExamPanel = string.Empty;
-
+        private List<Grid> panels;
 
         public StudentWindow(Student student, StudentsController studentsController)
         {
             InitializeComponent();
             DataContext = this;
-
             this.studentsController = studentsController;
 
-            // Controllers
-            courseController = new CourseController();
-            enrollmentsController = new CourseEnrollmentsController();
-
-            // NEW: exam controllers
-            examController = new ExamTermsController();
-            examEnrollmentsController = new ExamEnrollmentsController();
-
-            messagesController = new MessagesController();
-
-            // Views
-            studentViewExams = new StudentViewExams(
-                examController,
-                examEnrollmentsController,
-                this.studentsController,
-                ExamLanguageCombo,
-                ExamLevelCombo,
-                ExamFromDate,
-                ExamToDate,
-                ExamsGrid,
-                student.Email
-            );
-
-            studentViewCourses = new StudentViewCourses(
-                courseController,
-                enrollmentsController,
-                CourseLanguageCombo,
-                CourseLevelCombo,
-                CourseOnlineCombo,
-                CourseWeeksBox,
-                CourseFromDate,
-                CourseToDate,
-                CoursesGrid,
-                student.Email,
-                this.studentsController,
-                messagesController
-            );
-
+            studentViewExams = new StudentViewExams(examController,examEnrollmentsController,this.studentsController,ExamLanguageCombo,ExamLevelCombo,ExamFromDate,ExamToDate,ExamsGrid,student.Email);
+            studentViewCourses = new StudentViewCourses(courseController,enrollmentsController,CourseLanguageCombo,CourseLevelCombo,CourseOnlineCombo,CourseWeeksBox,CourseFromDate,CourseToDate,CoursesGrid,student.Email,this.studentsController,messagesController);
             RateWindow? rateWindow = studentViewCourses.CheckIfActiveCourseFinished();
 
             Student = new StudentDTO(student);
             UpdateStudent = new StudentDTO(student);
+            panels = new List<Grid> { MainPanel, EditPanel, ExamsPanel, CoursesPanel };
+            Dictionary<string, Action> coursePanelActions = new Dictionary<string, Action>{{ "show all",() => { CoursePanelButton.Content = "Enroll";studentViewCourses.ShowAllCourses();}},{ "show requested",() => { CoursePanelButton.Content = "Cancel";studentViewCourses.ShowRequestedCourses(); } },{ "show active",() => { CoursePanelButton.Content = "Unenroll";studentViewCourses.ShowActiveCourse();} }};
+            Dictionary<string, Action> examPanelActions = new Dictionary<string, Action> { { "show all", () => { ExamPanelButton.Content = "Enroll"; studentViewExams.ShowAllExams(); } }, { "show requested", () => { ExamPanelButton.Content = "Cancel"; studentViewExams.ShowRequestedExams(); } }, { "show active", () => { ExamPanelButton.Content = "Cancel"; studentViewExams.ShowActiveExam(); } } };
 
-            studentViewProfile = new StudentViewProfile(
-                Student,
-                this.studentsController,
-                courseController,
-                enrollmentsController,
-                examEnrollmentsController,
-                messagesController,
-                FirstNameBox,
-                LastNameBox,
-                MaleRadioButton,
-                FemaleRadioButton,
-                BirthDatePicker,
-                PhoneBox,
-                EmailBox,
-                PasswordTextBox,
-                EducationComboBox
-            );
-
-            studentViewProfile.SetLabels(
-                NameLabel,
-                SurnameLabel,
-                GenderLabel,
-                BirthDateLabel,
-                PhoneLabel,
-                EmailLabel,
-                EducationLabel,
-                CurrentCourseLabel,
-                PenaltyPointsLabel,
-                JoinedDateLabel
-            );
-
-            InformationUpdate();
-
+            studentViewProfile = new StudentViewProfile(Student,this.studentsController, courseController,enrollmentsController,examEnrollmentsController,messagesController);
+            studentViewProfile.SetLabels(NameLabel,SurnameLabel,GenderLabel,BirthDateLabel,PhoneLabel,EmailLabel,EducationLabel,CurrentCourseLabel,PenaltyPointsLabel,JoinedDateLabel);
+            studentViewEdit = new StudentViewEdit(Student,this.studentsController, studentViewProfile, FirstNameBox, LastNameBox, MaleRadioButton, FemaleRadioButton, BirthDatePicker, PhoneBox, EmailBox, PasswordTextBox, EducationComboBox);
+            studentViewTeaching = new StudentViewTeaching(panels, coursePanelActions, examPanelActions, studentViewCourses, studentViewExams);
+            studentViewProfile.InformationUpdate();
             if (rateWindow != null)
             {
                 rateWindow.Show();
                 rateWindow.Topmost = true;
             }
+            SetTeachingButtons();
         }
-
         private void ActivityButton_Click(object sender, RoutedEventArgs e)
         {
             if (sender is Button btn)
@@ -135,249 +73,85 @@ namespace LangLang.RoleWindows
                 btn.ContextMenu.IsOpen = true;
             }
         }
-
-        // Profile Panel
-        private void InformationUpdate()
+        private void ChangePanel_Click(object sender, RoutedEventArgs e)
         {
-            studentViewProfile.InformationUpdate();
+            if (sender is Button button && button.Tag is string panelIndex)
+                GUIHelper.ChangePanel(panels, int.Parse(panelIndex));
+        }
+        private void TeachingActivity_Click(object sender, RoutedEventArgs e)
+        {
+            var guiItem = (Control)sender!;
+            string methodName = guiItem.Tag!.ToString()!;
+            var method = studentViewTeaching.GetType().GetMethod(methodName)!;
+            method.Invoke(studentViewTeaching, null);
         }
 
+        // Profile Panel
         private void Edit_Click(object sender, RoutedEventArgs e)
         {
             if (Student.ActiveCourseId != -1)
             {
-                MessageBox.Show(
-                    "You cannot edit your profile while enrolled in a course. Please finish or leave your current course before making changes.",
-                    "Edit Profile",
-                    MessageBoxButton.OK,
-                    MessageBoxImage.Warning
-                );
+                MessageBox.Show("You cannot edit your profile while enrolled in a course. Please finish or leave your current course before making changes.","Edit Profile",MessageBoxButton.OK,MessageBoxImage.Warning);
                 return;
             }
-
             if (Student.ActiveExamTermId != -1)
             {
-                MessageBox.Show("You cannot edit your profile after you have applied for an exam.",
-                    "Edit Profile", MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show("You cannot edit your profile after you have applied for an exam.","Edit Profile", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 
-            studentViewProfile.SetStudentData();
-
-            MainPanel.Visibility = Visibility.Collapsed;
-            EditPanel.Visibility = Visibility.Visible;
+            studentViewEdit.SetStudentData();
+            GUIHelper.ChangePanel(panels, 1);
         }
-
         private void SaveEditChanges_Click(object sender, RoutedEventArgs e)
         {
-            if (studentViewProfile.SaveEditChanges(UpdateStudent))
+            if (studentViewEdit.SaveEditChanges(UpdateStudent))
             {
                 Student student = UpdateStudent.ToStudent();
                 Student = new StudentDTO(student);
-                CloseEditPanel_Click(sender, e);
+                GUIHelper.ChangePanel(panels, 0);
             }
         }
-
         private void Delete_Click(object sender, RoutedEventArgs e)
         {
             if (studentViewProfile.DeleteProfile())
-            {
                 Close();
-            }
         }
-
-        private void CloseEditPanel_Click(object sender, RoutedEventArgs e)
+        private void OpenInboxPanel_Click(object sender, RoutedEventArgs e)
         {
-            MainPanel.Visibility = Visibility.Visible;
-            EditPanel.Visibility = Visibility.Collapsed;
+            MessagesInboxWindow messagesInboxWindow = new MessagesInboxWindow(Student.Email, messagesController);
+            messagesInboxWindow.Show();
         }
 
-        // Exam Terms Panel
-        private void ShowAllExams_Click(object sender, RoutedEventArgs e)
+        //Teaching Activities
+        private void SetTeachingButtons()
         {
-            currentExamPanel = "show all";
-            ExamPanelButton.Content = "Enroll";
-            studentViewExams.ShowAllExams();
-            MainPanel.Visibility = Visibility.Collapsed;
-            ExamsPanel.Visibility = Visibility.Visible;
+            PrevPageBtnExams.Click += (s, e) => studentViewExams.PrevPage();
+            NextPageBtnExams.Click += (s, e) => studentViewExams.NextPage();
+            ExamsSearch.Click += (s, e) => studentViewExams.SearchExams();
+            FinishedExams.Click += (s, e) => studentViewExams.ShowFinishedExams();
+            PrevPageBtnCourses.Click += (s, e) => studentViewCourses.PrevPage();
+            NextPageBtnCourses.Click += (s, e) => studentViewCourses.NextPage();
+            CoursesSearch.Click += (s, e) => studentViewCourses.ApplyFiltersSortAndPage(resetPage:true);
+            FinishedCourses.Click += (s, e) => studentViewCourses.ShowFinishedCourses();
         }
-
-        private void CloseExamsPanel_Click(object sender, RoutedEventArgs e)
-        {
-            MainPanel.Visibility = Visibility.Visible;
-            ExamsPanel.Visibility = Visibility.Collapsed;
-            currentExamPanel = string.Empty;
-        }
-
-
-        private void ExamsSearch_Click(object sender, RoutedEventArgs e)
-        {
-            studentViewExams.SearchExams(sender, e);
-        }
-
-        private void PrevPageExams_Click(object sender, RoutedEventArgs e)
-        {
-            studentViewExams.PrevPage(sender, e);
-        }
-
-        private void NextPageExams_Click(object sender, RoutedEventArgs e)
-        {
-            studentViewExams.NextPage(sender, e);
-        }
-
         private void PageSizeComboExams_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (studentViewExams == null) return;
             studentViewExams.PageSizeChanged(sender, e);
         }
-
         private void ExamsGrid_Sorting(object sender, DataGridSortingEventArgs e)
         {
             studentViewExams.ExamsGridSorting(sender, e);
         }
-
-        // Course Terms Panel
-        private void OpenCoursesPanel_Click(object sender, RoutedEventArgs e)
-        {
-            MainPanel.Visibility = Visibility.Collapsed;
-            CoursesPanel.Visibility = Visibility.Visible;
-        }
-
-        private void CloseCoursesPanel_Click(object sender, RoutedEventArgs e)
-        {
-            MainPanel.Visibility = Visibility.Visible;
-            CoursesPanel.Visibility = Visibility.Collapsed;
-            currentCoursePanel = string.Empty;
-        }
-
-        private void ShowAllCourses_Click(object sender, RoutedEventArgs e)
-        {
-            currentCoursePanel = "show all";
-            CoursePanelButton.Content = "Enroll";
-            studentViewCourses.ShowAllCourses();
-            OpenCoursesPanel_Click(sender, e);
-        }
-
-        private void ShowRequestedCourses_Click(object sender, RoutedEventArgs e)
-        {
-            currentCoursePanel = "show requested";
-            CoursePanelButton.Content = "Cancel";
-            studentViewCourses.ShowRequestedCourses();
-            OpenCoursesPanel_Click(sender, e);
-        }
-
-        private void ShowActiveCourse_Click(object sender, RoutedEventArgs e)
-        {
-            currentCoursePanel = "show active";
-            CoursePanelButton.Content = "Unenroll";
-            studentViewCourses.ShowActiveCourse();
-            OpenCoursesPanel_Click(sender, e);
-        }
-
-        private void ShowFinishedCourses_Click(object sender, RoutedEventArgs e)
-        {
-            currentCoursePanel = string.Empty;
-            studentViewCourses.ShowFinishedCourses();
-        }
-
-        private void CoursesSearch_Click(object sender, RoutedEventArgs e)
-        {
-            studentViewCourses.SearchCourses();
-        }
-
-        private void CoursePanelButton_Click(object sender, RoutedEventArgs e)
-        {
-            if (currentCoursePanel == "show all")
-            {
-                EnrollRequestCourse_Click();
-            }
-            else if (currentCoursePanel == "show requested")
-            {
-                CancelRequestCourse_Click();
-            }
-            else if (currentCoursePanel == "show active")
-            {
-                UnenrollRequestCourse_Click();
-            }
-        }
-
-        private void EnrollRequestCourse_Click()
-        {
-            studentViewCourses.RequestForCourse();
-        }
-
-        private void CancelRequestCourse_Click()
-        {
-            studentViewCourses.CancelRequestForCourse();
-        }
-
-        private void UnenrollRequestCourse_Click()
-        {
-            studentViewCourses.UnenrollRequestCourse();
-        }
-
-        private void PrevPageCourses_Click(object sender, RoutedEventArgs e)
-        {
-            studentViewCourses.PrevPage();
-        }
-
-        private void NextPageCourses_Click(object sender, RoutedEventArgs e)
-        {
-            studentViewCourses.NextPage();
-        }
-
         private void PageSizeComboCourses_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (studentViewCourses == null) return;
             studentViewCourses.PageSizeChanged(sender);
         }
-
         private void CoursesGrid_Sorting(object sender, DataGridSortingEventArgs e)
         {
             studentViewCourses.CoursesGridSorting(e);
-        }
-
-
-        private void ShowRequestedExams_Click(object sender, RoutedEventArgs e)
-        {
-            currentExamPanel = "show requested";
-            ExamPanelButton.Content = "Cancel";
-            studentViewExams.ShowRequestedExams();
-            MainPanel.Visibility = Visibility.Collapsed;
-            ExamsPanel.Visibility = Visibility.Visible;
-        }
-
-        private void ShowActiveExam_Click(object sender, RoutedEventArgs e)
-        {
-            currentExamPanel = "show active";
-            ExamPanelButton.Content = "Cancel"; // ili "Unenroll" po želji
-            studentViewExams.ShowActiveExam();
-            MainPanel.Visibility = Visibility.Collapsed;
-            ExamsPanel.Visibility = Visibility.Visible;
-        }
-
-        private void ShowFinishedExams_Click(object sender, RoutedEventArgs e)
-        {
-            studentViewExams.ShowFinishedExams();
-        }
-
-        private void ExamPanelButton_Click(object sender, RoutedEventArgs e)
-        {
-            if (currentExamPanel == "show all")
-            {
-                studentViewExams.RequestForExam();       // prijavi selektovani termin
-            }
-            else if (currentExamPanel == "show requested" || currentExamPanel == "show active")
-            {
-                studentViewExams.CancelRequestForExam(); // otkaži selektovani termin (radi i za active/requested)
-            }
-        }
-
-
-        private void OpenInboxPanel_Click(object sender, RoutedEventArgs e)
-        {
-            MessagesInboxWindow messagesInboxWindow = new MessagesInboxWindow(Student.Email, messagesController);
-            messagesInboxWindow.Show();
         }
     }
 }

@@ -4,7 +4,7 @@ using LangLang.Observer;
 using LangLang.Model.Users;
 using LangLang.Model.Enums;
 using System;
-using System.Globalization;
+using LangLang.Model.DAO.Users.DAOHelpers;
 
 namespace LangLang.Model.DAO.Users
 {
@@ -12,7 +12,9 @@ namespace LangLang.Model.DAO.Users
     {
         private readonly List<Student> _students;
         private readonly Storage<Student> _storage;
-
+        private StudentsCourseDAO studentsCourseDAO;
+        private StudentsExamDAO studentsExamDAO;
+        private StudentsPenaltyDAO studentsPenaltyDAO;
         public Subject StudentSubject;
 
         public StudentsDAO()
@@ -20,258 +22,124 @@ namespace LangLang.Model.DAO.Users
             _storage = new Storage<Student>("students.json");
             _students = _storage.Load();
             StudentSubject = new Subject();
+            studentsCourseDAO = new StudentsCourseDAO(this);
+            studentsExamDAO = new StudentsExamDAO(this);
+            studentsPenaltyDAO = new StudentsPenaltyDAO(this);
         }
 
         public Student AddStudent(Student student)
         {
             _students.Add(student);
-            _storage.Save(_students);
-            StudentSubject.NotifyObservers();
+            SaveChanges();
             return student;
         }
-
         public Student? UpdateStudent(Student student)
         {
             Student? oldStudent = GetStudentById(student.Email);
             if (oldStudent is null) return null;
-
-            oldStudent.FirstName = student.FirstName;
-            oldStudent.LastName = student.LastName;
-            oldStudent.Gender = student.Gender;
-            oldStudent.DateOfBirth = student.DateOfBirth;
-            oldStudent.PhoneNumber = student.PhoneNumber;
-            oldStudent.Password = student.Password;
-            oldStudent.EducationLevel = student.EducationLevel;
-            oldStudent.DateOfRegistration = student.DateOfRegistration;
-            oldStudent.PenaltyPoints = student.PenaltyPoints;
-            oldStudent.RequestedCourses = student.RequestedCourses;
-            oldStudent.ActiveCourseId = student.ActiveCourseId;
-            oldStudent.FinishedCourses = student.FinishedCourses;
-            oldStudent.LastPenaltyProcessedAt = student.LastPenaltyProcessedAt; 
-            oldStudent.RequestedExamTerms = student.RequestedExamTerms;
-            oldStudent.ActiveExamTermId = student.ActiveExamTermId;
-            oldStudent.FinishedExams = student.FinishedExams;
-            oldStudent.IsExamApplicationLocked = student.IsExamApplicationLocked;
-
-
-            _storage.Save(_students);
-            StudentSubject.NotifyObservers();
+            foreach (var prop in typeof(Student).GetProperties())
+            {
+                if (prop.CanWrite && prop.Name != nameof(Student.Email))
+                {
+                    var newValue = prop.GetValue(student);
+                    prop.SetValue(oldStudent, newValue);
+                }
+            }
+            SaveChanges();
             return oldStudent;
         }
-
         public Student? RemoveStudent(string email)
         {
             Student? student = GetStudentById(email);
             if (student == null) return null;
 
             _students.Remove(student);
-            _storage.Save(_students);
-            StudentSubject.NotifyObservers();
+            SaveChanges();
             return student;
         }
-
         public Student? GetStudentById(string email) => _students.Find(s => s.Email == email);
         public List<Student> GetAllStudents() => _students;
+        public void SaveChanges()
+        {
+            _storage.Save(_students);
+            StudentSubject.NotifyObservers();
+        }
 
         public List<int> GetRequestedCourses(string email)
         {
-            Student? student = GetStudentById(email);
-            if (student == null) return new List<int>();
-            return student.RequestedCourses;
+            return studentsCourseDAO.GetRequestedCourses(email);
         }
-
         public List<Tuple<Language, LanguageLevel>> GetFinishedCourses(string email)
         {
-            Student? student = GetStudentById(email);
-            if (student == null) return new List<Tuple<Language, LanguageLevel>>();
-            return student.FinishedCourses;
+            return studentsCourseDAO.GetFinishedCourses(email);
         }
-
         public void FinishActiveCourse(string studentEmail, Language language, LanguageLevel level)
         {
-            Student? student = GetStudentById(studentEmail);
-            if (student != null && student.ActiveCourseId != -1)
-            {
-                student.FinishedCourses.Add(new Tuple<Language, LanguageLevel>(language, level));
-                student.ActiveCourseId = -1;
-                _storage.Save(_students);
-                StudentSubject.NotifyObservers();
-            }
+            studentsCourseDAO.FinishActiveCourse(studentEmail, language, level);
         }
-
-        private static DateTime MonthStart(DateTime d) => new DateTime(d.Year, d.Month, 1);
-
-        private static DateTime ParseMonthString(string? s, DateTime fallbackNow)
+        public void StartCourse(string studentEmail, int courseId)
         {
-            if (!string.IsNullOrWhiteSpace(s) &&
-                DateTime.TryParseExact(s, "yyyy-MM-dd", CultureInfo.InvariantCulture,
-                                       DateTimeStyles.None, out var dt))
-            {
-                return MonthStart(dt);
-            }
-            return MonthStart(fallbackNow);
+            studentsCourseDAO.StartCourse(studentEmail, courseId);
         }
-
-        private static int MonthsPassed(string? lastProcessedAt, DateTime now)
+        public void RemoveFromCourse(string studentEmail, int courseId)
         {
-            var a = ParseMonthString(lastProcessedAt, now);
-            var b = MonthStart(now);
-            return Math.Max(0, (b.Year - a.Year) * 12 + (b.Month - a.Month));
+            studentsCourseDAO.RemoveFromActiveCourse(studentEmail, courseId);
         }
-
-        public int ApplyMonthlyPenaltyDecayForAll(DateTime now)
+        public void AddCourseRequest(string studentEmail, int courseId)
         {
-            int changed = 0;
-            string monthStamp = MonthStart(now).ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
-
-            foreach (var s in _students)
-            {
-                int months = MonthsPassed(s.LastPenaltyProcessedAt, now);
-                if (months <= 0) continue;
-
-                if (s.PenaltyPoints > 0)
-                {
-                    int dec = Math.Min(s.PenaltyPoints, months);
-                    s.PenaltyPoints -= dec;
-                }
-
-                s.LastPenaltyProcessedAt = monthStamp;
-                changed++;
-            }
-
-            if (changed > 0)
-            {
-                _storage.Save(_students);
-                StudentSubject.NotifyObservers();
-            }
-
-            return changed;
+            studentsCourseDAO.AddCourseRequest(studentEmail, courseId);
+        }
+        public void RemoveCourseRequest(string studentEmail, int courseId)
+        {
+            studentsCourseDAO.RemoveCourseRequest(studentEmail, courseId);
         }
 
+        public int ApplyMonthlyPenaltyDecayForAll(DateTime now) => studentsPenaltyDAO.ApplyMonthlyPenaltyDecayForAll(now);
+        public void AddPenaltyPoint(string email) => studentsPenaltyDAO.AddPenaltyPoint(email);
 
         public List<int> GetRequestedExamTerms(string email)
         {
-            var s = GetStudentById(email);
-            return s?.RequestedExamTerms ?? new List<int>();
+            return studentsExamDAO.GetRequestedExamTerms(email);
         }
-
         public int GetActiveExamTermId(string email)
         {
-            var s = GetStudentById(email);
-            return s?.ActiveExamTermId ?? -1;
+            return studentsExamDAO.GetActiveExamTermId(email);
         }
-
         public List<Tuple<Language, LanguageLevel>> GetFinishedExams(string email)
         {
-            var s = GetStudentById(email);
-            return s?.FinishedExams ?? new List<Tuple<Language, LanguageLevel>>();
+            return studentsExamDAO.GetFinishedExams(email);
         }
-
         public void AddExamRequest(string studentEmail, int examTermId)
         {
-            var s = GetStudentById(studentEmail);
-            if (s == null) return;
-
-            if (!s.RequestedExamTerms.Contains(examTermId))
-                s.RequestedExamTerms.Add(examTermId);
-
-            if (s.ActiveExamTermId == -1)
-                s.ActiveExamTermId = examTermId;
-
-            _storage.Save(_students);
-            StudentSubject.NotifyObservers();
+            studentsExamDAO.AddExamRequest(studentEmail, examTermId);
         }
-
         public void RemoveExamRequest(string studentEmail, int examTermId)
         {
-            var s = GetStudentById(studentEmail);
-            if (s == null) return;
-
-            s.RequestedExamTerms.Remove(examTermId);
-            if (s.ActiveExamTermId == examTermId)
-                s.ActiveExamTermId = -1;
-
-            _storage.Save(_students);
-            StudentSubject.NotifyObservers();
+            studentsExamDAO.RemoveExamRequest(studentEmail, examTermId);
         }
-
         public void SetActiveExamTerm(string studentEmail, int examTermId)
         {
-            var s = GetStudentById(studentEmail);
-            if (s == null) return;
-
-            s.ActiveExamTermId = examTermId;
-            if (!s.RequestedExamTerms.Contains(examTermId))
-                s.RequestedExamTerms.Add(examTermId);
-
-            _storage.Save(_students);
-            StudentSubject.NotifyObservers();
+            studentsExamDAO.SetActiveExamTerm(studentEmail, examTermId);
         }
-
         public void ClearActiveExamTerm(string studentEmail)
         {
-            var s = GetStudentById(studentEmail);
-            if (s == null) return;
-
-            s.ActiveExamTermId = -1;
-            _storage.Save(_students);
-            StudentSubject.NotifyObservers();
+            studentsExamDAO.ClearActiveExamTerm(studentEmail);
         }
-
         public void FinishActiveExam(string studentEmail, Language language, LanguageLevel level)
         {
-            var s = GetStudentById(studentEmail);
-            if (s == null) return;
-
-            s.FinishedExams.Add(new Tuple<Language, LanguageLevel>(language, level));
-            s.ActiveExamTermId = -1;
-
-            _storage.Save(_students);
-            StudentSubject.NotifyObservers();
+            studentsExamDAO.FinishActiveExam(studentEmail, language, level);
         }
-
         public void LockExamApplications(string studentEmail)
         {
-            var s = GetStudentById(studentEmail);
-            if (s == null) return;
-
-            s.IsExamApplicationLocked = true;
-            _storage.Save(_students);
-            StudentSubject.NotifyObservers();
+            studentsExamDAO.LockExamApplications(studentEmail);
         }
-
         public void UnlockExamApplications(string studentEmail)
         {
-            var s = GetStudentById(studentEmail);
-            if (s == null) return;
-
-            s.IsExamApplicationLocked = false;
-            _storage.Save(_students);
-            StudentSubject.NotifyObservers();
+            studentsExamDAO.UnlockExamApplications(studentEmail);
         }
         public void RecordExamDecision(string studentEmail, Language language, LanguageLevel level, bool passed)
         {
-            // 1) Ažuriraj stanje ispita
-            if (passed)
-            {
-                // koristi već postojeću metodu da doda u FinishedExams i očisti ActiveExamTermId
-                FinishActiveExam(studentEmail, language, level);
-            }
-            else
-            {
-                // nije položio — ukloni aktivni termin, može opet da se prijavi
-                ClearActiveExamTerm(studentEmail);
-            }
-
-            // 2) Otključaj prijave ispita
-            var s = GetStudentById(studentEmail);
-            if (s == null) return;
-
-            s.IsExamApplicationLocked = false;
-            _storage.Save(_students);
-            StudentSubject.NotifyObservers();
+            studentsExamDAO.RecordExamDecision(studentEmail, language, level, passed);
         }
-
-
     }
 }
