@@ -49,6 +49,7 @@ namespace LangLang.View.PrincipalViewModules
             var resultsController = new ExamResultsController();
             var messagesController = new MessagesController();
             var studentsController = new StudentsController();
+            var exam = _examsController.GetById(examId);
 
             var allStudents = studentsController.GetAllStudents();
 
@@ -56,25 +57,36 @@ namespace LangLang.View.PrincipalViewModules
             {
                 if (student.ActiveExamTermId == examId)
                 {
-                    // fetch the result
-                    var result = resultsController.GetResultForStudent(examId, student.Email);
+                    var result = resultsController.GetRawResult(examId, student.Email);
 
                     if (result != null)
                     {
-                        // prepare message
                         Message message = new Message
                         {
                             RecipientId = student.Email,
-                            SenderId = "principal@gmail.com", 
+                            SenderId = "principal@gmail.com",
                             Title = $"Results for Exam {examId}",
-                            Body = $"Dear {student.FirstName}, your result for exam {examId} is: {result.TotalPoints}"
+                            Body =
+                            $"Dear {student.FirstName},\n\n" +
+                            $"Here are your results for exam {examId}:\n" +
+                            $"- Reading: {result.ReadingPoints}\n" +
+                            $"- Writing: {result.WritingPoints}\n" +
+                            $"- Listening: {result.ListeningPoints}\n" +
+                            $"- Speaking: {result.SpeakingPoints}\n" +
+                            $"Total: {result.TotalPoints}\n\n" +
+                            $"Status: {(result.Passed ? "PASSED" : "FAILED")}"
                         };
 
-                        messagesController.StudentAdd(message);
 
-                        // reset active exam
-                        student.ActiveExamTermId = -1;
-                        studentsController.Update(student);
+                        messagesController.StudentAdd(message);
+                        if(result.Passed)
+                        {
+                            studentsController.FinishActiveCourse(student.Email, exam.Language, exam.Level);
+                        }
+
+                        studentsController.UnlockExamApplications(student.Email);
+                        _examsController.LockExamTerm(examId);
+
                     }
                 }
             }

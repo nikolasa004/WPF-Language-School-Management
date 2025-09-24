@@ -79,5 +79,14 @@
     "Body": "44",
     "Date": "2025-09-22",
     "IsRead": false
+  },
+  {
+    "Id": 10,
+    "RecipientId": "ogi@gmail.com",
+    "SenderId": "principal@gmail.com",
+    "Title": "Results for Exam 4",
+    "Body": "Dear ogi,\n\nHere are your results for exam 4:\n- Reading: 31\n- Writing: 32\n- Listening: 20\n- Speaking: 26\nTotal: 109\n\nStatus: FAILED",
+    "Date": "2025-09-24",
+    "IsRead": false
   }
 ]

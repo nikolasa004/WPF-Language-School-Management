@@ -88,6 +88,7 @@ namespace LangLang.Model.DAO.Users.DAOHelpers
             if (s == null) return;
 
             s.IsExamApplicationLocked = false;
+            s.ActiveExamTermId = -1;
             _studentsDAO.SaveChanges();
         }
         public void RecordExamDecision(string studentEmail, Language language, LanguageLevel level, bool passed)

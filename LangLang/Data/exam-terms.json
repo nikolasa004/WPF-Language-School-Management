@@ -26,7 +26,7 @@
     "RoomId": "R202"
   },
   {
-    "IsLocked": false,
+    "IsLocked": true,
     "Id": 3,
     "ProfessorId": "profesor@gmail.com",
     "Language": 0,
@@ -46,13 +46,13 @@
     "Level": 0,
     "IsLive": true,
     "MaxAttendees": 18,
-    "Date": "2025-09-27",
-    "StartAt": "12:00",
+    "Date": "2025-09-24",
+    "StartAt": "11:00",
     "Duration": 240,
     "RoomId": "R204"
   },
   {
-    "IsLocked": false,
+    "IsLocked": true,
     "Id": 6,
     "ProfessorId": "profesor@gmail.com",
     "Language": 1,

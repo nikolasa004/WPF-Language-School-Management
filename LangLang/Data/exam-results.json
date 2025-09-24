@@ -11,14 +11,14 @@
     "Passed": false
   },
   {
-    "Id": 2,
-    "ExamId": 0,
-    "StudentId": "uki@gmail.com",
-    "ReadingPoints": 0,
-    "WritingPoints": 0,
-    "ListeningPoints": 0,
-    "SpeakingPoints": 0,
-    "TotalPoints": 0,
+    "Id": 3,
+    "ExamId": 4,
+    "StudentId": "ogi@gmail.com",
+    "ReadingPoints": 31,
+    "WritingPoints": 32,
+    "ListeningPoints": 20,
+    "SpeakingPoints": 26,
+    "TotalPoints": 109,
     "Passed": false
   }
 ]

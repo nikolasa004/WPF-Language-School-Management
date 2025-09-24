@@ -1,6 +1,8 @@
-﻿using LangLang.Controller.Users;
+﻿using System.Collections.Generic;
+using LangLang.Controller.Users;
 using LangLang.DTO;
 using LangLang.Model.DAO.TeachingActivity;
+using LangLang.Model.TeachingActivities;
 
 namespace LangLang.Controller.TeachingActivities
 {
@@ -22,23 +24,9 @@ namespace LangLang.Controller.TeachingActivities
             var result = dto.ToExamResult();
             _examResultsDAO.AddExamResult(result);
         }
-        public ExamResultDTO? GetResultForStudent(int examId, string studentId)
-        {
-            var result = _examResultsDAO.GetByExamAndStudent(examId, studentId);
-            if (result == null)
-                return null;
+        public ExamResult? GetRawResult(int examId, string studentId)
+        => _examResultsDAO.GetByExamAndStudent(examId, studentId);
 
-            var exam = _examTermsController.GetById(result.ExamId);
-            var student = _studentsController.GetStudentById(result.StudentId);
-
-            if (exam == null || student == null)
-                return null;
-
-            var examDto = new ExamTermDTO(exam);
-            var studentDto = new StudentDTO(student);
-
-            return new ExamResultDTO(result, examDto, studentDto);
-        }
-
+        public List<ExamResult> GetAll() => _examResultsDAO.GetAllExamResults();
     }
 }
