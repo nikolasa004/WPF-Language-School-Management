@@ -1,4 +1,5 @@
 ﻿    using System;
+using System.Windows;
 using LangLang.DTO;
 using LangLang.Model.Enums;
 
@@ -37,7 +38,7 @@ namespace LangLang.Controller.Services
             var daysDifference = timeDifference.TotalDays;
 
             // Exam has completely finished (past end time)
-            if (now > examEndDateTime && exam.IsLocked == false)
+            if (now > examEndDateTime && exam.IsLocked == true)
             {
                 return new ExamButtonInfo(ExamButtonState.Finish, "Finish", true);
             }

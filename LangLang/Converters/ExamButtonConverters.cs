@@ -69,7 +69,7 @@ namespace LangLang.Converters
                 }
 
                 // Otherwise return the default image brush
-                return null; // Let the XAML handle the default ImageBrush
+                return null;
             }
             return new SolidColorBrush(Colors.Gray);
         }

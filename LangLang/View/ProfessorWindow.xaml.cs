@@ -44,8 +44,10 @@ namespace LangLang.RoleWindows
         private ProfessorViewExams _examsView;
         private ProfessorManageExams _examsManage;
 
+        private readonly ExamResultsController _examResultController;
         private ProfessorStartExam _examStartView;
-        private ProfessorOngoingExam _examOngoingExam;
+        private ProfessorOngoingExam _examOngoingView;
+        private ProfessorFinishExam? _examFinishView;
 
 
         public ProfessorDTO Professor { get; set; }
@@ -57,9 +59,6 @@ namespace LangLang.RoleWindows
         private readonly string _professorId;
 
         private ProfessorOngoingCourses _ongoingView;
-
-        private ProfessorActionsExam _examActions;
-
 
 
         public ProfessorWindow(Professor professor, ProfessorsController professorsController)
@@ -143,6 +142,7 @@ namespace LangLang.RoleWindows
                              .ToList();
 
             _studentController = new StudentsController();
+            _examResultController = new ExamResultsController();
             _allStudents = _studentController.GetAllStudents()
                                  .Select(s => new StudentDTO(s))
                                  .ToList();
@@ -152,11 +152,8 @@ namespace LangLang.RoleWindows
                 _courseController,
                 _messagesController
             );
-
-            _examActions = new ProfessorActionsExam();
         }
         private ProfessorStartCourses _studentsView;
-        private ProfessorStartExam _startExamView;
 
         private void RejectStudent_Click(object sender, RoutedEventArgs e)
         {
@@ -181,24 +178,21 @@ namespace LangLang.RoleWindows
                     case ExamButtonState.Start:
                         _examStartView = new ProfessorStartExam(
                         _allStudents.Where(s => s.RequestedExamTerms.Contains(exam.Id) && !s.IsExamApplicationLocked).ToList(),
-                        ExamStudentsGrid,
-                            exam.Id,
-                            _studentController,
-                            _examController
-                        );
+                        ExamStudentsGrid, exam.Id, _studentController, _examController);
                         StartExamOverlay.Visibility = Visibility.Visible;
                         break;
 
                     case ExamButtonState.Open:
-                        _examOngoingExam = new ProfessorOngoingExam(
+                        _examOngoingView = new ProfessorOngoingExam(
                         _allStudents.Where(s => s.ActiveExamTermId == exam.Id).ToList(),
-                        OngoingExamGrid, _studentController
-                        );
+                        OngoingExamGrid, _studentController);
                         OngoingExamOverlay.Visibility = Visibility.Visible;
                         break;
 
                     case ExamButtonState.Finish:
-                        _examActions.FinishExam();
+                        _examFinishView = new ProfessorFinishExam(exam, _allStudents.Where(s => s.ActiveExamTermId == exam.Id).ToList(),
+                         FinishExamGrid, _examResultController, _examController);
+                        FinishExamOverlay.Visibility = Visibility.Visible;
                         break;
                 }
             }
@@ -217,6 +211,26 @@ namespace LangLang.RoleWindows
 
             }
         }
+
+        private void CloseFinishExam_Click(object sender, RoutedEventArgs e)
+        {
+            FinishExamOverlay.Visibility = Visibility.Collapsed;
+        }
+
+        private void SaveExamResults_Click(object sender, RoutedEventArgs e)
+        {
+            if (_examFinishView == null)
+            {
+                MessageBox.Show("Exam results view is not initialized.");
+                return;
+            }
+
+            _examFinishView.SaveResults();
+
+            FinishExamOverlay.Visibility = Visibility.Collapsed;
+            
+        }
+
         private void CloseOngoingExam_Click(object sender, RoutedEventArgs e)
         {
             OngoingExamOverlay.Visibility = Visibility.Collapsed;
@@ -226,7 +240,7 @@ namespace LangLang.RoleWindows
         {
             if (OngoingExamGrid.SelectedItem is StudentDTO selectedStudent)
             {
-                _examOngoingExam.BanStudent(selectedStudent);
+                _examOngoingView.BanStudent(selectedStudent);
             }
             else
             {
@@ -263,9 +277,10 @@ namespace LangLang.RoleWindows
             _finishCourseView = new ProfessorFinishCourse(_allStudents, FinishCourseGrid, _currentCourseId);
         }
 
-        private void BackToOngoingCourse_Click(object sender, RoutedEventArgs e)
+        private void CloseFinishCourse_Click(object sender, RoutedEventArgs e)
         {
             FinishCoursePanel.Visibility = Visibility.Collapsed;
+            _examsView.ReloadAll();
         }
 
         private void ConfirmFinishCourse_Click(object sender, RoutedEventArgs e)
