@@ -4,10 +4,12 @@ using LangLang.Controller.TeachingActivities;
 using LangLang.Controller.Users;
 using LangLang.DTO;
 using LangLang.Model.Users;
-using LangLang.RoleWindows.StudentViewModules;
 using LangLang.Utils;
 using LangLang.View;
 using LangLang.View.StudentViewModules;
+using LangLang.View.StudentViewModules.Courses;
+using LangLang.View.StudentViewModules.Exams;
+using LangLang.View.StudentViewModules.Profile;
 using System;
 using System.Collections.Generic;
 using System.Windows;
@@ -130,7 +132,7 @@ namespace LangLang.RoleWindows
             FinishedExams.Click += (s, e) => studentViewExams.ShowFinishedExams();
             PrevPageBtnCourses.Click += (s, e) => studentViewCourses.PrevPage();
             NextPageBtnCourses.Click += (s, e) => studentViewCourses.NextPage();
-            CoursesSearch.Click += (s, e) => studentViewCourses.SearchCourses();
+            CoursesSearch.Click += (s, e) => studentViewCourses.ApplyFiltersSortAndPage(resetPage:true);
             FinishedCourses.Click += (s, e) => studentViewCourses.ShowFinishedCourses();
         }
         private void PageSizeComboExams_SelectionChanged(object sender, SelectionChangedEventArgs e)

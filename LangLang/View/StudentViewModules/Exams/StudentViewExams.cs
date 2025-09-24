@@ -15,7 +15,7 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 
-namespace LangLang.RoleWindows.StudentViewModules
+namespace LangLang.View.StudentViewModules.Exams
 {
     internal class StudentViewExams
     {

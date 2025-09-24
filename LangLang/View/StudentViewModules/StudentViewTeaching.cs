@@ -1,5 +1,6 @@
-﻿using LangLang.RoleWindows.StudentViewModules;
-using LangLang.Utils;
+﻿using LangLang.Utils;
+using LangLang.View.StudentViewModules.Courses;
+using LangLang.View.StudentViewModules.Exams;
 using System;
 using System.Collections.Generic;
 using System.Windows.Controls;

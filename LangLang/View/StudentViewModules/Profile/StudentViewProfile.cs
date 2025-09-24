@@ -9,7 +9,7 @@ using System.Globalization;
 using System.Windows;
 using System.Windows.Controls;
 
-namespace LangLang.RoleWindows.StudentViewModules
+namespace LangLang.View.StudentViewModules.Profile
 {
     class StudentViewProfile
     {

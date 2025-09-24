@@ -2,13 +2,12 @@
 using LangLang.DTO;
 using LangLang.Model.Enums;
 using LangLang.Model.Users;
-using LangLang.RoleWindows.StudentViewModules;
 using System;
 using System.Globalization;
 using System.Windows;
 using System.Windows.Controls;
 
-namespace LangLang.View.StudentViewModules
+namespace LangLang.View.StudentViewModules.Profile
 {
     class StudentViewEdit
     {
