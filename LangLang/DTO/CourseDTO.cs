@@ -18,50 +18,32 @@ namespace LangLang.DTO
         }
 
         private int id;
-        public int Id { get => id; set => SetProperty(ref id, value, nameof(Id)); }
-
+        public int Id { get => id; set { SetProperty(ref id, value, nameof(Id)); } }
         private string professorId = string.Empty;
-        public string ProfessorId { get => professorId; set => SetProperty(ref professorId, value, nameof(ProfessorId)); }
-
+        public string ProfessorId { get => professorId; set { SetProperty(ref professorId, value, nameof(ProfessorId)); } }
         private Language language;
-        public Language Language { get => language; set => SetProperty(ref language, value, nameof(Language)); }
-
+        public Language Language { get => language; set { SetProperty(ref language, value, nameof(Language)); } }
         private LanguageLevel level;
-        public LanguageLevel Level { get => level; set => SetProperty(ref level, value, nameof(Level)); }
-
+        public LanguageLevel Level { get => level; set { SetProperty(ref level, value, nameof(Level)); } }
         private bool isLive = true;
-        public bool IsLive { get => isLive; set => SetProperty(ref isLive, value, nameof(IsLive)); }
-
+        public bool IsLive { get => isLive; set { SetProperty(ref isLive, value, nameof(IsLive)); } }
         private int? maxAttendees;
-        public int? MaxAttendees { get => maxAttendees; set => SetProperty(ref maxAttendees, value, nameof(MaxAttendees)); }
-
+        public int? MaxAttendees { get => maxAttendees; set { SetProperty(ref maxAttendees, value, nameof(MaxAttendees)); } }
         private string date = string.Empty;
-        public string Date { get => date; set => SetProperty(ref date, value, nameof(Date)); }
-
+        public string Date { get => date; set { SetProperty(ref date, value, nameof(Date)); } }
         private string startAt = string.Empty;
-        public string StartAt { get => startAt; set => SetProperty(ref startAt, value, nameof(StartAt)); }
-
+        public string StartAt { get => startAt; set { SetProperty(ref startAt, value, nameof(StartAt)); } }
         private int durationWeeks = 1;
-        public int DurationWeeks { get => durationWeeks; set => SetProperty(ref durationWeeks, value, nameof(DurationWeeks)); }
-
+        public int DurationWeeks { get => durationWeeks; set { SetProperty(ref durationWeeks, value, nameof(DurationWeeks)); } }
         private List<DayOfWeek> days = new();
-        public List<DayOfWeek> Days { get => days; set => SetProperty(ref days, value, nameof(Days)); }
-
+        public List<DayOfWeek> Days { get => days; set { SetProperty(ref days, value, nameof(Days)); } }
         public string DaysFormatted => Days != null && Days.Count > 0 ? string.Join(", ", Days) : "N/A";
-
         private string? roomId;
-        public string? RoomId { get => roomId; set => SetProperty(ref roomId, value, nameof(RoomId)); }
-
-
+        public string? RoomId { get => roomId; set { SetProperty(ref roomId, value, nameof(RoomId)); } }
         private Dictionary<string, Grade> grades = new();
-        public Dictionary<string, Grade> Grades
-        {
-            get => grades;
-            set => SetProperty(ref grades, value, nameof(Grades));
-        }
+        public Dictionary<string, Grade> Grades{get => grades;set { SetProperty(ref grades, value, nameof(Grades)); } }
 
         public CourseDTO() { }
-
         public CourseDTO(Course course)
         {
             Id = course.Id;
@@ -90,9 +72,7 @@ namespace LangLang.DTO
         public string this[string columnName] => validator.Validate(this, columnName);
         public bool IsValid => validator.IsValid(this);
         public string Error => string.Empty;
-
         public event PropertyChangedEventHandler? PropertyChanged;
-        protected virtual void OnPropertyChanged(string name)
-            => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+        protected virtual void OnPropertyChanged(string name) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
     }
 }

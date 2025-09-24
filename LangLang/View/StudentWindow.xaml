@@ -76,22 +76,22 @@
                                             </Style>
                                         </ContextMenu.ItemContainerStyle>
 
-                                        <MenuItem Header="Show available courses" Click="ShowAllCourses_Click">
+                                        <MenuItem Header="Show available courses" Tag="ShowAllCourses_Click" Click="TeachingActivity_Click">
                                             <MenuItem.Icon>
                                                 <Image Source="/GUIResources/star.png" Width="16" Height="16"/>
                                             </MenuItem.Icon>
                                         </MenuItem>
-                                        <MenuItem Header="Show course enrollment requests" Click="ShowRequestedCourses_Click">
+                                        <MenuItem Header="Show course enrollment requests" Tag="ShowRequestedCourses_Click" Click="TeachingActivity_Click">
                                             <MenuItem.Icon>
                                                 <Image Source="/GUIResources/star.png" Width="16" Height="16"/>
                                             </MenuItem.Icon>
                                         </MenuItem>
-                                        <MenuItem Header="Show finished courses" Click="ShowFinishedCourses_Click">
+                                        <MenuItem x:Name="FinishedCourses" Header="Show finished courses">
                                             <MenuItem.Icon>
                                                 <Image Source="/GUIResources/star.png" Width="16" Height="16"/>
                                             </MenuItem.Icon>
                                         </MenuItem>
-                                        <MenuItem Header="Show active course" Click="ShowActiveCourse_Click">
+                                        <MenuItem Header="Show active course" Tag="ShowActiveCourse_Click" Click="TeachingActivity_Click">
                                             <MenuItem.Icon>
                                                 <Image Source="/GUIResources/star.png" Width="16" Height="16"/>
                                             </MenuItem.Icon>
@@ -116,22 +116,22 @@
                                             </Style>
                                         </ContextMenu.ItemContainerStyle>
 
-                                        <MenuItem Header="Show available exams" Click="ShowAllExams_Click">
+                                        <MenuItem Header="Show available exams" Tag="ShowAllExams_Click" Click="TeachingActivity_Click">
                                             <MenuItem.Icon>
                                                 <Image Source="/GUIResources/star.png" Width="16" Height="16"/>
                                             </MenuItem.Icon>
                                         </MenuItem>
-                                        <MenuItem Header="Show exam registration requests"  Click="ShowRequestedExams_Click">
+                                        <MenuItem Header="Show exam registration requests"  Tag="ShowRequestedExams_Click" Click="TeachingActivity_Click">
                                             <MenuItem.Icon>
                                                 <Image Source="/GUIResources/star.png" Width="16" Height="16"/>
                                             </MenuItem.Icon>
                                         </MenuItem>
-                                        <MenuItem Header="Show finished exams" Click="ShowFinishedExams_Click">
+                                        <MenuItem x:Name="FinishedExams" Header="Show finished exams">
                                             <MenuItem.Icon>
                                                 <Image Source="/GUIResources/star.png" Width="16" Height="16"/>
                                             </MenuItem.Icon>
                                         </MenuItem>
-                                        <MenuItem Header="Show active exam" Click="ShowActiveExam_Click">
+                                        <MenuItem Header="Show active exam" Tag="ShowActiveExam_Click" Click="TeachingActivity_Click">
                                             <MenuItem.Icon>
                                                 <Image Source="/GUIResources/star.png" Width="16" Height="16"/>
                                             </MenuItem.Icon>
@@ -255,7 +255,7 @@
                     </Button>
 
                     <!-- Back Button -->
-                    <Button Style="{StaticResource FancyButtonStyle}" Content="Back" Height="50" Width="100" FontSize="16" Grid.Row="8" Grid.Column="0" Grid.ColumnSpan="2" HorizontalAlignment="Center" Margin="-125,20,0,0" FontFamily="Script MT Bold" Click="CloseEditPanel_Click">
+                    <Button Style="{StaticResource FancyButtonStyle}" Content="Back" Height="50" Width="100" FontSize="16" Grid.Row="8" Grid.Column="0" Grid.ColumnSpan="2" HorizontalAlignment="Center" Margin="-125,20,0,0" FontFamily="Script MT Bold" Tag="0" Click="ChangePanel_Click">
                         <Button.Background>
                             <ImageBrush ImageSource="/GUIResources/LoginButtonBackground.png"/>
                         </Button.Background>
@@ -286,7 +286,7 @@
                 <Label Content="To:" Foreground="White" FontFamily="Script MT Bold" VerticalAlignment="Center"/>
                 <DatePicker x:Name="ExamToDate" Style="{StaticResource GoldDatePickerStyle}" Width="160" Height="35" Margin="6,6,12,6" VerticalAlignment="Center"/>
 
-                <Button Content="Search" Style="{StaticResource FancyButtonStyle}" FontSize="16" Width="120" Height="35" Margin="12,6,0,6" VerticalAlignment="Center" Click="ExamsSearch_Click">
+                <Button x:Name="ExamsSearch" Content="Search" Style="{StaticResource FancyButtonStyle}" FontSize="16" Width="120" Height="35" Margin="12,6,0,6" VerticalAlignment="Center">
                     <Button.Background>
                         <ImageBrush ImageSource="/GUIResources/loginButtonBackground.png"/>
                     </Button.Background>
@@ -319,13 +319,13 @@
 
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                     <Button Content="Back" Style="{StaticResource FancyButtonStyle}" FontSize="16"
-            Width="120" Height="38" Margin="6,0" Click="CloseExamsPanel_Click">
+            Width="120" Height="38" Margin="6,0" Tag="0" Click="ChangePanel_Click">
                         <Button.Background>
                             <ImageBrush ImageSource="/GUIResources/loginButtonBackground.png"/>
                         </Button.Background>
                     </Button>
 
-                    <Button x:Name="ExamPanelButton" Content="Enroll" Style="{StaticResource FancyButtonStyle}" FontSize="16" Width="120" Height="38" Margin="6,0" Click="ExamPanelButton_Click">
+                    <Button x:Name="ExamPanelButton" Content="Enroll" Style="{StaticResource FancyButtonStyle}" FontSize="16" Width="120" Height="38" Margin="6,0" Tag="ExamPanelButton_Click" Click="TeachingActivity_Click">
                         <Button.Background>
                             <ImageBrush ImageSource="/GUIResources/loginButtonBackground.png"/>
                         </Button.Background>
@@ -342,7 +342,7 @@
                         <ComboBoxItem Content="50"/>
                     </ComboBox>
 
-                    <Button x:Name="PrevPageBtnExams" Content="◀ Prev" Style="{StaticResource FancyButtonStyle}" Width="90" Height="34" Margin="6,0" Click="PrevPageExams_Click">
+                    <Button x:Name="PrevPageBtnExams" Content="◀ Prev" Style="{StaticResource FancyButtonStyle}" Width="90" Height="34" Margin="6,0">
                         <Button.Background>
                             <ImageBrush ImageSource="/GUIResources/loginButtonBackground.png"/>
                         </Button.Background>
@@ -351,7 +351,7 @@
                     <!-- Uses ApplyFiltersSortAndPage in code -->
                     <TextBlock x:Name="PagerTextExams" Text="Page 1/1 · 0 items" Foreground="White" FontFamily="Script MT Bold" VerticalAlignment="Center" Margin="8,0"/>
 
-                    <Button x:Name="NextPageBtnExams" Content="Next ▶" Style="{StaticResource FancyButtonStyle}" Width="90" Height="34" Margin="6,0" Click="NextPageExams_Click">
+                    <Button x:Name="NextPageBtnExams" Content="Next ▶" Style="{StaticResource FancyButtonStyle}" Width="90" Height="34" Margin="6,0">
                         <Button.Background>
                             <ImageBrush ImageSource="/GUIResources/loginButtonBackground.png"/>
                         </Button.Background>
@@ -391,7 +391,7 @@
                 <Label Content="To:" Foreground="White" FontFamily="Script MT Bold" VerticalAlignment="Center"/>
                 <DatePicker x:Name="CourseToDate" Style="{StaticResource GoldDatePickerStyle}" Width="160" Height="35" Margin="6,6,12,6" VerticalAlignment="Center"/>
 
-                <Button Content="Search" Style="{StaticResource FancyButtonStyle}" FontSize="16" Width="120" Height="35" Margin="12,6,0,6" VerticalAlignment="Center" Click="CoursesSearch_Click">
+                <Button x:Name="CoursesSearch" Content="Search" Style="{StaticResource FancyButtonStyle}" FontSize="16" Width="120" Height="35" Margin="12,6,0,6" VerticalAlignment="Center">
                     <Button.Background>
                         <ImageBrush ImageSource="/GUIResources/loginButtonBackground.png"/>
                     </Button.Background>
@@ -428,14 +428,14 @@
 
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,10">
                     <!-- Back button -->
-                    <Button Content="Back" Style="{StaticResource FancyButtonStyle}" FontSize="16" Width="120" Height="38" Margin="6,0,20,0" Click="CloseCoursesPanel_Click">
+                    <Button Content="Back" Style="{StaticResource FancyButtonStyle}" FontSize="16" Width="120" Height="38" Margin="6,0,20,0" Tag="0" Click="ChangePanel_Click">
                         <Button.Background>
                             <ImageBrush ImageSource="/GUIResources/loginButtonBackground.png"/>
                         </Button.Background>
                     </Button>
 
                     <!-- Enroll button -->
-                    <Button x:Name="CoursePanelButton" Content="Enroll" Style="{StaticResource FancyButtonStyle}" FontSize="16" Width="120" Height="38" Margin="6,0" Click="CoursePanelButton_Click">
+                    <Button x:Name="CoursePanelButton" Content="Enroll" Style="{StaticResource FancyButtonStyle}" FontSize="16" Width="120" Height="38" Margin="6,0" Tag="CoursePanelButton_Click" Click="TeachingActivity_Click">
                         <Button.Background>
                             <ImageBrush ImageSource="/GUIResources/loginButtonBackground.png"/>
                         </Button.Background>
@@ -453,7 +453,7 @@
                         <ComboBoxItem Content="50"/>
                     </ComboBox>
 
-                    <Button x:Name="PrevPageBtnCourses" Content="◀ Prev" Style="{StaticResource FancyButtonStyle}" Width="90" Height="34" Margin="6,0" Click="PrevPageCourses_Click">
+                    <Button x:Name="PrevPageBtnCourses" Content="◀ Prev" Style="{StaticResource FancyButtonStyle}" Width="90" Height="34" Margin="6,0">
                         <Button.Background>
                             <ImageBrush ImageSource="/GUIResources/loginButtonBackground.png"/>
                         </Button.Background>
@@ -462,7 +462,7 @@
                     <!-- Uses ApplyFiltersSortAndPage in code -->
                     <TextBlock x:Name="PagerTextCourses" Text="Page 1/1 · 0 items" Foreground="White" FontFamily="Script MT Bold" VerticalAlignment="Center" Margin="8,0"/>
 
-                    <Button x:Name="NextPageBtnCourses" Content="Next ▶" Style="{StaticResource FancyButtonStyle}" Width="90" Height="34" Margin="6,0" Click="NextPageCourses_Click">
+                    <Button x:Name="NextPageBtnCourses" Content="Next ▶" Style="{StaticResource FancyButtonStyle}" Width="90" Height="34" Margin="6,0">
                         <Button.Background>
                             <ImageBrush ImageSource="/GUIResources/loginButtonBackground.png"/>
                         </Button.Background>

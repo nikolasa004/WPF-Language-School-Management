@@ -46,6 +46,16 @@ namespace LangLang.Model.DAO.Users.DAOHelpers
                 _studentsDAO.SaveChanges();
             }
         }
+        public void RemoveFromActiveCourse(string studentEmail, int courseId)
+        {
+            Student? student =_studentsDAO.GetStudentById(studentEmail);
+            if (student == null) return;
+            if (student.RequestedCourses.Contains(courseId))
+                student.RequestedCourses.Remove(courseId);
+            if (student.ActiveCourseId == courseId)
+                student.ActiveCourseId = -1;
+            _studentsDAO.SaveChanges();
+        }
         public void AddCourseRequest(string studentEmail, int courseId)
         {
             Student? student = _studentsDAO.GetStudentById(studentEmail);

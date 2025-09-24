@@ -134,7 +134,7 @@ namespace LangLang.RoleWindows.StudentViewModules
             win.Show();
         }
 
-        public void SearchExams(object sender, RoutedEventArgs e) => ApplyFiltersSortAndPage(resetPage: true);
+        public void SearchExams() => ApplyFiltersSortAndPage(resetPage: true);
 
         // -------------------------
         // Helpers (load/filter/sort)
@@ -273,14 +273,14 @@ namespace LangLang.RoleWindows.StudentViewModules
             }
         }
 
-        public void PrevPage(object sender, RoutedEventArgs e)
+        public void PrevPage()
         {
             if (_currentPage <= 1) return;
             _currentPage--;
             ApplyFiltersSortAndPage(resetPage: false);
         }
 
-        public void NextPage(object sender, RoutedEventArgs e)
+        public void NextPage()
         {
             var totalPages = Math.Max(1, (int)Math.Ceiling((double)_sorted.Count / _pageSize));
             if (_currentPage >= totalPages) return;

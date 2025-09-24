@@ -25,10 +25,10 @@
     "LastName": "Studentic",
     "Gender": 0,
     "DateOfBirth": "1990-09-13",
-    "PhoneNumber": "123",
+    "PhoneNumber": "12345",
     "Email": "student@gmail.com",
     "Password": "123",
-    "EducationLevel": 0,
+    "EducationLevel": 1,
     "DateOfRegistration": "2025-09-21"
   }
 ]
