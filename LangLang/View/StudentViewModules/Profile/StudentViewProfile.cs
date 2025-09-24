@@ -4,6 +4,7 @@ using LangLang.Controller.TeachingActivities;
 using LangLang.Controller.Users;
 using LangLang.DTO;
 using LangLang.Model.TeachingActivities;
+using LangLang.Utils;
 using System;
 using System.Globalization;
 using System.Windows;
@@ -41,18 +42,18 @@ namespace LangLang.View.StudentViewModules.Profile
             this.examEnrollmentsController = examEnrollmentsController; 
             this.messagesController= messagesController;
         }
-        public void SetLabels(Label nameLabel, Label surnameLabel, Label genderLabel, Label birthDateLabel, Label phoneLabel, Label emailLabel, Label educationLabel, Label currentCourseLabel, Label penaltyPointsLabel, Label joinedDateLabel)
+        public void SetLabels(ProfileLabelsPackage labelsPackage)
         {
-            NameLabel = nameLabel;
-            SurnameLabel = surnameLabel;
-            GenderLabel = genderLabel;
-            BirthDateLabel = birthDateLabel;
-            PhoneLabel = phoneLabel;
-            EmailLabel = emailLabel;
-            EducationLabel = educationLabel;
-            CurrentCourseLabel = currentCourseLabel;
-            PenaltyPointsLabel = penaltyPointsLabel;
-            JoinedDateLabel = joinedDateLabel;
+            NameLabel = labelsPackage.NameLabel;
+            SurnameLabel =labelsPackage.SurnameLabel;
+            GenderLabel = labelsPackage.GenderLabel;
+            BirthDateLabel =labelsPackage.BirthDateLabel;
+            PhoneLabel = labelsPackage.PhoneLabel;
+            EmailLabel = labelsPackage.EmailLabel;
+            EducationLabel = labelsPackage.EducationLabel;
+            CurrentCourseLabel = labelsPackage.CurrentCourseLabel;
+            PenaltyPointsLabel = labelsPackage.PenaltyPointsLabel;
+            JoinedDateLabel = labelsPackage.JoinedDateLabel;
         }
 
         public void InformationUpdate(bool fromEdit=false, StudentDTO? updatedStudent=null)

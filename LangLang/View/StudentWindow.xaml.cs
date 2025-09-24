@@ -54,7 +54,7 @@ namespace LangLang.RoleWindows
             Dictionary<string, Action> examPanelActions = new Dictionary<string, Action> { { "show all", () => { ExamPanelButton.Content = "Enroll"; studentViewExams.ShowAllExams(); } }, { "show requested", () => { ExamPanelButton.Content = "Cancel"; studentViewExams.ShowRequestedExams(); } }, { "show active", () => { ExamPanelButton.Content = "Cancel"; studentViewExams.ShowActiveExam(); } } };
 
             studentViewProfile = new StudentViewProfile(Student,this.studentsController, courseController,enrollmentsController,examEnrollmentsController,messagesController);
-            studentViewProfile.SetLabels(NameLabel,SurnameLabel,GenderLabel,BirthDateLabel,PhoneLabel,EmailLabel,EducationLabel,CurrentCourseLabel,PenaltyPointsLabel,JoinedDateLabel);
+            studentViewProfile.SetLabels(new ProfileLabelsPackage(NameLabel,SurnameLabel,GenderLabel,BirthDateLabel,PhoneLabel,EmailLabel,EducationLabel,CurrentCourseLabel,PenaltyPointsLabel,JoinedDateLabel));
             studentViewEdit = new StudentViewEdit(Student,this.studentsController, studentViewProfile, FirstNameBox, LastNameBox, MaleRadioButton, FemaleRadioButton, BirthDatePicker, PhoneBox, EmailBox, PasswordTextBox, EducationComboBox);
             studentViewTeaching = new StudentViewTeaching(panels, coursePanelActions, examPanelActions, studentViewCourses, studentViewExams);
             studentViewProfile.InformationUpdate();
