@@ -75,6 +75,7 @@ namespace LangLang.Model.DAO.TeachingActivity
             old.Duration = term.Duration;
             old.RoomId = term.RoomId;
             old.IsLocked = term.IsLocked;
+            old.IsArchived = term.IsArchived;
             SaveAllIso(); 
             ExamTermSubject.NotifyObservers();
             return old;
@@ -114,7 +115,9 @@ namespace LangLang.Model.DAO.TeachingActivity
                 StartAt = src.StartAt,
                 Duration = src.Duration,
                 RoomId = src.RoomId,
-                IsLocked = src.IsLocked
+                IsLocked = src.IsLocked,
+                IsArchived = src.IsArchived
+
             };
         }
         private static string ToIsoOrKeep(string? date)

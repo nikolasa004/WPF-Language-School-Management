@@ -9,14 +9,10 @@ namespace LangLang.Controller.TeachingActivities
     public class ExamResultsController
     {
         private readonly ExamResultsDAO _examResultsDAO;
-        private readonly ExamTermsController _examTermsController;
-        private readonly StudentsController _studentsController;
 
         public ExamResultsController()
         {
             _examResultsDAO = new ExamResultsDAO();
-            _examTermsController = new ExamTermsController();
-            _studentsController = new StudentsController();
         }
 
         public void Save(ExamResultDTO dto)

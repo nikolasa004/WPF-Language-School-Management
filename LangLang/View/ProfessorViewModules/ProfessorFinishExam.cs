@@ -14,16 +14,17 @@ namespace LangLang.View.ProfessorViewModules
         private readonly ObservableCollection<ExamResultDTO> _examResults = new();
         private readonly ExamResultsController _examResultsController;
 
-        public ProfessorFinishExam(ExamTermDTO exam, List<StudentDTO> students, DataGrid finishExamGrid, ExamResultsController examResultsController, ExamTermsController examTermsController)
+        public ProfessorFinishExam(ExamTermDTO exam, List<StudentDTO> allStudents, DataGrid finishExamGrid, ExamResultsController examResultsController, ExamTermsController examTermsController)
         {
             {
                 FinishExamGrid = finishExamGrid;
                 _examResultsController = examResultsController;
 
-                _examResults = new ObservableCollection<ExamResultDTO>(
-               students.Select(s => new ExamResultDTO
-               {Student = s, Exam = exam, ReadingPoints = 0, WritingPoints = 0, ListeningPoints = 0, SpeakingPoints = 0})
-                );
+                var activeStudents = allStudents
+                .Where(s => s.ActiveExamTermId == exam.Id)
+                .ToList();
+
+                _examResults = new ObservableCollection<ExamResultDTO>(activeStudents.Select(s => new ExamResultDTO{Student = s, Exam = exam, ReadingPoints = 0, WritingPoints = 0, ListeningPoints = 0, SpeakingPoints = 0}));
 
                 FinishExamGrid.ItemsSource = _examResults;
                 examTermsController.UnlockExamTerm(exam.Id);

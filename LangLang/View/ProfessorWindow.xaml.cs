@@ -171,36 +171,33 @@ namespace LangLang.RoleWindows
         }
         private void CustomExamButton_Click(object sender, RoutedEventArgs e)
         {
-            if (sender is Button button && button.DataContext is ExamTermDTO exam)
+            if (sender is not Button button || button.DataContext is not ExamTermDTO exam)
+                return;
+
+            switch (button.Tag)
             {
-                switch (button.Tag)
-                {
-                    case ExamButtonState.Start:
-                        _examStartView = new ProfessorStartExam(
-                        _allStudents.Where(s => s.RequestedExamTerms.Contains(exam.Id) && !s.IsExamApplicationLocked).ToList(),
-                        ExamStudentsGrid, exam.Id, _studentController, _examController);
-                        StartExamOverlay.Visibility = Visibility.Visible;
-                        break;
+                case ExamButtonState.Start:
+                    _examStartView = new ProfessorStartExam(exam, _allStudents, ExamStudentsGrid, _studentController, _examController);
+                    StartExamOverlay.Visibility = Visibility.Visible;
+                    break;
 
-                    case ExamButtonState.Open:
-                        _examOngoingView = new ProfessorOngoingExam(
-                        _allStudents.Where(s => s.ActiveExamTermId == exam.Id).ToList(),
-                        OngoingExamGrid, _studentController);
-                        OngoingExamOverlay.Visibility = Visibility.Visible;
-                        break;
+                case ExamButtonState.Open:
+                    _examOngoingView = new ProfessorOngoingExam(exam, _allStudents, OngoingExamGrid, _studentController);
+                    OngoingExamOverlay.Visibility = Visibility.Visible;
+                    break;
 
-                    case ExamButtonState.Finish:
-                        _examFinishView = new ProfessorFinishExam(exam, _allStudents.Where(s => s.ActiveExamTermId == exam.Id).ToList(),
-                         FinishExamGrid, _examResultController, _examController);
-                        FinishExamOverlay.Visibility = Visibility.Visible;
-                        break;
-                }
+                case ExamButtonState.Finish:
+                    _examFinishView = new ProfessorFinishExam(exam, _allStudents, FinishExamGrid, _examResultController, _examController);
+                    FinishExamOverlay.Visibility = Visibility.Visible;
+                    break;
             }
         }
+
 
         private void CloseStartExam_Click(object sender, RoutedEventArgs e)
         {
             StartExamOverlay.Visibility = Visibility.Collapsed;
+            _examsView.ReloadAll();
         }
 
         private void StartExam_Click(object sender, RoutedEventArgs e)
@@ -208,6 +205,7 @@ namespace LangLang.RoleWindows
             if (_examStartView?.ConfirmExamStart() == true)
             {
                 StartExamOverlay.Visibility = Visibility.Collapsed;
+                _examsView.ReloadAll();
 
             }
         }
@@ -215,6 +213,7 @@ namespace LangLang.RoleWindows
         private void CloseFinishExam_Click(object sender, RoutedEventArgs e)
         {
             FinishExamOverlay.Visibility = Visibility.Collapsed;
+            _examsView.ReloadAll();
         }
 
         private void SaveExamResults_Click(object sender, RoutedEventArgs e)
@@ -228,7 +227,7 @@ namespace LangLang.RoleWindows
             _examFinishView.SaveResults();
 
             FinishExamOverlay.Visibility = Visibility.Collapsed;
-            
+            _examsView.ReloadAll();
         }
 
         private void CloseOngoingExam_Click(object sender, RoutedEventArgs e)

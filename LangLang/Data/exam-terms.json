@@ -1,6 +1,7 @@
 [
   {
     "IsLocked": false,
+    "IsArchived": true,
     "Id": 1,
     "ProfessorId": "profesor@gmail.com",
     "Language": 3,
@@ -14,6 +15,7 @@
   },
   {
     "IsLocked": false,
+    "IsArchived": false,
     "Id": 2,
     "ProfessorId": "profesor@gmail.com",
     "Language": 1,
@@ -27,6 +29,7 @@
   },
   {
     "IsLocked": false,
+    "IsArchived": true,
     "Id": 3,
     "ProfessorId": "profesor@gmail.com",
     "Language": 0,
@@ -40,6 +43,7 @@
   },
   {
     "IsLocked": false,
+    "IsArchived": false,
     "Id": 4,
     "ProfessorId": "profesor@gmail.com",
     "Language": 0,
@@ -53,6 +57,7 @@
   },
   {
     "IsLocked": false,
+    "IsArchived": false,
     "Id": 6,
     "ProfessorId": "profesor@gmail.com",
     "Language": 1,
@@ -66,6 +71,7 @@
   },
   {
     "IsLocked": false,
+    "IsArchived": false,
     "Id": 5,
     "ProfessorId": "profesor@gmail.com",
     "Language": 4,
@@ -79,6 +85,7 @@
   },
   {
     "IsLocked": false,
+    "IsArchived": false,
     "Id": 7,
     "ProfessorId": "profesor@gmail.com",
     "Language": 4,
@@ -92,6 +99,7 @@
   },
   {
     "IsLocked": false,
+    "IsArchived": false,
     "Id": 8,
     "ProfessorId": "profesor@gmail.com",
     "Language": 3,
@@ -105,6 +113,7 @@
   },
   {
     "IsLocked": false,
+    "IsArchived": false,
     "Id": 9,
     "ProfessorId": "profesor@gmail.com",
     "Language": 1,
@@ -118,6 +127,7 @@
   },
   {
     "IsLocked": false,
+    "IsArchived": false,
     "Id": 10,
     "ProfessorId": "profesor@gmail.com",
     "Language": 2,
@@ -131,6 +141,7 @@
   },
   {
     "IsLocked": false,
+    "IsArchived": false,
     "Id": 11,
     "ProfessorId": "profesor@gmail.com",
     "Language": 0,
@@ -144,6 +155,7 @@
   },
   {
     "IsLocked": false,
+    "IsArchived": false,
     "Id": 12,
     "ProfessorId": "profesor@gmail.com",
     "Language": 4,
@@ -157,6 +169,7 @@
   },
   {
     "IsLocked": false,
+    "IsArchived": false,
     "Id": 13,
     "ProfessorId": "profesor@gmail.com",
     "Language": 1,
@@ -170,6 +183,7 @@
   },
   {
     "IsLocked": false,
+    "IsArchived": false,
     "Id": 14,
     "ProfessorId": "profesor@gmail.com",
     "Language": 3,
@@ -183,6 +197,7 @@
   },
   {
     "IsLocked": false,
+    "IsArchived": false,
     "Id": 15,
     "ProfessorId": "profesor@gmail.com",
     "Language": 0,
@@ -196,6 +211,7 @@
   },
   {
     "IsLocked": false,
+    "IsArchived": false,
     "Id": 16,
     "ProfessorId": "profesor@gmail.com",
     "Language": 2,
@@ -209,6 +225,7 @@
   },
   {
     "IsLocked": false,
+    "IsArchived": false,
     "Id": 17,
     "ProfessorId": "profesor@gmail.com",
     "Language": 4,
@@ -222,6 +239,7 @@
   },
   {
     "IsLocked": false,
+    "IsArchived": false,
     "Id": 18,
     "ProfessorId": "profesor@gmail.com",
     "Language": 1,
@@ -235,6 +253,7 @@
   },
   {
     "IsLocked": false,
+    "IsArchived": false,
     "Id": 19,
     "ProfessorId": "profesor@gmail.com",
     "Language": 3,
@@ -248,6 +267,7 @@
   },
   {
     "IsLocked": false,
+    "IsArchived": false,
     "Id": 20,
     "ProfessorId": "profesor@gmail.com",
     "Language": 0,
@@ -261,6 +281,7 @@
   },
   {
     "IsLocked": false,
+    "IsArchived": false,
     "Id": 21,
     "ProfessorId": "profesor@gmail.com",
     "Language": 2,
@@ -274,6 +295,7 @@
   },
   {
     "IsLocked": false,
+    "IsArchived": false,
     "Id": 22,
     "ProfessorId": "profesor@gmail.com",
     "Language": 1,
@@ -287,6 +309,7 @@
   },
   {
     "IsLocked": false,
+    "IsArchived": false,
     "Id": 23,
     "ProfessorId": "profesor@gmail.com",
     "Language": 4,
@@ -299,7 +322,8 @@
     "RoomId": "R101"
   },
   {
-    "IsLocked": false,
+    "IsLocked": true,
+    "IsArchived": false,
     "Id": 24,
     "ProfessorId": "profesor@gmail.com",
     "Language": 3,
@@ -313,6 +337,7 @@
   },
   {
     "IsLocked": false,
+    "IsArchived": false,
     "Id": 25,
     "ProfessorId": "profesor@gmail.com",
     "Language": 2,
@@ -326,6 +351,7 @@
   },
   {
     "IsLocked": false,
+    "IsArchived": false,
     "Id": 26,
     "ProfessorId": "profesor@gmail.com",
     "Language": 0,
@@ -339,6 +365,7 @@
   },
   {
     "IsLocked": false,
+    "IsArchived": false,
     "Id": 27,
     "ProfessorId": "profesor@gmail.com",
     "Language": 1,
@@ -352,6 +379,7 @@
   },
   {
     "IsLocked": false,
+    "IsArchived": false,
     "Id": 28,
     "ProfessorId": "profesor@gmail.com",
     "Language": 4,
@@ -365,6 +393,7 @@
   },
   {
     "IsLocked": false,
+    "IsArchived": false,
     "Id": 29,
     "ProfessorId": "profesor@gmail.com",
     "Language": 2,
@@ -378,6 +407,7 @@
   },
   {
     "IsLocked": false,
+    "IsArchived": false,
     "Id": 30,
     "ProfessorId": "profesor@gmail.com",
     "Language": 3,
@@ -388,5 +418,19 @@
     "StartAt": "10:00",
     "Duration": 240,
     "RoomId": "R303"
+  },
+  {
+    "IsLocked": false,
+    "IsArchived": false,
+    "Id": 31,
+    "ProfessorId": "profesor@gmail.com",
+    "Language": 0,
+    "Level": 0,
+    "IsLive": true,
+    "MaxAttendees": 10,
+    "Date": "2025-09-30",
+    "StartAt": "10:00",
+    "Duration": 240,
+    "RoomId": ""
   }
 ]
