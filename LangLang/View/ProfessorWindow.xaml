@@ -185,20 +185,20 @@
                     <Style TargetType="DataGridCell"         BasedOn="{StaticResource DGCellStyle}"/>
                 </DataGrid.Resources>
                 <DataGrid.Columns>
-                    <DataGridTextColumn Header="ID"         Binding="{Binding Id}"            SortMemberPath="Id"            Width="60"/>
-                    <DataGridTextColumn Header="Language"   Binding="{Binding Language}"      SortMemberPath="Language"      Width="*"/>
-                    <DataGridTextColumn Header="Level"      Binding="{Binding Level}"         SortMemberPath="Level"         Width="*"/>
-                    <DataGridTextColumn Header="Start date" Binding="{Binding Date}"          SortMemberPath="Date"          Width="110"/>
+                    <DataGridTextColumn Header="ID"         Binding="{Binding Id}"            SortMemberPath="Id"            Width="40"/>
+                    <DataGridTextColumn Header="Language"   Binding="{Binding Language}"      SortMemberPath="Language"      Width="80"/>
+                    <DataGridTextColumn Header="Level"      Binding="{Binding Level}"         SortMemberPath="Level"         Width="40"/>
+                    <DataGridTextColumn Header="Start date" Binding="{Binding Date}"          SortMemberPath="Date"          Width="80"/>
                     <DataGridTextColumn Header="Professor"  Binding="{Binding ProfessorId}"   SortMemberPath="ProfessorId"   Width="*"/>
-                    <DataGridTextColumn Header="Weeks"      Binding="{Binding DurationWeeks}" SortMemberPath="DurationWeeks" Width="*"/>
-                    <DataGridTextColumn Header="Days"       Binding="{Binding DaysFormatted}" SortMemberPath="DaysFormatted" Width="*"/>
-                    <DataGridTextColumn Header="Start"      Binding="{Binding StartAt}"       SortMemberPath="StartAt"       Width="*"/>
-                    <DataGridTextColumn Header="Live"       Binding="{Binding IsLive}"        SortMemberPath="IsLive"        Width="80"/>
-                    <DataGridTextColumn Header="Room"       Binding="{Binding RoomId}"        SortMemberPath="RoomId"        Width="80"/>
-                    <DataGridTextColumn Header="Max"        Binding="{Binding MaxAttendees}"  SortMemberPath="MaxAttendees"  Width="80"/>
+                    <DataGridTextColumn Header="Weeks"      Binding="{Binding DurationWeeks}" SortMemberPath="DurationWeeks" Width="40"/>
+                    <DataGridTextColumn Header="Days"       Binding="{Binding DaysFormatted}" SortMemberPath="DaysFormatted" Width="120"/>
+                    <DataGridTextColumn Header="Start"      Binding="{Binding StartAt}"       SortMemberPath="StartAt"       Width="60"/>
+                    <DataGridTextColumn Header="Live"       Binding="{Binding IsLive}"        SortMemberPath="IsLive"        Width="50"/>
+                    <DataGridTextColumn Header="Room"       Binding="{Binding RoomId}"        SortMemberPath="RoomId"        Width="40"/>
+                    <DataGridTextColumn Header="Max"        Binding="{Binding MaxAttendees}"  SortMemberPath="MaxAttendees"  Width="40"/>
 
                     <!-- Actions column -->
-                    <DataGridTemplateColumn Header="Actions" Width="180">
+                    <DataGridTemplateColumn Header="Actions" Width="*">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
@@ -437,14 +437,14 @@
                             <Style TargetType="DataGridCell" BasedOn="{StaticResource DGCellStyle}"/>
                         </DataGrid.Resources>
                         <DataGrid.Columns>
-                            <DataGridTextColumn Header="First Name" Binding="{Binding FirstName}" Width="*" IsReadOnly="True"/>
-                            <DataGridTextColumn Header="Last Name" Binding="{Binding LastName}" Width="*" IsReadOnly="True"/>
-                            <DataGridTextColumn Header="Gender" Binding="{Binding Gender}" Width="100" IsReadOnly="True"/>
-                            <DataGridTextColumn Header="Email" Binding="{Binding Email}" Width="*" IsReadOnly="True"/>
-                            <DataGridTextColumn Header="Phone" Binding="{Binding PhoneNumber}" Width="*" IsReadOnly="True"/>
-                            <DataGridTextColumn Header="Penalty" Binding="{Binding PenaltyPoints}" Width="100" IsReadOnly="True"/>
+                            <DataGridTextColumn Header="First Name" Binding="{Binding FirstName}" Width="80" IsReadOnly="True"/>
+                            <DataGridTextColumn Header="Last Name" Binding="{Binding LastName}" Width="80" IsReadOnly="True"/>
+                            <DataGridTextColumn Header="Gender" Binding="{Binding Gender}" Width="50" IsReadOnly="True"/>
+                            <DataGridTextColumn Header="Email" Binding="{Binding Email}" Width="120" IsReadOnly="True"/>
+                            <DataGridTextColumn Header="Phone" Binding="{Binding PhoneNumber}" Width="80" IsReadOnly="True"/>
+                            <DataGridTextColumn Header="Penalty" Binding="{Binding PenaltyPoints}" Width="40" IsReadOnly="True"/>
 
-                            <DataGridTemplateColumn Header="Actions" Width="120">
+                            <DataGridTemplateColumn Header="Actions" Width="*">
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
                                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
@@ -558,7 +558,7 @@
                                     <DataTemplate>
                                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                                             <Button Content="Approve"
-                                            Width="140" Height="38" Margin="6,0"
+                                            Width="70" Height="38" Margin="6,0"
                                             Click="ApproveUnenroll_Click"
                                             Style="{StaticResource FancyButtonStyle}">
                                                 <Button.Background>
@@ -566,7 +566,7 @@
                                                 </Button.Background>
                                             </Button>
                                             <Button Content="Reject"
-                                            Width="140" Height="38" Margin="6,0"
+                                            Width="70" Height="38" Margin="6,0"
                                             Click="RejectUnenroll_Click"
                                             Style="{StaticResource FancyButtonStyle}">
                                                 <Button.Background>

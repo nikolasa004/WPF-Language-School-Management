@@ -8,11 +8,13 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Markup;
 using LangLang.Controller.Messages;
+using LangLang.Controller.Requests;
 using LangLang.Controller.Services;
 using LangLang.Controller.TeachingActivities;
 using LangLang.Controller.Users;
 using LangLang.DTO;
 using LangLang.Model.Enums;
+using LangLang.Model.Requests;
 using LangLang.Model.TeachingActivities;
 using LangLang.Model.Users;
 using LangLang.RoleWindows.ProfessorExamModules;
@@ -56,6 +58,7 @@ namespace LangLang.RoleWindows
         private readonly ProfessorsController professorsController;
         private readonly ExamTermsController _examController = new();
         private readonly CourseController _courseController = new();
+        private readonly CourseEnrollmentsController _enrollmentsController = new();
         private readonly string _professorId;
 
         private ProfessorOngoingCourses _ongoingView;
@@ -251,6 +254,21 @@ namespace LangLang.RoleWindows
         {
             if ((sender as FrameworkElement)?.DataContext is CourseDTO course)
             {
+                bool hasStarted = false;
+                foreach (var student in _allStudents)
+                {
+                    if (student.ActiveCourseId == course.Id)
+                    {
+                        hasStarted = true;
+                        break;
+                    }
+                }
+                if (!hasStarted)
+                {
+                    MessageBox.Show("This course has not been started yet. You can only view students for ongoing courses.",
+                                    "Course Not Started", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return;
+                }
                 _currentCourseId = course.Id;
                 OngoingCoursePanel.Visibility = Visibility.Visible;
 
@@ -385,13 +403,20 @@ namespace LangLang.RoleWindows
 
                 StartCourseOverlay.Visibility = Visibility.Visible;
 
-                _studentsView = new ProfessorStartCourses(
-                    _allStudents.Where(s => s.RequestedCourses.Contains(_currentCourseId)).ToList(),
-                    StudentsGrid,
-                    _currentCourseId,
-                    course,
-                    _messagesController
-                );
+                List<StudentDTO> requestingStudents=new List<StudentDTO>();
+                foreach(var student in _allStudents)
+                {
+                    foreach(var requestedCourseId in student.RequestedCourses)
+                    {
+                        CourseEnrollment? enrollment = _enrollmentsController.GetCourseEnrollmentById(requestedCourseId);
+                        if (enrollment != null && enrollment.TeachingActivityID == _currentCourseId)
+                        {
+                            requestingStudents.Add(student);
+                            break;
+                        }
+                    }
+                }
+                _studentsView = new ProfessorStartCourses(requestingStudents,StudentsGrid,_currentCourseId,course,_messagesController, _enrollmentsController);
             }
         }
 

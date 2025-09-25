@@ -1,9 +1,12 @@
 ﻿using LangLang.Controller.Messages;
+using LangLang.Controller.Requests;
 using LangLang.Controller.TeachingActivities;
 using LangLang.Controller.Users;
 using LangLang.DTO;
 using LangLang.Model.Messages;
+using LangLang.Model.Requests;
 using LangLang.View;
+using LangLang.View.StudentViewModules.Courses;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -19,6 +22,7 @@ namespace LangLang.RoleWindows.ProfessorViewModules
 
         private readonly StudentsController _studentController;
         private readonly MessagesController _messagesController;
+        private readonly CourseEnrollmentsController _enrollmentsController;
 
         private List<StudentDTO> _allStudents;
         private readonly ObservableCollection<StudentDTO> _studentsObservable = new();
@@ -33,9 +37,11 @@ namespace LangLang.RoleWindows.ProfessorViewModules
      DataGrid studentsGrid,
      int currentCourseId,
      CourseDTO currentCourseDTO,
-     MessagesController messagesController)   
+     MessagesController messagesController,
+            CourseEnrollmentsController enrollmentsController)
         {
             _studentController = new StudentsController();
+            _enrollmentsController = enrollmentsController;
             _messagesController = messagesController; 
             _allStudents = sharedStudents ?? new List<StudentDTO>();
             StudentsGrid = studentsGrid;
@@ -101,27 +107,36 @@ namespace LangLang.RoleWindows.ProfessorViewModules
                   $"Is Live: {(_currentCourseDTO.IsLive ? "Yes" : "No")}"
                 : "Course information unavailable.";
 
+
             foreach (var student in _allStudents)
             {
-                if (student.RequestedCourses.Contains(_currentCourseId))
+                if (student.ActiveCourseId != -1)
+                    continue;
+
+                int requestCourseId = 0;
+                foreach (var reqId in student.RequestedCourses)
                 {
-                    if (student.ActiveCourseId != -1)
-                        continue;
-
-                    student.RequestedCourses.Remove(_currentCourseId);
-                    student.ActiveCourseId = _currentCourseId;
-
-                    _studentController.StartCourse(student.Email, _currentCourseId);
-
-                    Message msg = new Message
+                    CourseEnrollment courseEnrollment = _enrollmentsController.GetCourseEnrollmentById(reqId)!;
+                    if (courseEnrollment != null && courseEnrollment.TeachingActivityID == _currentCourseId)
                     {
-                        RecipientId = student.Email,
-                        SenderId = _currentCourseDTO.ProfessorId,
-                        Title = $"You have been enrolled in {_currentCourseDTO.Language} {_currentCourseDTO.Level}",
-                        Body = $"You have been successfully enrolled in the course.\n\n{courseInfo}"
-                    };
-                    _messagesController.StudentAdd(msg); 
+                        requestCourseId = reqId;
+                        break;
+                    }
                 }
+
+                student.RequestedCourses.Remove(requestCourseId);
+                student.ActiveCourseId = _currentCourseId;
+
+                _studentController.StartCourse(student.Email, _currentCourseId);
+
+                Message msg = new Message
+                {
+                    RecipientId = student.Email,
+                    SenderId = _currentCourseDTO.ProfessorId,
+                    Title = $"You have been enrolled in {_currentCourseDTO.Language} {_currentCourseDTO.Level}",
+                    Body = $"You have been successfully enrolled in the course.\n\n{courseInfo}"
+                };
+                _messagesController.StudentAdd(msg); 
             }
 
             LoadStudents();

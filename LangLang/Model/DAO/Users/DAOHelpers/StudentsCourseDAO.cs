@@ -39,12 +39,9 @@ namespace LangLang.Model.DAO.Users.DAOHelpers
         {
             Student? student = _studentsDAO.GetStudentById(studentEmail);
             if (student == null || student.ActiveCourseId != -1) return;
-            if (student.RequestedCourses.Contains(courseId))
-            {
-                student.RequestedCourses.Remove(courseId);
-                student.ActiveCourseId = courseId;
-                _studentsDAO.SaveChanges();
-            }
+            student.RequestedCourses.Remove(courseId);
+            student.ActiveCourseId = courseId;
+            _studentsDAO.SaveChanges();
         }
         public void RemoveFromActiveCourse(string studentEmail, int courseId)
         {
