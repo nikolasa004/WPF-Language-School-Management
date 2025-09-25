@@ -74,21 +74,56 @@
     "DateOfRegistration": "2025-08-28"
   },
   {
-    "Languages": {
-      "Italian": 0
+        "Languages": {
+            "Italian": 0
+        },
+        "AverageRating": {
+            "Item1": 0,
+            "Item2": 0
+        },
+        "FirstName": "Nikolica",
+        "LastName": "Nikolic",
+        "Gender": 0,
+        "DateOfBirth": "2005-08-28",
+        "PhoneNumber": "123123123",
+        "Email": "nikola@gmail.com",
+        "Password": "1234",
+        "EducationLevel": 2,
+        "DateOfRegistration": "2025-08-28"
+   },
+    {
+        "Languages": { "Spanish": 3 },
+        "AverageRating": {
+            "Item1": 10,
+            "Item2": 2
+        },
+        "FirstName": "Estrella",
+        "LastName": "Lopez",
+        "Gender": 1,
+        "DateOfBirth": "1989-07-21",
+        "PhoneNumber": "555-1002",
+        "Email": "spanish.star@gmail.com",
+        "Password": "123",
+        "EducationLevel": 3,
+        "DateOfRegistration": "2025-08-20"
     },
-    "AverageRating": {
-      "Item1": 0,
-      "Item2": 0
-    },
-    "FirstName": "Nikolica",
-    "LastName": "Nikolic",
-    "Gender": 0,
-    "DateOfBirth": "2005-08-28",
-    "PhoneNumber": "123123123",
-    "Email": "nikola@gmail.com",
-    "Password": "1234",
-    "EducationLevel": 2,
-    "DateOfRegistration": "2025-08-28"
-  }
+    {
+        "Languages": { "Spanish": 3 },
+        "AverageRating": {
+            "Item1": 8,
+            "Item2": 2
+        },
+        "FirstName": "Cristian",
+        "LastName": "Diaz",
+        "Gender": 0,
+        "DateOfBirth": "1990-11-30",
+        "PhoneNumber": "555-1003",
+        "Email": "spanish.tied@gmail.com",
+        "Password": "123",
+        "EducationLevel": 3,
+        "DateOfRegistration": "2025-08-20"
+    }
+
+
+
 ]

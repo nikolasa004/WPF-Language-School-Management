@@ -63,11 +63,55 @@
                             </Button>
 
                             <!-- Courses Button -->
-                            <Button x:Name="CoursesButton" Content="Courses" Style="{StaticResource FancyButtonStyle}" FontSize="20" Width="100" Height="35" Click="CoursesButton_Click">
+                            <Button x:Name="CoursesButton"
+        Content="Courses"
+        Style="{StaticResource FancyButtonStyle}"
+        FontSize="20"
+        Width="100"
+        Height="35">
                                 <Button.Background>
                                     <ImageBrush ImageSource="/GUIResources/topBarButtonBackground.png"/>
                                 </Button.Background>
+
+                                <!-- Padajući meni -->
+                                <Button.ContextMenu>
+                                    <ContextMenu x:Name="CoursesContextMenu"
+                     Placement="Bottom"
+                     PlacementTarget="{Binding RelativeSource={RelativeSource Self}}">
+                                        <ContextMenu.ItemContainerStyle>
+                                            <Style TargetType="MenuItem">
+                                                <Setter Property="Foreground" Value="White"/>
+                                                <Setter Property="Background" Value="Gold"/>
+                                                <Setter Property="FontFamily" Value="Script MT Bold"/>
+                                                <Setter Property="FontSize" Value="20"/>
+                                            </Style>
+                                        </ContextMenu.ItemContainerStyle>
+
+                                        <!-- Opcija 1: Show available courses -->
+                                        <MenuItem Header="Show available courses"
+                      Tag="ShowAllCourses_Click"
+                      Click="TeachingActivity_Click">
+                                            <MenuItem.Icon>
+                                                <Image Source="/GUIResources/star.png"
+                           Width="16"
+                           Height="16"/>
+                                            </MenuItem.Icon>
+                                        </MenuItem>
+
+                                        <!-- Opcija 2: ono što je do sada radilo na CoursesButton_Click -->
+                                        <MenuItem Header="Finished courses"
+                      Click="CoursesButton_Click">
+                                            <MenuItem.Icon>
+                                                <Image Source="/GUIResources/star.png"
+                           Width="16"
+                           Height="16"/>
+                                            </MenuItem.Icon>
+                                        </MenuItem>
+                                    </ContextMenu>
+                                </Button.ContextMenu>
                             </Button>
+
+
 
                             <!-- Exams Button -->
                             <Button x:Name="ExamsButton" Content="Exams" Style="{StaticResource FancyButtonStyle}" FontSize="20" Width="100" Height="35" Click="ExamsButton_Click">
@@ -178,7 +222,9 @@
                                     <Setter Property="FontFamily" Value="Script MT Bold"/>
                                     <Setter Property="BorderBrush" Value="#00000000"/>
                                     <Setter Property="Padding" Value="6,2"/>
+                                    
                                 </Style>
+
                             </DataGrid.Resources>
 
                             <DataGrid.Columns>
@@ -694,14 +740,19 @@
                 </Grid>
             </Border>
         </Grid>
-        <!-- ================== /COURSE OVERLAY ================== -->
+        <!-- ===================================================================== -->
+        <!-- ==================  (1) PRINCIPAL COURSES PANEL  ==================== -->
+        <!-- ===================================================================== -->
+        <Grid x:Name="PrincipalCoursesPanel" Visibility="Collapsed" Background="Transparent" Panel.ZIndex="999">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
 
-
-        <!-- Reassign Professor Overlay -->
-        <Grid x:Name="CourseReassignmentOverlay" Visibility="Collapsed" Background="#80000000" Panel.ZIndex="1000">
+            <!-- Lokalni stilovi za ovaj panel -->
             <Grid.Resources>
-                <Style x:Key="GoldComboItemStyle" TargetType="ComboBoxItem">
-                    <Setter Property="OverridesDefaultStyle" Value="True"/>
+                <Style x:Key="PrincipalGoldComboItemStyle" TargetType="ComboBoxItem">
                     <Setter Property="Foreground" Value="White"/>
                     <Setter Property="Background" Value="Gold"/>
                     <Setter Property="Padding" Value="8,4"/>
@@ -727,8 +778,7 @@
                     </Setter>
                 </Style>
 
-                <Style x:Key="GoldComboStyle" TargetType="{x:Type ComboBox}">
-                    <Setter Property="OverridesDefaultStyle" Value="True"/>
+                <Style x:Key="PrincipalGoldComboStyle" TargetType="ComboBox">
                     <Setter Property="Foreground" Value="White"/>
                     <Setter Property="FontFamily" Value="Script MT Bold"/>
                     <Setter Property="FontSize" Value="16"/>
@@ -737,46 +787,38 @@
                     <Setter Property="Padding" Value="6,2"/>
                     <Setter Property="BorderBrush" Value="#B8860B"/>
                     <Setter Property="BorderThickness" Value="2"/>
-                    <Setter Property="SnapsToDevicePixels" Value="True"/>
-                    <Setter Property="ItemContainerStyle" Value="{StaticResource GoldComboItemStyle}"/>
+                    <Setter Property="ItemContainerStyle" Value="{StaticResource PrincipalGoldComboItemStyle}"/>
                     <Setter Property="Template">
                         <Setter.Value>
-                            <ControlTemplate TargetType="{x:Type ComboBox}">
+                            <ControlTemplate TargetType="ComboBox">
                                 <Grid SnapsToDevicePixels="True">
                                     <Border Background="Gold"
-                                BorderBrush="{TemplateBinding BorderBrush}"
-                                BorderThickness="{TemplateBinding BorderThickness}"
-                                CornerRadius="4">
+                                            BorderBrush="{TemplateBinding BorderBrush}"
+                                            BorderThickness="{TemplateBinding BorderThickness}"
+                                            CornerRadius="4">
                                         <DockPanel>
                                             <ToggleButton x:Name="PART_DropDownToggle"
-                                      DockPanel.Dock="Right"
-                                      Focusable="False"
-                                      IsChecked="{Binding IsDropDownOpen, RelativeSource={RelativeSource TemplatedParent}}"
-                                      ClickMode="Press"
-                                      Background="Gold"
-                                      BorderThickness="0"
-                                      Width="28">
-                                                <Path Data="M 0 0 L 8 0 L 4 4 Z"
-                                          Fill="White"
-                                          HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                          DockPanel.Dock="Right"
+                                                          Focusable="False"
+                                                          IsChecked="{Binding IsDropDownOpen, RelativeSource={RelativeSource TemplatedParent}}"
+                                                          ClickMode="Press"
+                                                          Background="Gold"
+                                                          BorderThickness="0"
+                                                          Width="28">
+                                                <Path Data="M 0 0 L 8 0 L 4 4 Z" Fill="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                                             </ToggleButton>
                                             <ContentPresenter Margin="6,0,6,0"
-                                          HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
-                                          VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
+                                                              HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                                              VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
                                         </DockPanel>
                                     </Border>
-
                                     <Popup x:Name="PART_Popup"
-                               Placement="Bottom"
-                               IsOpen="{TemplateBinding IsDropDownOpen}"
-                               AllowsTransparency="True"
-                               Focusable="False"
-                               PopupAnimation="Slide">
-                                        <Border Background="Gold"
-                                    BorderBrush="{TemplateBinding BorderBrush}"
-                                    BorderThickness="2"
-                                    CornerRadius="4"
-                                    Margin="0,2,0,0">
+                                           Placement="Bottom"
+                                           IsOpen="{TemplateBinding IsDropDownOpen}"
+                                           AllowsTransparency="True"
+                                           Focusable="False"
+                                           PopupAnimation="Slide">
+                                        <Border Background="Gold" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="2" CornerRadius="4" Margin="0,2,0,0">
                                             <ScrollViewer CanContentScroll="True" SnapsToDevicePixels="True">
                                                 <StackPanel IsItemsHost="True"/>
                                             </ScrollViewer>
@@ -787,99 +829,327 @@
                         </Setter.Value>
                     </Setter>
                 </Style>
+
+                <Style x:Key="PrincipalGoldDatePickerStyle" TargetType="DatePicker">
+                    <Setter Property="Foreground" Value="White"/>
+                    <Setter Property="FontFamily" Value="Script MT Bold"/>
+                    <Setter Property="FontSize" Value="16"/>
+                    <Setter Property="Background" Value="Gold"/>
+                    <Setter Property="BorderBrush" Value="#B8860B"/>
+                    <Setter Property="BorderThickness" Value="2"/>
+                    <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                </Style>
+
+                <Style x:Key="PrincipalGoldTextBoxStyle" TargetType="TextBox">
+                    <Setter Property="Foreground" Value="White"/>
+                    <Setter Property="FontFamily" Value="Script MT Bold"/>
+                    <Setter Property="FontSize" Value="16"/>
+                    <Setter Property="Background" Value="Gold"/>
+                    <Setter Property="BorderBrush" Value="#B8860B"/>
+                    <Setter Property="BorderThickness" Value="2"/>
+                    <Setter Property="Padding" Value="6,2"/>
+                    <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                </Style>
             </Grid.Resources>
 
-            <Border CornerRadius="10" Padding="20" Width="700" Height="500"
-        HorizontalAlignment="Center" VerticalAlignment="Center"
-        BorderBrush="#B8860B" BorderThickness="2">
+            <!-- FILTERI -->
+            <WrapPanel Grid.Row="0" Background="#66000000" ItemHeight="35">
+                <Label Content="Language:" Foreground="White" FontFamily="Script MT Bold" VerticalAlignment="Center"/>
+                <ComboBox x:Name="PrincipalCourseLanguageCombo" Style="{StaticResource PrincipalGoldComboStyle}"
+                          Width="170" Height="35" Margin="6,6,12,6" VerticalAlignment="Center"/>
+
+                <Label Content="Level:" Foreground="White" FontFamily="Script MT Bold" VerticalAlignment="Center"/>
+                <ComboBox x:Name="PrincipalCourseLevelCombo" Style="{StaticResource PrincipalGoldComboStyle}"
+                          Width="170" Height="35" Margin="6,6,12,6" VerticalAlignment="Center"/>
+
+                <Label Content="Live:" Foreground="White" FontFamily="Script MT Bold" VerticalAlignment="Center"/>
+                <ComboBox x:Name="PrincipalCourseOnlineCombo" Style="{StaticResource PrincipalGoldComboStyle}"
+                          Width="75" Height="35" Margin="6,6,12,6" VerticalAlignment="Center">
+                    <ComboBoxItem Content="Yes"/>
+                    <ComboBoxItem Content="No"/>
+                </ComboBox>
+
+                <Label Content="Weeks:" Foreground="White" FontFamily="Script MT Bold" VerticalAlignment="Center"/>
+                <TextBox x:Name="PrincipalCourseWeeksBox" Style="{StaticResource PrincipalGoldTextBoxStyle}"
+                         Width="50" Height="35" Margin="6,6,12,6" VerticalAlignment="Center"/>
+
+                <Label Content="From:" Foreground="White" FontFamily="Script MT Bold" VerticalAlignment="Center"/>
+                <DatePicker x:Name="PrincipalCourseFromDate" Style="{StaticResource PrincipalGoldDatePickerStyle}"
+                            Width="160" Height="35" Margin="6,6,12,6" VerticalAlignment="Center"/>
+
+                <Label Content="To:" Foreground="White" FontFamily="Script MT Bold" VerticalAlignment="Center"/>
+                <DatePicker x:Name="PrincipalCourseToDate" Style="{StaticResource PrincipalGoldDatePickerStyle}"
+                            Width="160" Height="35" Margin="6,6,12,6" VerticalAlignment="Center"/>
+
+                <Button x:Name="PrincipalCoursesSearchButton" Content="Search" Style="{StaticResource FancyButtonStyle}"
+                        FontSize="16" Width="120" Height="35" Margin="12,6,0,6" VerticalAlignment="Center"
+                        Click="CoursesSearch_Click">
+                    <Button.Background>
+                        <ImageBrush ImageSource="/GUIResources/loginButtonBackground.png"/>
+                    </Button.Background>
+                </Button>
+            </WrapPanel>
+
+            <!-- TABELA KURSEVA -->
+            <DataGrid x:Name="PrincipalBrowseCoursesGrid"
+                      Grid.Row="1" Margin="0,8,0,8"
+                      AutoGenerateColumns="False" IsReadOnly="True"
+                      CanUserSortColumns="True" Sorting="CoursesGrid_Sorting"
+                      Background="#66000000" Foreground="White" FontFamily="Script MT Bold"
+                      GridLinesVisibility="None" HeadersVisibility="Column"
+                      RowBackground="#33000000" AlternatingRowBackground="#22000000"
+                      BorderBrush="#00000000"
+                      CellStyle="{DynamicResource PrincipalCourseCellStyle}">
+                <DataGrid.Resources>
+                    <Style TargetType="DataGridColumnHeader">
+                        <Setter Property="Background" Value="#88000000"/>
+                        <Setter Property="Foreground" Value="White"/>
+                        <Setter Property="FontFamily" Value="Script MT Bold"/>
+                        <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                        <Setter Property="Padding" Value="6,4"/>
+                    </Style>
+                    <Style x:Key="PrincipalCourseCellStyle" TargetType="{x:Type DataGridCell}">
+                        <Setter Property="Foreground" Value="White"/>
+                        <Setter Property="FontFamily" Value="Script MT Bold"/>
+                        <Setter Property="BorderBrush" Value="#00000000"/>
+                        <Setter Property="Padding" Value="6,2"/>
+                        <Style.Triggers>
+                            <!-- kurs bez profesora (null) -->
+                            <DataTrigger Binding="{Binding ProfessorId}" Value="{x:Null}">
+                                <Setter Property="Background" Value="#55FF3B30"/>
+                                <Setter Property="ToolTip"   Value="No professor assigned"/>
+                            </DataTrigger>
+                            <!-- kurs bez profesora (prazan string) -->
+                            <DataTrigger Binding="{Binding ProfessorId}" Value="">
+                                <Setter Property="Background" Value="#55FF3B30"/>
+                                <Setter Property="ToolTip"   Value="No professor assigned"/>
+                            </DataTrigger>
+                            <!-- kada je selektovano, koristi sistemsku boju selekcije -->
+                            <Trigger Property="IsSelected" Value="True">
+                                <Setter Property="Background"
+                            Value="{DynamicResource {x:Static SystemColors.HighlightBrushKey}}"/>
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </DataGrid.Resources>
+
+                <DataGrid.Columns>
+                    
+                    
+                    <DataGridTextColumn Header="ID"         Binding="{Binding Id}"            SortMemberPath="Id"            Width="60"/>
+                    <DataGridTextColumn Header="Language"   Binding="{Binding Language}"      SortMemberPath="Language"      Width="*"/>
+                    <DataGridTextColumn Header="Level"      Binding="{Binding Level}"         SortMemberPath="Level"         Width="*"/>
+                    <DataGridTextColumn Header="Start date" Binding="{Binding Date}"          SortMemberPath="Date"          Width="110"/>
+                    <DataGridTextColumn Header="Professor"  Binding="{Binding ProfessorId}"   SortMemberPath="ProfessorId"   Width="*"/>
+                    <DataGridTextColumn Header="Weeks"      Binding="{Binding DurationWeeks}" SortMemberPath="DurationWeeks" Width="*"/>
+                    <DataGridTextColumn Header="Days"       Binding="{Binding DaysFormatted}" SortMemberPath="DaysFormatted" Width="*"/>
+                    <DataGridTextColumn Header="Start"      Binding="{Binding StartAt}"       SortMemberPath="StartAt"       Width="*"/>
+                    <DataGridTextColumn Header="Live"       Binding="{Binding IsLive}"        SortMemberPath="IsLive"        Width="80"/>
+                    <DataGridTextColumn Header="Room"       Binding="{Binding RoomId}"        SortMemberPath="RoomId"        Width="80"/>
+                    <DataGridTextColumn Header="Max"        Binding="{Binding MaxAttendees}"  SortMemberPath="MaxAttendees"  Width="80"/>
+
+                    <DataGridTemplateColumn Header="Actions" Width="260">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                    <Button Content="Edit" Width="70" Height="30" Margin="2,0"
+                                            Style="{StaticResource FancyButtonStyle}"
+                                            Click="EditCourse_Click">
+                                        <Button.Background>
+                                            <ImageBrush ImageSource="/GUIResources/loginButtonBackground.png"/>
+                                        </Button.Background>
+                                    </Button>
+                                    <Button Content="Delete" Width="80" Height="30" Margin="6,0,0,0"
+                                            Style="{StaticResource FancyButtonStyle}"
+                                            Click="DeleteCourse_Click">
+                                        <Button.Background>
+                                            <ImageBrush ImageSource="/GUIResources/loginButtonBackground.png"/>
+                                        </Button.Background>
+                                    </Button>
+                                    
+                                    
+                                </StackPanel>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                </DataGrid.Columns>
+             
+
+            </DataGrid>
+
+            <!-- DNO: back + add + paginacija -->
+            <Grid Grid.Row="2" Margin="0,0,0,10">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <Button x:Name="PrincipalCloseCoursesPanelBtn" Grid.Column="0" Content="Back" Style="{StaticResource FancyButtonStyle}"
+                        FontSize="16" Width="120" Height="38" Margin="6,0" Click="CloseCoursesPanel_Click">
+                    <Button.Background>
+                        <ImageBrush ImageSource="/GUIResources/loginButtonBackground.png"/>
+                    </Button.Background>
+                </Button>
+
+                <Button x:Name="PrincipalAddCourseButton" Grid.Column="1" Content="Add" Style="{StaticResource FancyButtonStyle}"
+                        FontSize="16" Width="120" Height="38" Margin="6,0" Click="AddCourseButton_Click">
+                    <Button.Background>
+                        <ImageBrush ImageSource="/GUIResources/loginButtonBackground.png"/>
+                    </Button.Background>
+                </Button>
+
+                <!-- NEW: Assign professor -->
+                <Button x:Name="PrincipalAssignProfessorButton" Grid.Column="2" Content="Assign professor"
+            Style="{StaticResource FancyButtonStyle}" FontSize="16" Width="160" Height="38" Margin="6,0"
+            Click="AssignProfessor_Click">
+                    <Button.Background>
+                        <ImageBrush ImageSource="/GUIResources/loginButtonBackground.png"/>
+                    </Button.Background>
+                </Button>
+
+                <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center">
+                    <TextBlock Text="Per page:" Foreground="White" FontFamily="Script MT Bold" VerticalAlignment="Center" Margin="0,0,6,0"/>
+                    <ComboBox x:Name="PrincipalPageSizeComboCourses" Width="70" Height="34" Margin="0,0,12,0" SelectionChanged="PageSizeComboCourses_SelectionChanged">
+                        <ComboBoxItem Content="5"/>
+                        <ComboBoxItem Content="10"/>
+                        <ComboBoxItem Content="20"/>
+                        <ComboBoxItem Content="50"/>
+                    </ComboBox>
+
+                    <Button x:Name="PrincipalPrevPageBtnCourses" Content="◀ Prev" Style="{StaticResource FancyButtonStyle}" Width="90" Height="34" Margin="6,0" Click="PrevPageCourses_Click">
+                        <Button.Background>
+                            <ImageBrush ImageSource="/GUIResources/loginButtonBackground.png"/>
+                        </Button.Background>
+                    </Button>
+
+                    <TextBlock x:Name="PrincipalPagerTextCourses" Text="Page 1/1 · 0 items" Foreground="White" FontFamily="Script MT Bold" VerticalAlignment="Center" Margin="8,0"/>
+
+                    <Button x:Name="PrincipalNextPageBtnCourses" Content="Next ▶" Style="{StaticResource FancyButtonStyle}" Width="90" Height="34" Margin="6,0" Click="NextPageCourses_Click">
+                        <Button.Background>
+                            <ImageBrush ImageSource="/GUIResources/loginButtonBackground.png"/>
+                        </Button.Background>
+                    </Button>
+                </StackPanel>
+            </Grid>
+        </Grid>
+        <!-- ================== /PRINCIPAL COURSES PANEL ================== -->
+
+
+        <!-- ===================================================================== -->
+        <!-- ==================  (2) PRINCIPAL EDIT COURSE  ====================== -->
+        <!-- ===================================================================== -->
+        <Grid x:Name="PrincipalEditCourseOverlay" Visibility="Collapsed" Background="Transparent" Panel.ZIndex="999">
+            <Grid.Resources>
+                <Style x:Key="PrincipalGoldComboItemStyle2" TargetType="ComboBoxItem">
+                    <Setter Property="Foreground" Value="White"/>
+                    <Setter Property="Background" Value="Gold"/>
+                    <Setter Property="Padding" Value="8,4"/>
+                    <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                </Style>
+
+                <Style x:Key="PrincipalGoldComboStyle2" TargetType="ComboBox">
+                    <Setter Property="Foreground" Value="White"/>
+                    <Setter Property="FontFamily" Value="Script MT Bold"/>
+                    <Setter Property="FontSize" Value="16"/>
+                    <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                    <Setter Property="VerticalContentAlignment" Value="Center"/>
+                    <Setter Property="Padding" Value="6,2"/>
+                    <Setter Property="BorderBrush" Value="#B8860B"/>
+                    <Setter Property="BorderThickness" Value="2"/>
+                    <Setter Property="ItemContainerStyle" Value="{StaticResource PrincipalGoldComboItemStyle2}"/>
+                    <Setter Property="Background" Value="Gold"/>
+                </Style>
+
+                <Style x:Key="PrincipalGoldTextBoxStyle2" TargetType="TextBox">
+                    <Setter Property="Foreground" Value="White"/>
+                    <Setter Property="FontFamily" Value="Script MT Bold"/>
+                    <Setter Property="FontSize" Value="16"/>
+                    <Setter Property="Background" Value="Gold"/>
+                    <Setter Property="BorderBrush" Value="#B8860B"/>
+                    <Setter Property="BorderThickness" Value="2"/>
+                    <Setter Property="Padding" Value="6,2"/>
+                    <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                </Style>
+
+                <Style x:Key="PrincipalGoldDatePickerStyle2" TargetType="DatePicker">
+                    <Setter Property="Foreground" Value="White"/>
+                    <Setter Property="FontFamily" Value="Script MT Bold"/>
+                    <Setter Property="FontSize" Value="16"/>
+                    <Setter Property="Background" Value="Gold"/>
+                    <Setter Property="BorderBrush" Value="#B8860B"/>
+                    <Setter Property="BorderThickness" Value="2"/>
+                    <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                </Style>
+            </Grid.Resources>
+
+            <Border CornerRadius="10" Padding="18" Width="640"
+                    HorizontalAlignment="Center" VerticalAlignment="Center"
+                    BorderBrush="#B8860B" BorderThickness="2">
                 <Border.Background>
                     <ImageBrush ImageSource="/GUIResources/loginBackground.jpg" Stretch="Fill"/>
                 </Border.Background>
 
-                <Grid>
+                <Grid Margin="6">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="190"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
                     <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="*"/>
                         <RowDefinition Height="Auto"/>
                     </Grid.RowDefinitions>
 
-                    <!-- Title -->
-                    <TextBlock Grid.Row="0" Text="Reassign Courses" FontSize="24" FontFamily="Script MT Bold" 
-                       Foreground="White" HorizontalAlignment="Center" Margin="0,0,0,20"/>
+                    <Label Grid.Row="0" Grid.Column="0" Content="Language:" Foreground="White" FontFamily="Script MT Bold" VerticalAlignment="Center" Margin="0,4"/>
+                    <ComboBox x:Name="PrincipalEditCourseLangCombo" Grid.Row="0" Grid.Column="1" Style="{StaticResource PrincipalGoldComboStyle2}" Height="35" Margin="8,4,0,4"/>
 
-                    <!-- Content -->
-                    <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
-                        <StackPanel>
-                            <!-- Instructions -->
-                            <TextBlock x:Name="InstructionsText" FontSize="16" FontFamily="Script MT Bold" 
-                               Foreground="White" TextWrapping="Wrap" Margin="0,0,0,20"
-                               Text="The following courses need to be reassigned to other professors before deletion can proceed:"/>
+                    <Label Grid.Row="1" Grid.Column="0" Content="Level:" Foreground="White" FontFamily="Script MT Bold" VerticalAlignment="Center" Margin="0,4"/>
+                    <ComboBox x:Name="PrincipalEditCourseLevelCombo" Grid.Row="1" Grid.Column="1" Style="{StaticResource PrincipalGoldComboStyle2}" Height="35" Margin="8,4,0,4"/>
 
-                            <!-- Courses List -->
-                            <ItemsControl x:Name="CoursesToReassignList">
-                                <ItemsControl.ItemTemplate>
-                                    <DataTemplate>
-                                        <Border Background="#80000000" BorderBrush="#B8860B" BorderThickness="1" 
-                                        CornerRadius="5" Margin="0,5" Padding="15">
-                                            <Grid>
-                                                <Grid.RowDefinitions>
-                                                    <RowDefinition Height="Auto"/>
-                                                    <RowDefinition Height="Auto"/>
-                                                    <RowDefinition Height="Auto"/>
-                                                </Grid.RowDefinitions>
-                                                <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="*"/>
-                                                    <ColumnDefinition Width="200"/>
-                                                </Grid.ColumnDefinitions>
+                    <Label Grid.Row="2" Grid.Column="0" Content="Max attendees:" Foreground="White" FontFamily="Script MT Bold" VerticalAlignment="Center" Margin="0,4"/>
+                    <TextBox x:Name="PrincipalEditCourseMaxBox" Grid.Row="2" Grid.Column="1" Style="{StaticResource PrincipalGoldTextBoxStyle2}" Height="35" Margin="8,4,0,4"/>
 
-                                                <!-- Course Info -->
-                                                <StackPanel Grid.Row="0" Grid.Column="0" Grid.RowSpan="3">
-                                                    <TextBlock FontSize="16" FontFamily="Script MT Bold" Foreground="White" FontWeight="Bold">
-                                                <Run Text="{Binding Language}"/> - <Run Text="{Binding Level}"/>
-                                                    </TextBlock>
-                                                    <TextBlock FontSize="14" FontFamily="Script MT Bold" Foreground="#CCCCCC" Margin="0,2">
-                                                <Run Text="Start Date: "/> <Run Text="{Binding Date}"/>
-                                                    </TextBlock>
-                                                    <TextBlock FontSize="14" FontFamily="Script MT Bold" Foreground="#CCCCCC" Margin="0,2">
-                                                <Run Text="Duration: "/> <Run Text="{Binding DurationWeeks}"/> weeks
-                                                    </TextBlock>
-                                                    <TextBlock FontSize="14" FontFamily="Script MT Bold" Foreground="#CCCCCC" Margin="0,2">
-                                                <Run Text="Max Attendees: "/> <Run Text="{Binding MaxAttendees}"/>
-                                                    </TextBlock>
-                                                </StackPanel>
+                    <Label Grid.Row="3" Grid.Column="0" Content="Start (date &amp; time):" Foreground="White" FontFamily="Script MT Bold" VerticalAlignment="Center" Margin="0,4"/>
+                    <StackPanel Grid.Row="3" Grid.Column="1" Orientation="Horizontal" Margin="8,4,0,4">
+                        <DatePicker x:Name="PrincipalEditCourseDatePicker" Width="170" Height="35" Style="{StaticResource PrincipalGoldDatePickerStyle2}" SelectedDateFormat="Short"/>
+                        <TextBox x:Name="PrincipalEditCourseTimeBox" Width="120" Height="35" Margin="8,0,0,0" Style="{StaticResource PrincipalGoldTextBoxStyle2}" ToolTip="Format: HH:mm (npr. 10:00)"/>
+                    </StackPanel>
 
-                                                <!-- Professor Selection -->
-                                                <StackPanel Grid.Row="0" Grid.Column="1" Grid.RowSpan="3" VerticalAlignment="Center">
-                                                    <Label Content="Assign to Professor:" FontSize="14" Foreground="White" 
-                                                   FontFamily="Script MT Bold" HorizontalAlignment="Center"/>
-                                                    <ComboBox x:Name="ProfessorComboBox" Height="35" 
-                                                      Style="{StaticResource GoldComboStyle}" Margin="0,5"
-                                                      DisplayMemberPath="DisplayName"
-                                                      SelectedValuePath="Email"
-                                                      SelectedValue="{Binding NewProfessorId, Mode=TwoWay}"
-                                                      ItemsSource="{Binding DataContext.AvailableProfessors, 
-                                                                   RelativeSource={RelativeSource AncestorType=Window}}"/>
-                                                </StackPanel>
-                                            </Grid>
-                                        </Border>
-                                    </DataTemplate>
-                                </ItemsControl.ItemTemplate>
-                            </ItemsControl>
-                        </StackPanel>
-                    </ScrollViewer>
+                    <Label Grid.Row="4" Grid.Column="0" Content="Room (optional):" Foreground="White" FontFamily="Script MT Bold" VerticalAlignment="Center" Margin="0,4"/>
+                    <TextBox x:Name="PrincipalEditCourseRoomBox" Grid.Row="4" Grid.Column="1" Style="{StaticResource PrincipalGoldTextBoxStyle2}" Height="35" Margin="8,4,0,4"/>
 
-                    <!-- Buttons -->
-                    <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,20,0,0">
-                        <Button Content="Reassign All" Width="120" Height="40" Margin="10,0"
-                        Click="ReassignCourses_Click"
-                        Style="{StaticResource FancyButtonStyle}">
+                    <Label Grid.Row="5" Grid.Column="0" Content="Is Live:" Foreground="White" FontFamily="Script MT Bold" VerticalAlignment="Center" Margin="0,4"/>
+                    <CheckBox x:Name="PrincipalEditCourseIsLiveCheckBox" Grid.Row="5" Grid.Column="1" VerticalAlignment="Center" Margin="8,4,0,4"/>
+
+                    <Label Grid.Row="6" Grid.Column="0" Content="Days:" Foreground="White" FontFamily="Script MT Bold" VerticalAlignment="Top" Margin="0,4"/>
+                    <WrapPanel Grid.Row="6" Grid.Column="1" Margin="8,4,0,4">
+                        <CheckBox Content="Mon" x:Name="PrincipalEditCourseMonCheckBox" Foreground="White" Margin="0,0,8,0"/>
+                        <CheckBox Content="Tue" x:Name="PrincipalEditCourseTueCheckBox" Foreground="White" Margin="0,0,8,0"/>
+                        <CheckBox Content="Wed" x:Name="PrincipalEditCourseWedCheckBox" Foreground="White" Margin="0,0,8,0"/>
+                        <CheckBox Content="Thu" x:Name="PrincipalEditCourseThuCheckBox" Foreground="White" Margin="0,0,8,0"/>
+                        <CheckBox Content="Fri" x:Name="PrincipalEditCourseFriCheckBox" Foreground="White" Margin="0,0,8,0"/>
+                        <CheckBox Content="Sat" x:Name="PrincipalEditCourseSatCheckBox" Foreground="White" Margin="0,0,8,0"/>
+                        <CheckBox Content="Sun" x:Name="PrincipalEditCourseSunCheckBox" Foreground="White"/>
+                    </WrapPanel>
+
+                    <Label Grid.Row="7" Grid.Column="0" Content="Duration (weeks):" Foreground="White" FontFamily="Script MT Bold" VerticalAlignment="Center" Margin="0,4"/>
+                    <TextBox x:Name="PrincipalEditCourseDurationWeeksBox" Grid.Row="7" Grid.Column="1" Style="{StaticResource PrincipalGoldTextBoxStyle2}" Height="35" Margin="8,4,0,4"/>
+
+                    <StackPanel Grid.Row="9" Grid.ColumnSpan="2" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,6,0,0">
+                        <Button Content="Save" Width="140" Height="38" Margin="8" Click="SaveEditedCourse_Click" Style="{StaticResource FancyButtonStyle}">
                             <Button.Background>
                                 <ImageBrush ImageSource="/GUIResources/loginButtonBackground.png"/>
                             </Button.Background>
                         </Button>
-                        <Button Content="Cancel" Width="120" Height="40" Margin="10,0"
-                        Click="CancelCourseReassignment_Click"
-                        Style="{StaticResource FancyButtonStyle}">
+                        <Button Content="Cancel" Width="140" Height="38" Margin="8" Click="CancelEditCourse_Click" Style="{StaticResource FancyButtonStyle}">
                             <Button.Background>
                                 <ImageBrush ImageSource="/GUIResources/loginButtonBackground.png"/>
                             </Button.Background>
@@ -888,6 +1158,136 @@
                 </Grid>
             </Border>
         </Grid>
+        <!-- ================== /PRINCIPAL EDIT COURSE OVERLAY ================== -->
+
+
+        <!-- ===================================================================== -->
+        <!-- ==================  (3) PRINCIPAL ADD COURSE  ======================= -->
+        <!-- ===================================================================== -->
+        <Grid x:Name="PrincipalAddCourseOverlay" Visibility="Collapsed" Background="Transparent" Panel.ZIndex="999">
+            <Grid.Resources>
+                <Style x:Key="PrincipalGoldComboItemStyle3" TargetType="ComboBoxItem">
+                    <Setter Property="Foreground" Value="White"/>
+                    <Setter Property="Background" Value="Gold"/>
+                    <Setter Property="Padding" Value="8,4"/>
+                    <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                </Style>
+
+                <Style x:Key="PrincipalGoldComboStyle3" TargetType="ComboBox">
+                    <Setter Property="Foreground" Value="White"/>
+                    <Setter Property="FontFamily" Value="Script MT Bold"/>
+                    <Setter Property="FontSize" Value="16"/>
+                    <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                    <Setter Property="VerticalContentAlignment" Value="Center"/>
+                    <Setter Property="Padding" Value="6,2"/>
+                    <Setter Property="BorderBrush" Value="#B8860B"/>
+                    <Setter Property="BorderThickness" Value="2"/>
+                    <Setter Property="ItemContainerStyle" Value="{StaticResource PrincipalGoldComboItemStyle3}"/>
+                    <Setter Property="Background" Value="Gold"/>
+                </Style>
+
+                <Style x:Key="PrincipalGoldTextBoxStyle3" TargetType="TextBox">
+                    <Setter Property="Foreground" Value="White"/>
+                    <Setter Property="FontFamily" Value="Script MT Bold"/>
+                    <Setter Property="FontSize" Value="16"/>
+                    <Setter Property="Background" Value="Gold"/>
+                    <Setter Property="BorderBrush" Value="#B8860B"/>
+                    <Setter Property="BorderThickness" Value="2"/>
+                    <Setter Property="Padding" Value="6,2"/>
+                    <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                    <Setter Property="VerticalContentAlignment" Value="Center"/>
+                </Style>
+
+                <Style x:Key="PrincipalGoldDatePickerStyle3" TargetType="DatePicker">
+                    <Setter Property="Foreground" Value="White"/>
+                    <Setter Property="FontFamily" Value="Script MT Bold"/>
+                    <Setter Property="FontSize" Value="16"/>
+                    <Setter Property="Background" Value="Gold"/>
+                    <Setter Property="BorderBrush" Value="#B8860B"/>
+                    <Setter Property="BorderThickness" Value="2"/>
+                    <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                </Style>
+            </Grid.Resources>
+
+            <Border CornerRadius="10" Padding="18" Width="640"
+                    HorizontalAlignment="Center" VerticalAlignment="Center"
+                    BorderBrush="#B8860B" BorderThickness="2">
+                <Border.Background>
+                    <ImageBrush ImageSource="/GUIResources/loginBackground.jpg" Stretch="Fill"/>
+                </Border.Background>
+
+                <Grid Margin="6">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="190"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <Label Grid.Row="0" Grid.Column="0" Content="Language:" Foreground="White" FontFamily="Script MT Bold" VerticalAlignment="Center" Margin="0,4"/>
+                    <ComboBox x:Name="PrincipalAddCourseLangCombo" Grid.Row="0" Grid.Column="1" Style="{StaticResource PrincipalGoldComboStyle3}" Height="35" Margin="8,4,0,4"/>
+
+                    <Label Grid.Row="1" Grid.Column="0" Content="Level:" Foreground="White" FontFamily="Script MT Bold" VerticalAlignment="Center" Margin="0,4"/>
+                    <ComboBox x:Name="PrincipalAddCourseLevelCombo" Grid.Row="1" Grid.Column="1" Style="{StaticResource PrincipalGoldComboStyle3}" Height="35" Margin="8,4,0,4"/>
+
+                    <Label Grid.Row="2" Grid.Column="0" Content="Max attendees:" Foreground="White" FontFamily="Script MT Bold" VerticalAlignment="Center" Margin="0,4"/>
+                    <TextBox x:Name="PrincipalAddCourseMaxBox" Grid.Row="2" Grid.Column="1" Style="{StaticResource PrincipalGoldTextBoxStyle3}" Height="35" Margin="8,4,0,4"/>
+
+                    <Label Grid.Row="3" Grid.Column="0" Content="Start (date &amp; time):" Foreground="White" FontFamily="Script MT Bold" VerticalAlignment="Center" Margin="0,4"/>
+                    <StackPanel Grid.Row="3" Grid.Column="1" Orientation="Horizontal" Margin="8,4,0,4">
+                        <DatePicker x:Name="PrincipalAddCourseDatePicker" Width="170" Height="35" Style="{StaticResource PrincipalGoldDatePickerStyle3}" SelectedDateFormat="Short"/>
+                        <TextBox x:Name="PrincipalAddCourseTimeBox" Width="120" Height="35" Margin="8,0,0,0" Style="{StaticResource PrincipalGoldTextBoxStyle3}" ToolTip="Format: HH:mm (npr. 10:00)"/>
+                    </StackPanel>
+
+                    <Label Grid.Row="4" Grid.Column="0" Content="Room (optional):" Foreground="White" FontFamily="Script MT Bold" VerticalAlignment="Center" Margin="0,4"/>
+                    <TextBox x:Name="PrincipalAddCourseRoomBox" Grid.Row="4" Grid.Column="1" Style="{StaticResource PrincipalGoldTextBoxStyle3}" Height="35" Margin="8,4,0,4"/>
+
+                    <Label Grid.Row="5" Grid.Column="0" Content="Is Live:" Foreground="White" FontFamily="Script MT Bold" VerticalAlignment="Center" Margin="0,4"/>
+                    <CheckBox x:Name="PrincipalAddCourseIsLiveCheckBox" Grid.Row="5" Grid.Column="1" VerticalAlignment="Center" Margin="8,4,0,4"/>
+
+                    <Label Grid.Row="6" Grid.Column="0" Content="Days:" Foreground="White" FontFamily="Script MT Bold" VerticalAlignment="Top" Margin="0,4"/>
+                    <WrapPanel Grid.Row="6" Grid.Column="1" Margin="8,4,0,4">
+                        <CheckBox Content="Mon" x:Name="PrincipalAddCourseMonCheckBox" Foreground="White" Margin="0,0,8,0"/>
+                        <CheckBox Content="Tue" x:Name="PrincipalAddCourseTueCheckBox" Foreground="White" Margin="0,0,8,0"/>
+                        <CheckBox Content="Wed" x:Name="PrincipalAddCourseWedCheckBox" Foreground="White" Margin="0,0,8,0"/>
+                        <CheckBox Content="Thu" x:Name="PrincipalAddCourseThuCheckBox" Foreground="White" Margin="0,0,8,0"/>
+                        <CheckBox Content="Fri" x:Name="PrincipalAddCourseFriCheckBox" Foreground="White" Margin="0,0,8,0"/>
+                        <CheckBox Content="Sat" x:Name="PrincipalAddCourseSatCheckBox" Foreground="White" Margin="0,0,8,0"/>
+                        <CheckBox Content="Sun" x:Name="PrincipalAddCourseSunCheckBox" Foreground="White"/>
+                    </WrapPanel>
+
+                    <TextBox x:Name="PrincipalAddCourseDurationWeeksBox" Grid.Row="7" Grid.Column="1" Style="{StaticResource PrincipalGoldTextBoxStyle3}" Height="35" Margin="8,4,0,4">
+                        <TextBox.ToolTip>
+                            <ToolTip Content="Duration (weeks)"/>
+                        </TextBox.ToolTip>
+                    </TextBox>
+
+                    <StackPanel Grid.Row="8" Grid.ColumnSpan="2" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,6,0,0">
+                        <Button Content="Save" Width="140" Height="38" Margin="8" Click="SaveNewCourse_Click" Style="{StaticResource FancyButtonStyle}">
+                            <Button.Background>
+                                <ImageBrush ImageSource="/GUIResources/loginButtonBackground.png"/>
+                            </Button.Background>
+                        </Button>
+                        <Button Content="Cancel" Width="140" Height="38" Margin="8" Click="CancelAddCourse_Click" Style="{StaticResource FancyButtonStyle}">
+                            <Button.Background>
+                                <ImageBrush ImageSource="/GUIResources/loginButtonBackground.png"/>
+                            </Button.Background>
+                        </Button>
+                    </StackPanel>
+                </Grid>
+            </Border>
+        </Grid>
+        <!-- ================== /PRINCIPAL ADD COURSE OVERLAY ================== -->
+
 
     </Grid>
 </Window>
