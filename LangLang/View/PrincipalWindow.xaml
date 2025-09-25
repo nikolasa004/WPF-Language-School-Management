@@ -580,7 +580,123 @@
         </Grid>
         <!-- ================== /EXAM OVERLAY ================== -->
 
-        
+        <!-- ================== COURSE OVERLAY ================== -->
+        <Grid x:Name="PrincipalCourseOverlay" Visibility="Collapsed" Background="Transparent" Panel.ZIndex="999">
+            <Border CornerRadius="10" Padding="18" Width="800" MinHeight="500" HorizontalAlignment="Center" VerticalAlignment="Center" BorderBrush="#B8860B" BorderThickness="2">
+                <Border.Background>
+                    <ImageBrush ImageSource="/GUIResources/loginBackground.jpg" Stretch="Fill"/>
+                </Border.Background>
+
+                <Grid Margin="6">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <!-- Title -->
+                        <RowDefinition Height="*"/>
+                        <!-- DataGrid -->
+                        <RowDefinition Height="Auto"/>
+                        <!-- Buttons -->
+                    </Grid.RowDefinitions>
+
+                    <!-- Title + Radio buttons -->
+                    <Grid Grid.Row="0" Margin="0,20,0,8">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+
+                        <!-- Title -->
+                        <Label Content="Past Courses"
+                           Foreground="Gold"
+                           FontSize="22"
+                           FontFamily="Script MT Bold"
+                           HorizontalAlignment="Center"
+                           Grid.Column="0"/>
+
+                        <!-- Radio Buttons -->
+                        <StackPanel Orientation="Horizontal" Grid.Column="1" VerticalAlignment="Center" Margin="20,0,0,0">
+                            <RadioButton x:Name="KnowledgeRadio"
+                             Content="Knowledge"
+                             FontFamily="Script MT Bold"
+                             Foreground="White"
+                             FontSize="16"
+                             GroupName="ComplimentType"
+                             Margin="0,0,10,0"
+                             IsChecked="True"/>
+                            <RadioButton x:Name="ActivityRadio"
+                     Content="Activity"
+                     FontFamily="Script MT Bold"
+                     Foreground="White"
+                     FontSize="16"
+                     GroupName="ComplimentType"/>
+                        </StackPanel>
+                    </Grid>
+
+                    <!-- Courses DataGrid -->
+                    <DataGrid Grid.Row="1"
+                    x:Name="CoursesGrid"
+                    ItemsSource="{Binding CoursesObservable}"
+                    AutoGenerateColumns="False"
+                    CanUserAddRows="False"
+                    CanUserDeleteRows="False"
+                    IsReadOnly="True"
+                    CanUserSortColumns="True"
+                    VerticalAlignment="Stretch"
+                    Background="#66000000"
+                    Foreground="White"
+                    FontFamily="Script MT Bold"
+                    GridLinesVisibility="None"
+                    HeadersVisibility="Column"
+                    RowBackground="#33000000"
+                    AlternatingRowBackground="#22000000"
+                    BorderBrush="#00000000">
+
+                        <DataGrid.Resources>
+                            <Style TargetType="DataGridColumnHeader" BasedOn="{StaticResource DGHeaderStyle}"/>
+                            <Style TargetType="DataGridCell" BasedOn="{StaticResource DGCellStyle}"/>
+                        </DataGrid.Resources>
+
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="ID" Binding="{Binding Id}" Width="40" /> 
+                            <DataGridTextColumn Header="Language" Binding="{Binding Language}" Width="*" />
+                            <DataGridTextColumn Header="Level" Binding="{Binding Level}" Width="60" />
+                            <DataGridTextColumn Header="Start Date" Binding="{Binding Date}" Width="100"/>
+                            <DataGridTextColumn Header="Duration" Binding="{Binding DurationWeeks}" Width="60"/>
+                            <DataGridTextColumn Header="Professor" Binding="{Binding ProfessorId}" Width="*" />
+
+                            <!-- Confirm Results Button -->
+                            <DataGridTemplateColumn Header="Actions" Width="160">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <Button Content="Send compliments" 
+                                        Width="140" Height="28"
+                                        Click="SendCompliments_Click"
+                                        Style="{StaticResource FancyButtonStyle}">
+                                            <Button.Background>
+                                                <ImageBrush ImageSource="/GUIResources/loginButtonBackground.png"/>
+                                            </Button.Background>
+                                        </Button>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                        </DataGrid.Columns>
+                    </DataGrid>
+
+                    <!-- Bottom Buttons -->
+                    <StackPanel Grid.Row="2" Orientation="Horizontal"
+        HorizontalAlignment="Center" Margin="0,6,0,0">
+                        <Button Content="Close" Width="140" Height="38" Margin="8"
+                Click="ClosePrincipalCourse_Click" Style="{StaticResource FancyButtonStyle}">
+                            <Button.Background>
+                                <ImageBrush ImageSource="/GUIResources/loginButtonBackground.png"/>
+                            </Button.Background>
+                        </Button>
+                    </StackPanel>
+                </Grid>
+            </Border>
+        </Grid>
+        <!-- ================== /COURSE OVERLAY ================== -->
+
+
         <!-- Reassign Professor Overlay -->
         <Grid x:Name="CourseReassignmentOverlay" Visibility="Collapsed" Background="#80000000" Panel.ZIndex="1000">
             <Grid.Resources>
