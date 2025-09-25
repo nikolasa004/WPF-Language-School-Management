@@ -14,14 +14,12 @@ using System;
 using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
-
 namespace LangLang.RoleWindows
 {
     public partial class StudentWindow : Window
     {
         public StudentDTO Student { get; set; }
         public StudentDTO UpdateStudent { get; set; }
-
         private StudentsController studentsController;
         private CourseController courseController=new CourseController();
         private CourseEnrollmentsController enrollmentsController=new CourseEnrollmentsController();
@@ -34,9 +32,7 @@ namespace LangLang.RoleWindows
         private StudentViewProfile studentViewProfile;
         private StudentViewEdit studentViewEdit;
         private StudentViewTeaching studentViewTeaching;
-
         private List<Grid> panels;
-
         public StudentWindow(Student student, StudentsController studentsController)
         {
             InitializeComponent();
@@ -85,8 +81,6 @@ namespace LangLang.RoleWindows
             var method = studentViewTeaching.GetType().GetMethod(methodName)!;
             method.Invoke(studentViewTeaching, null);
         }
-
-        // Profile Panel
         private void Edit_Click(object sender, RoutedEventArgs e)
         {
             if (Student.ActiveCourseId != -1)
@@ -122,8 +116,6 @@ namespace LangLang.RoleWindows
             MessagesInboxWindow messagesInboxWindow = new MessagesInboxWindow(Student.Email, messagesController);
             messagesInboxWindow.Show();
         }
-
-        //Teaching Activities
         private void SetTeachingButtons()
         {
             PrevPageBtnExams.Click += (s, e) => studentViewExams.PrevPage();

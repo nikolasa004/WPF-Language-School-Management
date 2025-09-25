@@ -32,8 +32,8 @@
     "DateOfRegistration": "2025-09-21"
   },
   {
-    "PenaltyPoints": 0,
-    "LastPenaltyProcessedAt": "2025-09-01",
+    "PenaltyPoints": 2,
+    "LastPenaltyProcessedAt": "2025-08-01",
     "RequestedCourses": [
       1
     ],
