@@ -91,7 +91,6 @@ namespace LangLang.Model.DAO.TeachingActivity
             return old;
         }
 
-
         public Course? RemoveCourse(int id)
         {
             var course = GetCourseById(id);
@@ -105,9 +104,7 @@ namespace LangLang.Model.DAO.TeachingActivity
         }
 
         public Course? GetCourseById(int id) => _courses.Find(c => c.Id == id);
-
         public List<Course> GetAllCourses() => _courses;
-
         public List<Course> GetCoursesByProfessor(string professorId) => _courses.FindAll(c => c.ProfessorId == professorId);
 
         private void SaveAllIso()

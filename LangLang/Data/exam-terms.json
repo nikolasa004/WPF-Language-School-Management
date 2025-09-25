@@ -26,7 +26,7 @@
     "RoomId": "R202"
   },
   {
-    "IsLocked": true,
+    "IsLocked": false,
     "Id": 3,
     "ProfessorId": "profesor@gmail.com",
     "Language": 0,
@@ -52,7 +52,7 @@
     "RoomId": "R204"
   },
   {
-    "IsLocked": true,
+    "IsLocked": false,
     "Id": 6,
     "ProfessorId": "profesor@gmail.com",
     "Language": 1,
