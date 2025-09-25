@@ -38,7 +38,7 @@ namespace LangLang.View.PrincipalViewModules
             {
                 if (exam.TryGetStart(out var startTime))
                 {
-                    if (startTime < DateTime.Now && !exam.IsLocked)
+                    if (startTime < DateTime.Now && !exam.IsLocked && !exam.IsArchived)
                         _examTermsObservable.Add(exam);
                 }
             }
@@ -50,6 +50,11 @@ namespace LangLang.View.PrincipalViewModules
             var messagesController = new MessagesController();
             var studentsController = new StudentsController();
             var exam = _examsController.GetById(examId);
+
+            if (exam != null)
+            {
+                _examsController.ArchiveExamTerm(examId);
+            }
 
             var allStudents = studentsController.GetAllStudents();
 
@@ -85,7 +90,6 @@ namespace LangLang.View.PrincipalViewModules
                         }
 
                         studentsController.UnlockExamApplications(student.Email);
-                        _examsController.LockExamTerm(examId);
 
                     }
                 }

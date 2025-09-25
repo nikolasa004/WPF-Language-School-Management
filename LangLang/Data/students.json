@@ -12,7 +12,9 @@
         "Item2": 0
       }
     ],
-    "RequestedExamTerms": [],
+    "RequestedExamTerms": [
+      31
+    ],
     "ActiveExamTermId": -1,
     "FinishedExams": [
       {
@@ -21,12 +23,12 @@
       }
     ],
     "IsExamApplicationLocked": false,
-    "FirstName": "ogi",
+    "FirstName": "Student2",
     "LastName": "Studentic",
     "Gender": 0,
     "DateOfBirth": "1990-09-13",
     "PhoneNumber": "12345",
-    "Email": "ogi@gmail.com",
+    "Email": "student2@gmail.com",
     "Password": "123",
     "EducationLevel": 1,
     "DateOfRegistration": "2025-09-21"

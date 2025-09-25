@@ -119,6 +119,15 @@ namespace LangLang.Controller.TeachingActivities
             exam.IsLocked = false;
             return _dao.UpdateExamTerm(exam);
         }
+        public ExamTerm? ArchiveExamTerm(int examId)
+        {
+            var exam = _dao.GetExamTermById(examId);
+            if (exam == null)
+                throw new InvalidOperationException("Exam term not found.");
+
+            exam.IsArchived = true;
+            return _dao.UpdateExamTerm(exam);
+        }
 
         public ExamTerm? GetById(int id) => _dao.GetExamTermById(id);
         public List<ExamTerm> GetAll() => _dao.GetAllExamTerms();

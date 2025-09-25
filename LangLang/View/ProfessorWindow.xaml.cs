@@ -197,6 +197,7 @@ namespace LangLang.RoleWindows
         private void CloseStartExam_Click(object sender, RoutedEventArgs e)
         {
             StartExamOverlay.Visibility = Visibility.Collapsed;
+            _examsView.ReloadAll();
         }
 
         private void StartExam_Click(object sender, RoutedEventArgs e)
@@ -204,6 +205,7 @@ namespace LangLang.RoleWindows
             if (_examStartView?.ConfirmExamStart() == true)
             {
                 StartExamOverlay.Visibility = Visibility.Collapsed;
+                _examsView.ReloadAll();
 
             }
         }
@@ -211,6 +213,7 @@ namespace LangLang.RoleWindows
         private void CloseFinishExam_Click(object sender, RoutedEventArgs e)
         {
             FinishExamOverlay.Visibility = Visibility.Collapsed;
+            _examsView.ReloadAll();
         }
 
         private void SaveExamResults_Click(object sender, RoutedEventArgs e)
@@ -224,7 +227,7 @@ namespace LangLang.RoleWindows
             _examFinishView.SaveResults();
 
             FinishExamOverlay.Visibility = Visibility.Collapsed;
-            
+            _examsView.ReloadAll();
         }
 
         private void CloseOngoingExam_Click(object sender, RoutedEventArgs e)
