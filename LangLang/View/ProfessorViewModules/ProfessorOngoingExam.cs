@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using LangLang.Controller.TeachingActivities;
@@ -11,15 +12,19 @@ namespace LangLang.View.ProfessorViewModules
 {
     internal class ProfessorOngoingExam
     {
-        private readonly ObservableCollection<StudentDTO> _students = new();
+        private readonly ObservableCollection<StudentDTO> _students;
         private readonly StudentsController _studentsController;
+        private readonly int _examTermId;
 
-        public ProfessorOngoingExam(List<StudentDTO> students, DataGrid ongoingExamGrid, StudentsController studentsController)
+        public ProfessorOngoingExam(ExamTermDTO examTerm, List<StudentDTO> allStudents, DataGrid ongoingExamGrid, StudentsController studentsController)
         {
             OngoingExamGrid = ongoingExamGrid;
             _studentsController = studentsController;
+            _examTermId = examTerm.Id;
 
-            _students = new ObservableCollection<StudentDTO>(students);
+            var activeStudents = allStudents.Where(s => s.ActiveExamTermId == _examTermId).ToList();
+
+            _students = new ObservableCollection<StudentDTO>(activeStudents);
             OngoingExamGrid.ItemsSource = _students;
         }
 
@@ -40,21 +45,20 @@ namespace LangLang.View.ProfessorViewModules
                 MessageBoxImage.Warning
             );
 
-            if (result == MessageBoxResult.Yes)
-            {
-                try
-                {
-                    _studentsController.Delete(student.Email);
-                    _students.Remove(student);
+            if (result != MessageBoxResult.Yes)
+                return;
 
-                    MessageBox.Show($"Student {student.FirstName} {student.LastName} has been banned.");
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show($"Failed to ban student: {ex.Message}");
-                }
+            try
+            {
+                _studentsController.Delete(student.Email);
+                _students.Remove(student);
+
+                MessageBox.Show($"Student {student.FirstName} {student.LastName} has been banned.");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Failed to ban student: {ex.Message}");
             }
         }
-
     }
 }
