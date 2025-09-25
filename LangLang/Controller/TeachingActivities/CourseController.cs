@@ -261,6 +261,4 @@ namespace LangLang.Controller.TeachingActivities
             _dao.UpdateCourse(course);
         }
     }
-
-    }
-
+}

@@ -15,6 +15,7 @@ namespace LangLang.RoleWindows
         private ProfessorsController _professorsController;
         private PrincipalProfessorView _professorView;
         private PrincipalExamView _principalExamView;
+        private PrincipalCourseView _principalCourseView;
         private PrincipalProfessorManager _professorManager;
 
         public PrincipalWindow(ProfessorsController _professorsController)
@@ -25,6 +26,7 @@ namespace LangLang.RoleWindows
 
             _professorView = new PrincipalProfessorView(_professorsController, ProfessorsDataGrid, this);
             _professorManager = new PrincipalProfessorManager(_professorsController);
+            _principalCourseView = new PrincipalCourseView(CoursesGrid);
 
             DataContext = _professorView;
             _professorView.LoadProfessors();
@@ -106,7 +108,16 @@ namespace LangLang.RoleWindows
 
         private void CoursesButton_Click(object sender, RoutedEventArgs e)
         {
-            //TODO
+            PrincipalCourseOverlay.Visibility = Visibility.Visible;
+        }
+        private void SendCompliments_Click(object sender, RoutedEventArgs e)
+        {
+            MessageBox.Show("Compliment messages have been sent to best students from this course.", "Send Compliments", MessageBoxButton.OK, MessageBoxImage.Information);
+            Button btn = (Button)sender;
+            CourseDTO course = (CourseDTO)btn.DataContext;
+            string type=KnowledgeRadio.IsChecked==true?"knowledge":"activity";
+            _principalCourseView.SendCompliments(course.Id, type);
+            _principalCourseView.RefreshCourses();
         }
         private void ExamsButton_Click(object sender, RoutedEventArgs e)
         {
@@ -117,6 +128,10 @@ namespace LangLang.RoleWindows
         private void ClosePrincipalExam_Click(object sender, RoutedEventArgs e)
         {
             PrincipalExamOverlay.Visibility = Visibility.Collapsed;
+        }
+        private void ClosePrincipalCourse_Click(object sender, RoutedEventArgs e)
+        {
+            PrincipalCourseOverlay.Visibility = Visibility.Collapsed;
         }
         public void ConfirmResults_Click(object sender, RoutedEventArgs e)
         {
