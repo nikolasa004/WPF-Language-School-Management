@@ -7,5 +7,14 @@
     "Body": "Dear ogi,\n\nHere are your results for exam 4:\n- Reading: 31\n- Writing: 32\n- Listening: 20\n- Speaking: 26\nTotal: 109\n\nStatus: FAILED",
     "Date": "2025-09-24",
     "IsRead": false
+  },
+  {
+    "Id": 11,
+    "RecipientId": "student@gmail.com",
+    "SenderId": "profesor@gmail.com",
+    "Title": "You have received a penalty point in Italian A1",
+    "Body": "aaaa",
+    "Date": "2025-10-05",
+    "IsRead": false
   }
 ]

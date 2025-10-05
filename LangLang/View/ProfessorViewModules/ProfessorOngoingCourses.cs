@@ -3,6 +3,7 @@ using LangLang.Controller.TeachingActivities;
 using LangLang.Controller.Users;
 using LangLang.DTO;
 using LangLang.Model.Messages;
+using LangLang.Model.TeachingActivities;
 using LangLang.View;
 using System;
 using System.Collections.Generic;
@@ -16,6 +17,7 @@ namespace LangLang.View.ProfessorViewModules
     {
         private readonly StudentsController _studentController;
         private readonly MessagesController _messagesController;
+        private readonly PenaltyPointsController _penaltyPointsController = new();
 
         private List<StudentDTO> _allStudents;
         private readonly ObservableCollection<StudentDTO> _studentsObservable = new();
@@ -128,6 +130,9 @@ namespace LangLang.View.ProfessorViewModules
                         "student"
                     );
                     messageWindow.Show();
+
+                    PenaltyPoint penaltyPoint = new PenaltyPoint(-1, student.Email, _currentCourseDTO!.Id);
+                    _penaltyPointsController.AddPenaltyPoint(penaltyPoint);
 
                     RefreshStudents(_allStudents);
                 }

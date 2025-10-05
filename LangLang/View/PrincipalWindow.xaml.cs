@@ -1,12 +1,14 @@
-﻿using System;
-using System.Linq;
-using System.Windows;
-using System.Windows.Controls;
+﻿using LangLang.Controller.Messages;
 using LangLang.Controller.TeachingActivities;
 using LangLang.Controller.Users;
 using LangLang.DTO;
 using LangLang.Utils;
 using LangLang.View.PrincipalViewModules;
+using System;
+using System.Linq;
+using System.Windows;
+using System.Windows.Controls;
+
 namespace LangLang.RoleWindows
 {
     public partial class PrincipalWindow : Window
@@ -18,6 +20,11 @@ namespace LangLang.RoleWindows
         private PrincipalProfessorManager _professorManager;
         private readonly CourseController _courseController = new CourseController();
         private PrincipalBrowseCourses _principalBrowseCourses;
+        private StudentsController studentsController;
+        private ExamResultsController examResultsController;
+
+        private ReportsController _reportsService;
+
         public PrincipalWindow(ProfessorsController _professorsController)
         {
             InitializeComponent();
@@ -25,6 +32,9 @@ namespace LangLang.RoleWindows
             _professorView = new PrincipalProfessorView(_professorsController, ProfessorsDataGrid, this);
             _professorManager = new PrincipalProfessorManager(_professorsController);
             _principalCourseView = new PrincipalCourseView(CoursesGrid);
+            studentsController = new StudentsController();
+            examResultsController = new ExamResultsController();
+            _reportsService = new ReportsController(studentsController, examResultsController,_courseController);
             _principalBrowseCourses = new PrincipalBrowseCourses(
                 PrincipalCourseLanguageCombo, PrincipalCourseLevelCombo, PrincipalCourseOnlineCombo,
                 PrincipalCourseWeeksBox, PrincipalCourseFromDate, PrincipalCourseToDate,
@@ -33,6 +43,13 @@ namespace LangLang.RoleWindows
             DataContext = _professorView;
             _professorView.LoadProfessors();
         }
+        private void DropDown_Click(object sender, RoutedEventArgs e)
+        {
+            var btn = (Button)sender;
+            btn.ContextMenu.PlacementTarget = btn;
+            btn.ContextMenu.IsOpen = true;
+        }
+
         private void ReassignCourses_Click(object sender, RoutedEventArgs e)
         {
             MessageBox.Show("Course reassignment functionality has been integrated into the delete professor workflow.",
@@ -135,7 +152,13 @@ namespace LangLang.RoleWindows
                 _principalExamView.RefreshExams();
             }
         }
-        private void ReportsButton_Click(object sender, RoutedEventArgs e) { /* TODO */ }
+        private void Reports_Click(object sender, RoutedEventArgs e)
+        {
+            MenuItem btn = (MenuItem)sender;
+            string reportType = (string)btn.Tag;
+            _reportsService.GenerateReport(reportType);
+            MessageBox.Show("Report generated and sent to your email.", "Report Generated", MessageBoxButton.OK, MessageBoxImage.Information);
+        }
         private void ProfessorsButton_Click(object sender, RoutedEventArgs e) { /* TODO */ }
         private void Search_Click(object sender, RoutedEventArgs e)
         {

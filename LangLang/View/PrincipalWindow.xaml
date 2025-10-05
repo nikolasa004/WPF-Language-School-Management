@@ -63,21 +63,13 @@
                             </Button>
 
                             <!-- Courses Button -->
-                            <Button x:Name="CoursesButton"
-        Content="Courses"
-        Style="{StaticResource FancyButtonStyle}"
-        FontSize="20"
-        Width="100"
-        Height="35">
+                            <Button x:Name="CoursesButton" Content="Courses" Style="{StaticResource FancyButtonStyle}" FontSize="20" Width="100" Height="40" Click="DropDown_Click">
                                 <Button.Background>
                                     <ImageBrush ImageSource="/GUIResources/topBarButtonBackground.png"/>
                                 </Button.Background>
-
-                                <!-- Padajući meni -->
+                                
                                 <Button.ContextMenu>
-                                    <ContextMenu x:Name="CoursesContextMenu"
-                     Placement="Bottom"
-                     PlacementTarget="{Binding RelativeSource={RelativeSource Self}}">
+                                    <ContextMenu x:Name="CoursesContextMenu" Placement="Bottom">
                                         <ContextMenu.ItemContainerStyle>
                                             <Style TargetType="MenuItem">
                                                 <Setter Property="Foreground" Value="White"/>
@@ -87,31 +79,20 @@
                                             </Style>
                                         </ContextMenu.ItemContainerStyle>
 
-                                        <!-- Opcija 1: Show available courses -->
-                                        <MenuItem Header="Show available courses"
-                      Tag="ShowAllCourses_Click"
-                      Click="TeachingActivity_Click">
+                                        <MenuItem Header="Show available courses" Tag="ShowAllCourses_Click" Click="TeachingActivity_Click">
                                             <MenuItem.Icon>
-                                                <Image Source="/GUIResources/star.png"
-                           Width="16"
-                           Height="16"/>
+                                                <Image Source="/GUIResources/star.png" Width="16" Height="16"/>
                                             </MenuItem.Icon>
                                         </MenuItem>
 
-                                        <!-- Opcija 2: ono što je do sada radilo na CoursesButton_Click -->
-                                        <MenuItem Header="Finished courses"
-                      Click="CoursesButton_Click">
+                                        <MenuItem Header="Finished courses" Click="CoursesButton_Click">
                                             <MenuItem.Icon>
-                                                <Image Source="/GUIResources/star.png"
-                           Width="16"
-                           Height="16"/>
+                                                <Image Source="/GUIResources/star.png" Width="16" Height="16"/>
                                             </MenuItem.Icon>
                                         </MenuItem>
                                     </ContextMenu>
                                 </Button.ContextMenu>
                             </Button>
-
-
 
                             <!-- Exams Button -->
                             <Button x:Name="ExamsButton" Content="Exams" Style="{StaticResource FancyButtonStyle}" FontSize="20" Width="100" Height="35" Click="ExamsButton_Click">
@@ -121,10 +102,35 @@
                             </Button>
 
                             <!-- Reports Button -->
-                            <Button x:Name="ReportsButton" Content="Reports" Style="{StaticResource FancyButtonStyle}" FontSize="20" Width="100" Height="35" Click="ReportsButton_Click">
+                            <Button x:Name="ReportsButton" Content="Reports" Style="{StaticResource FancyButtonStyle}" FontSize="20" Width="100" Height="35" Click="DropDown_Click">
                                 <Button.Background>
                                     <ImageBrush ImageSource="/GUIResources/topBarButtonBackground.png"/>
                                 </Button.Background>
+
+                                <Button.ContextMenu>
+                                    <ContextMenu x:Name="ReportsContextMenu" Placement="Bottom">
+                                        <ContextMenu.ItemContainerStyle>
+                                            <Style TargetType="MenuItem">
+                                                <Setter Property="Foreground" Value="White"/>
+                                                <Setter Property="Background" Value="Gold"/>
+                                                <Setter Property="FontFamily" Value="Script MT Bold"/>
+                                                <Setter Property="FontSize" Value="20"/>
+                                            </Style>
+                                        </ContextMenu.ItemContainerStyle>
+
+                                        <MenuItem Header="Generate penalty report" Tag="penalty" Click="Reports_Click">
+                                            <MenuItem.Icon>
+                                                <Image Source="/GUIResources/star.png" Width="16" Height="16"/>
+                                            </MenuItem.Icon>
+                                        </MenuItem>
+
+                                        <MenuItem Header="Sledeci izvestaj neki" Click="Reports_Click">
+                                            <MenuItem.Icon>
+                                                <Image Source="/GUIResources/star.png" Width="16" Height="16"/>
+                                            </MenuItem.Icon>
+                                        </MenuItem>
+                                    </ContextMenu>
+                                </Button.ContextMenu>
                             </Button>
                         </StackPanel>
 
