@@ -1,7 +1,7 @@
 [
   {
     "PenaltyPoints": 0,
-    "LastPenaltyProcessedAt": "2025-09-01",
+    "LastPenaltyProcessedAt": "2025-10-01",
     "RequestedCourses": [
       1
     ],
@@ -35,11 +35,11 @@
   },
   {
     "PenaltyPoints": 2,
-    "LastPenaltyProcessedAt": "2025-08-01",
+    "LastPenaltyProcessedAt": "2025-10-05",
     "RequestedCourses": [
       1
     ],
-    "ActiveCourseId": -1,
+    "ActiveCourseId": 5,
     "FinishedCourses": [
       {
         "Item1": 0,

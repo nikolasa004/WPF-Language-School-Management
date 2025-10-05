@@ -10,7 +10,7 @@ namespace LangLang.Controller.TeachingActivities
         private Storage<ComplimentedCourses> storage;
         public ComplimentedCoursesController()
         {
-            storage = new Storage<ComplimentedCourses>("complimentedCourses.json");
+            storage = new Storage<ComplimentedCourses>("complimented-courses.json");
             List<ComplimentedCourses> temp = storage.Load();
             if (temp.Count > 0)
                 complimentedCourses = temp[0];
