@@ -6,6 +6,7 @@ using LangLang.Model.TeachingActivities;
 using LangLang.Utils;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -17,13 +18,15 @@ namespace LangLang.Controller.Messages
         private ExamResultsController examResultsController;
         private PenaltyPointsController penaltyPointsController;
         private CourseController courseController;
+        private ProfessorsController professorsController;
 
-        public ReportsController(StudentsController studentsController, ExamResultsController examResultsController, CourseController courseController)
+        public ReportsController(StudentsController studentsController, ExamResultsController examResultsController, CourseController courseController, ProfessorsController professorsController)
         {
             this.studentsController = studentsController;
             this.examResultsController = examResultsController;
             penaltyPointsController = new PenaltyPointsController();
             this.courseController = courseController;
+            this.professorsController = professorsController;
         }
 
         public void GenerateReport(string reportType)
@@ -32,7 +35,98 @@ namespace LangLang.Controller.Messages
             {
                 GeneratePenaltyReport();
             }
+            if (reportType == "average")
+            {
+                GenerateAverageGradesReport();
+            }
         }
+
+        public void GenerateAverageGradesReport()
+        {
+            DateTime today = DateTime.Now;
+            DateTime oneYearAgo = today.AddYears(-1);
+
+            var allCourses = courseController.GetAll();
+            var professors = professorsController.GetAllProfessors();
+
+            Dictionary<int, (double avgKnowledge, double avgActivity)> courseAverages =
+                new Dictionary<int, (double, double)>();
+
+            foreach (var course in allCourses)
+            {
+                if (!DateTime.TryParseExact(course.Date, "dd.MM.yyyy", new CultureInfo("sr-RS"), DateTimeStyles.None, out DateTime startDate))
+                    continue;
+
+                DateTime endDate = startDate.AddDays(course.DurationWeeks * 7);
+                if (endDate < oneYearAgo || endDate > today)
+                    continue; // kurs nije u opsegu poslednjih godinu dana
+
+                double sumKnowledge = 0;
+                double sumActivity = 0;
+                int gradeCount = 0;
+
+                foreach (var kvp in course.Grades)
+                {
+                    var grade = kvp.Value;
+                    sumKnowledge += grade.Knowledge;
+                    sumActivity += grade.Activity;
+                    gradeCount++;
+                }
+
+                if (gradeCount > 0)
+                {
+                    double avgKnowledge = sumKnowledge / gradeCount;
+                    double avgActivity = sumActivity / gradeCount;
+                    courseAverages[course.Id] = (avgKnowledge, avgActivity);
+                }
+            }
+
+           
+            Dictionary<string, double> professorAverages = new Dictionary<string, double>();
+            foreach (var professor in professors)
+            {
+                int sum = professor.AverageRating.Item1;
+                int count = professor.AverageRating.Item2;
+
+                double avg = count > 0 ? (double)sum / count : 0;
+                professorAverages[professor.Email] = avg;
+            }
+
+          
+            MakeAverageGradesPdf(courseAverages, professorAverages);
+        }
+
+        void MakeAverageGradesPdf(
+            Dictionary<int, (double avgKnowledge, double avgActivity)> courseAverages,
+            Dictionary<string, double> professorAverages)
+        {
+            string title = "Average Grades Report";
+            string currentDate = DateTime.Now.ToString("yyyy-MM-dd");
+
+            List<string> lines = new List<string>
+    {
+        $"Report generated on: {currentDate}\n",
+        "Course Average Grades (last 12 months):"
+    };
+
+            foreach (var kvp in courseAverages)
+            {
+                int courseId = kvp.Key;
+                var (avgKnowledge, avgActivity) = kvp.Value;
+                lines.Add($"- Course {courseId}: Knowledge = {avgKnowledge:F2}, Activity = {avgActivity:F2}");
+            }
+
+            lines.Add("\nProfessor Average Ratings:");
+            foreach (var kvp in professorAverages)
+            {
+                lines.Add($"- {kvp.Key}: {kvp.Value:F2}");
+            }
+
+            byte[] document = PDFService.GenerateCenteredReport(title, lines.ToArray());
+            Task.Run(() => SendReportEmail(document, $"AverageGradesReport({currentDate}).pdf"));
+        }
+
+
 
         private void GeneratePenaltyReport()
         {

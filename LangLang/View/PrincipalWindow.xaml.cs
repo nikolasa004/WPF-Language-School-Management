@@ -34,7 +34,7 @@ namespace LangLang.RoleWindows
             _principalCourseView = new PrincipalCourseView(CoursesGrid);
             studentsController = new StudentsController();
             examResultsController = new ExamResultsController();
-            _reportsService = new ReportsController(studentsController, examResultsController,_courseController);
+            _reportsService = new ReportsController(studentsController, examResultsController,_courseController, _professorsController);
             _principalBrowseCourses = new PrincipalBrowseCourses(
                 PrincipalCourseLanguageCombo, PrincipalCourseLevelCombo, PrincipalCourseOnlineCombo,
                 PrincipalCourseWeeksBox, PrincipalCourseFromDate, PrincipalCourseToDate,
