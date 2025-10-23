@@ -20,6 +20,8 @@ namespace LangLang.Model.DAO.Requests
             CourseEnrollmentSubject = new Subject();
         }
 
+        public List<CourseEnrollment> GetAll() => _courseEnrollments;
+
         public CourseEnrollment AddCourseEnrollment(CourseEnrollment courseEnrollment)
         {
             int nextId = _courseEnrollments.Count > 0 ? _courseEnrollments[^1].ID + 1 : 1;

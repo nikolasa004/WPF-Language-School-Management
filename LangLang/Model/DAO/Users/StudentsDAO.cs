@@ -27,6 +27,8 @@ namespace LangLang.Model.DAO.Users
             studentsPenaltyDAO = new StudentsPenaltyDAO(this);
         }
 
+        public List<Student> GetAll()=> _students;
+
         public Student AddStudent(Student student)
         {
             _students.Add(student);

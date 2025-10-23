@@ -36,6 +36,8 @@ namespace LangLang.Model.DAO.TeachingActivity
             _maxId = _courses.Count == 0 ? 0 : _courses.Max(c => c.Id);
         }
 
+        public List<Course> GetAll()=> _courses;
+
         private SortedSet<int> RecalculateFreeIds(List<Course> courses)
         {
             var free = new SortedSet<int>();
