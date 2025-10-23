@@ -1,4 +1,5 @@
 ﻿using ConsoleCRUD.View;
+using ConsoleCRUD.View.Styling;
 
 namespace ConsoleCRUD.Services
 {
@@ -10,23 +11,25 @@ namespace ConsoleCRUD.Services
         private readonly IReadOnlyDictionary<string, Type> _catalog;
         private readonly MenuView _menu;
         private readonly ExecutorCRUD _executor;
+        private readonly RenderOptions option;
 
-        public MenuRouter(IReadOnlyDictionary<string, Type> catalog, IReadOnlyDictionary<Type, object> daoCatalog)
+        public MenuRouter(IReadOnlyDictionary<string, Type> catalog, IReadOnlyDictionary<Type, object> daoCatalog, RenderOptions option)
         {
             _catalog = catalog;
             _menu = new MenuView();
-            _executor= new ExecutorCRUD(catalog, daoCatalog);
+            this.option = option;
+            _executor = new ExecutorCRUD(catalog, daoCatalog,option);
         }
 
         public void Run()
         {
             while (true)
             {
-                var (exitRequested, chosenKey, chosenType) = _menu.ShowEntityMenu(_catalog);
+                var (exitRequested, chosenKey, chosenType) = _menu.ShowEntityMenu(_catalog,option);
                 if (exitRequested) break;
                 if (chosenType == null) continue;
 
-                var (goBack, crudAction) = _menu.ShowCrudMenu(chosenKey!);
+                var (goBack, crudAction) = _menu.ShowCrudMenu(chosenKey!,option);
                 if (goBack) continue;
 
                 _executor.Execute(crudAction, chosenKey!);

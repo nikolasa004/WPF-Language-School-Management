@@ -1,29 +1,30 @@
 ﻿using ConsoleCRUD.Services;
+using ConsoleCRUD.View.Styling;
 
 namespace ConsoleCRUD.View
 {
     //Draws menus for entity selection and CRUD action selection.
     internal sealed class MenuView
     {
-        public (bool exitRequested, string? chosenKey, Type? chosenType) ShowEntityMenu(IReadOnlyDictionary<string, Type> catalog)
+        public (bool exitRequested, string? chosenKey, Type? chosenType) ShowEntityMenu(IReadOnlyDictionary<string, Type> catalog, RenderOptions options)
         {
-            ConsoleUI.ClearWithHeader("CONSOLE CRUD — Izbor entiteta");
+            ConsoleUI.ClearWithHeader("CONSOLE CRUD — Izbor entiteta",options);
 
             if (catalog.Count == 0)
             {
                 Console.WriteLine("Nema registrovanih modela za CRUD.");
                 Console.WriteLine();
-                ConsoleUI.Prompt("Pritisni Enter za izlaz...");
+                ConsoleUI.Prompt("Pritisni Enter za izlaz...", options);
                 return (true, null, null);
             }
 
             var keys = catalog.Keys.OrderBy(k => k, StringComparer.OrdinalIgnoreCase).ToList();
 
-            Console.WriteLine("Odaberi entitet:");
+            ThemedConsole.With(options.Theme,options.Theme.Name,() => Console.WriteLine("Odaberi entitet:"));
             Console.WriteLine(new string('-', 60));
             for (int i = 0; i < keys.Count; i++)
             {
-                Console.WriteLine($"{i + 1,2}) {keys[i]}");
+                ThemedConsole.With(options.Theme, options.Theme.Value, () =>Console.WriteLine($"{i + 1,2}) {keys[i]}"));
             }
             Console.WriteLine(new string('-', 60));
             Console.WriteLine("X) Izlaz iz aplikacije");
@@ -46,20 +47,20 @@ namespace ConsoleCRUD.View
                     return (false, chosenKey, chosenType);
                 }
 
-                ConsoleUI.Warn("Nevažeći izbor. Pokušaj ponovo (1..N ili X za izlaz).");
+                ConsoleUI.Warn("Nevažeći izbor. Pokušaj ponovo (1..N ili X za izlaz).", options);
             }
         }
 
-        public (bool goBack, CrudAction action) ShowCrudMenu(string chosenKey)
+        public (bool goBack, CrudAction action) ShowCrudMenu(string chosenKey, RenderOptions options)
         {
-            ConsoleUI.ClearWithHeader($"Entitet: {chosenKey} — Izbor operacije");
+            ConsoleUI.ClearWithHeader($"Entitet: {chosenKey} — Izbor operacije",options);
 
-            Console.WriteLine("Odaberi CRUD operaciju:");
+            ThemedConsole.With(options.Theme,options.Theme.Name,() => Console.WriteLine("Odaberi CRUD operaciju:"));
             Console.WriteLine(new string('-', 60));
-            Console.WriteLine("A) Add (Create)");
-            Console.WriteLine("L) List (Read)");
-            Console.WriteLine("E) Edit (Update)");
-            Console.WriteLine("D) Delete");
+            ThemedConsole.With(options.Theme, options.Theme.Value, () => Console.WriteLine("A) Add (Create)"));
+            ThemedConsole.With(options.Theme, options.Theme.Value, () => Console.WriteLine("L) List (Read)"));
+            ThemedConsole.With(options.Theme, options.Theme.Value, () => Console.WriteLine("E) Edit (Update)"));
+            ThemedConsole.With(options.Theme, options.Theme.Value, () => Console.WriteLine("D) Delete"));
             Console.WriteLine(new string('-', 60));
             Console.WriteLine("B) Back (nazad na izbor entiteta)");
             Console.WriteLine();
@@ -79,7 +80,7 @@ namespace ConsoleCRUD.View
                     case "D": return (false, CrudAction.Delete);
                     case "B": return (true, default);
                     default:
-                        ConsoleUI.Warn("Nevažeći izbor. Dozvoljeno: A/L/E/D ili B za nazad.");
+                        ConsoleUI.Warn("Nevažeći izbor. Dozvoljeno: A/L/E/D ili B za nazad.", options);
                         break;
                 }
             }

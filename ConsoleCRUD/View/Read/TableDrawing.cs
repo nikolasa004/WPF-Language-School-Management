@@ -1,4 +1,5 @@
 ﻿using ConsoleCRUD.Services.Read;
+using ConsoleCRUD.View.Styling;
 
 namespace ConsoleCRUD.View.Read
 {
@@ -44,50 +45,38 @@ namespace ConsoleCRUD.View.Read
             return pages;
         }
 
-        public static void DrawPage(List<Column> cols, List<string[]> data, int[] widths, Page page)
+        public static void DrawPage(List<Column> cols, List<string[]> data, int[] widths, Page page, RenderOptions options)
         {
             var idxs = Enumerable.Range(page.Start, page.Count).ToArray();
-            PrintSep(widths, idxs);
-            PrintHeader(cols, widths, idxs);
-            PrintSep(widths, idxs);
-            foreach (var r in data) PrintRow(cols, widths, idxs, r);
-            PrintSep(widths, idxs);
-        }
 
-        private static void PrintHeader(List<Column> cols, int[] widths, int[] idxs)
-        {
-            Console.Write("|");
-            foreach (var idx in idxs) PrintCell(cols[idx].Header, widths[idx], false);
-            Console.WriteLine();
-        }
-
-        private static void PrintRow(List<Column> cols, int[] widths, int[] idxs, string[] r)
-        {
-            Console.Write("|");
-            foreach (var idx in idxs) PrintCell(r[idx] ?? "", widths[idx], cols[idx].AlignRight);
-            Console.WriteLine();
-        }
-
-        private static void PrintSep(int[] widths, int[] idxs)
-        {
-            Console.Write("+");
-            foreach (var idx in idxs)
+            ThemedConsole.With(options.Theme, options.Theme.Header, () =>
             {
-                Console.Write(new string('-', widths[idx] + CellPadding * 2));
-                Console.Write("+");
-            }
-            Console.WriteLine();
+                options.Skin.Top(SelectWidths(widths, idxs));
+                options.Skin.RowStart();
+                foreach (var idx in idxs)
+                    options.Skin.Cell(cols[idx].Header, widths[idx], alignRight: false);
+                options.Skin.RowEnd();
+                options.Skin.Mid(SelectWidths(widths, idxs));
+            });
+
+            ThemedConsole.With(options.Theme, options.Theme.Value, () =>
+            {
+                foreach (var r in data)
+                {
+                    options.Skin.RowStart();
+                    foreach (var idx in idxs)
+                        options.Skin.Cell(r[idx] ?? "", widths[idx], cols[idx].AlignRight);
+                    options.Skin.RowEnd();
+                }
+                options.Skin.Bot(SelectWidths(widths, idxs));
+            });
         }
 
-        private static void PrintCell(string text, int width, bool alignRight)
+        private static IReadOnlyList<int> SelectWidths(int[] widths, int[] idxs)
         {
-            var t =Trunc(text, width);
-            var pad = width - t.Length;
-            if (alignRight)
-                Console.Write(new string(' ', CellPadding + pad) + t + new string(' ', CellPadding));
-            else
-                Console.Write(new string(' ', CellPadding) + t + new string(' ', CellPadding + pad));
-            Console.Write("|");
+            var list = new List<int>(idxs.Length);
+            foreach (var i in idxs) list.Add(widths[i]);
+            return list;
         }
 
         public static string Trunc(string s, int width)
