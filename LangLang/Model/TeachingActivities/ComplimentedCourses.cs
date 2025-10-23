@@ -4,7 +4,7 @@ using System.Text.Json;
 
 namespace LangLang.Model.TeachingActivities
 {
-    class ComplimentedCourses:ISerializable
+    public class ComplimentedCourses:ISerializable
     {
         public List<int> Courses { get; set; }
         public ComplimentedCourses() { Courses = new List<int>(); }

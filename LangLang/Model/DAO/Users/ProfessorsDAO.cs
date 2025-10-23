@@ -20,6 +20,8 @@ namespace LangLang.Model.DAO.Users
             ProfessorSubject = new Subject();
         }
 
+        public List<Professor> GetAll() => _professors;
+
         public Professor AddProfessor(Professor professor)
         {
             _professors.Add(professor);

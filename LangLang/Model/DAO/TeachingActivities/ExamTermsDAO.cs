@@ -30,6 +30,9 @@ namespace LangLang.Model.DAO.TeachingActivity
             _freeIds = RecalculateFreeIds(_examTerms);
             _maxId = _examTerms.Count == 0 ? 0 : _examTerms.Max(t => t.Id);
         }
+
+        public List<ExamTerm> GetAll() => _examTerms;
+
         private SortedSet<int> RecalculateFreeIds(List<ExamTerm> terms)
         {
             var free = new SortedSet<int>();

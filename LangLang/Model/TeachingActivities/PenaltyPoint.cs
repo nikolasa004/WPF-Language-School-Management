@@ -2,7 +2,7 @@
 
 namespace LangLang.Model.TeachingActivities
 {
-    internal class PenaltyPoint:ISerializable
+    public class PenaltyPoint:ISerializable
     {
         public int Id { get; set; }
         public string StudentId { get; set; }
