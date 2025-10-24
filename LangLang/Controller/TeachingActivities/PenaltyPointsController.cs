@@ -3,6 +3,7 @@ using LangLang.Model.TeachingActivities;
 using System.Collections.Generic;
 using LangLang.SQL.Repositories;
 using LangLang.Model.TeachingActivities;
+using System.Linq;
 
 namespace LangLang.Controller.TeachingActivities
 {
@@ -24,7 +25,10 @@ namespace LangLang.Controller.TeachingActivities
         {
             _penaltyPointsDAO = new PenaltyPointsDAO();
         }
-
+        public List<PenaltyPoint> GetByCourseIdSQL(int courseId)
+        {
+            return _sqlRepo.GetAll().Where(p => p.CourseId == courseId).ToList();
+        }
         public void AddPenaltyPoint(PenaltyPoint penaltyPoint)
         {
             _penaltyPointsDAO.AddPenaltyPoint(penaltyPoint);

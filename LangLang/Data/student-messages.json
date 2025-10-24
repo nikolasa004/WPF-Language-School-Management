@@ -25,5 +25,23 @@
     "Body": "smiri se",
     "Date": "2025-10-24",
     "IsRead": false
+  },
+  {
+    "Id": 13,
+    "RecipientId": "student@gmail.com",
+    "SenderId": "profesor@gmail.com",
+    "Title": "You have received a penalty point in Italian A1",
+    "Body": "123",
+    "Date": "2025-10-24",
+    "IsRead": false
+  },
+  {
+    "Id": 14,
+    "RecipientId": "student@gmail.com",
+    "SenderId": "profesor@gmail.com",
+    "Title": "You have received a penalty point in Italian A1",
+    "Body": "432",
+    "Date": "2025-10-24",
+    "IsRead": false
   }
 ]

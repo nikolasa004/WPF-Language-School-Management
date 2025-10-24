@@ -18,10 +18,8 @@ namespace LangLang.View.ProfessorViewModules
         private readonly StudentsController _studentController;
         private readonly MessagesController _messagesController;
         private readonly PenaltyPointsController _penaltyPointsController = new();
-
         private List<StudentDTO> _allStudents;
         private readonly ObservableCollection<StudentDTO> _studentsObservable = new();
-
         private DataGrid StudentsGrid;
         private int _currentCourseId;
         private CourseDTO _currentCourseDTO;
@@ -43,7 +41,6 @@ namespace LangLang.View.ProfessorViewModules
             StudentsGrid.ItemsSource = _studentsObservable;
             LoadStudents();
         }
-
         private void LoadStudents()
         {
             _studentsObservable.Clear();
@@ -53,7 +50,6 @@ namespace LangLang.View.ProfessorViewModules
                     _studentsObservable.Add(student);
             }
         }
-
         public void ExpelStudent_Click(object sender, RoutedEventArgs e)
         {
             if (sender is Button btn && btn.DataContext is StudentDTO student)
@@ -64,18 +60,15 @@ namespace LangLang.View.ProfessorViewModules
                     "Confirm Expel",
                     MessageBoxButton.YesNo,
                     MessageBoxImage.Warning);
-
                 if (result == MessageBoxResult.Yes)
                 {
-                    
                     student.ActiveCourseId = -1;
                     student.PenaltyPoints += 1;
-
                     _studentController.RemoveFromCourse(student.Email, _currentCourseId);
-                    _studentController.AddPenaltyPoint(student.Email); 
-
+                    _studentController.AddPenaltyPoint(student.Email);
+                    PenaltyPoint penaltyPoint = new PenaltyPoint(student.Email, _currentCourseDTO!.Id);
+                    _penaltyPointsController.AddPenaltyPointSQL(penaltyPoint);
                     _studentsObservable.Remove(student);
-
                     string courseInfo = _currentCourseDTO != null
                         ? $"Course: {_currentCourseDTO.Language} {_currentCourseDTO.Level}\n" +
                           $"Start Date: {_currentCourseDTO.Date}\n" +
@@ -96,7 +89,6 @@ namespace LangLang.View.ProfessorViewModules
                 }
             }
         }
-
         public void AddPenalty_Click(object sender, RoutedEventArgs e)
         {
             if (sender is Button btn && btn.DataContext is StudentDTO student)
@@ -106,10 +98,8 @@ namespace LangLang.View.ProfessorViewModules
                     "Confirm Penalty",
                     MessageBoxButton.YesNo,
                     MessageBoxImage.Warning);
-
                 if (result == MessageBoxResult.Yes)
                 {
-      
                     student.PenaltyPoints += 1;
                     _studentController.AddPenaltyPoint(student.Email);
 
@@ -131,15 +121,14 @@ namespace LangLang.View.ProfessorViewModules
                     );
                     messageWindow.Show();
 
-                    PenaltyPoint penaltyPoint = new PenaltyPoint(-1, student.Email, _currentCourseDTO!.Id);
-                    _penaltyPointsController.AddPenaltyPoint(penaltyPoint);
+                    PenaltyPoint penaltyPoint = new PenaltyPoint(student.Email, _currentCourseDTO!.Id);
+                    //_penaltyPointsController.AddPenaltyPoint(penaltyPoint);
                     _penaltyPointsController.AddPenaltyPointSQL(penaltyPoint);
 
                     RefreshStudents(_allStudents);
                 }
             }
         }
-
         public void ViewUnenrollRequest_Click(object sender, RoutedEventArgs e)
         {
             if (sender is Button btn && btn.DataContext is StudentDTO student)
@@ -147,13 +136,10 @@ namespace LangLang.View.ProfessorViewModules
                 MessageBox.Show($"ViewUnenrollRequest_Click for {student.FirstName} {student.LastName} (to be implemented).");
             }
         }
-
         public void RefreshStudents(List<StudentDTO> updatedStudents)
         {
             _allStudents = updatedStudents ?? new List<StudentDTO>();
             LoadStudents();
         }
-
-
     }
 }

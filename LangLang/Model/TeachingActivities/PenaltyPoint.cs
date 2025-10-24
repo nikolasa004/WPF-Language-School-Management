@@ -1,10 +1,16 @@
-﻿using LangLang.Model.Users;
+﻿using System.ComponentModel.DataAnnotations.Schema;
+using System.ComponentModel.DataAnnotations;
+using LangLang.Model.Users;
 using LangLang.Storage.Serialization;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace LangLang.Model.TeachingActivities
 {
     public class PenaltyPoint:ISerializable
     {
+        [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
         public string StudentId { get; set; }
         public int CourseId { get; set; }
@@ -16,9 +22,9 @@ namespace LangLang.Model.TeachingActivities
             StudentId = string.Empty;
             CourseId = -1;
         }
-        public PenaltyPoint(int id, string studentId, int courseId)
+        public PenaltyPoint(string studentId, int courseId)
         {
-            Id = id;
+           
             StudentId = studentId;
             CourseId = courseId;
 
