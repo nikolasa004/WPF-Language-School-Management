@@ -1,7 +1,17 @@
 [
-  {
-    "Id": 1,
-    "StudentId": "student@gmail.com",
-    "CourseId": 5
-  }
+    {
+        "Id": 1,
+        "StudentId": "student@gmail.com",
+        "CourseId": 5
+    },
+    {
+        "Id": 2,
+        "StudentId": "student@gmail.com",
+        "CourseId": 3
+    },
+    {
+        "Id": 3,
+        "StudentId": "student@gmail.com",
+        "CourseId": 4
+    }
 ]

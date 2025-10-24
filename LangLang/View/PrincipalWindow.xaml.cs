@@ -21,6 +21,7 @@ namespace LangLang.RoleWindows
         private readonly CourseController _courseController = new CourseController();
         private PrincipalBrowseCourses _principalBrowseCourses;
         private StudentsController studentsController;
+        private ExamTermsController examTermsController;
         private ExamResultsController examResultsController;
 
         private ReportsController _reportsService;
@@ -33,8 +34,9 @@ namespace LangLang.RoleWindows
             _professorManager = new PrincipalProfessorManager(_professorsController);
             _principalCourseView = new PrincipalCourseView(CoursesGrid);
             studentsController = new StudentsController();
+            examTermsController = new ExamTermsController();
             examResultsController = new ExamResultsController();
-            _reportsService = new ReportsController(studentsController, examResultsController,_courseController, _professorsController);
+            _reportsService = new ReportsController(studentsController, examResultsController, _courseController, examTermsController, _professorsController);
             _principalBrowseCourses = new PrincipalBrowseCourses(
                 PrincipalCourseLanguageCombo, PrincipalCourseLevelCombo, PrincipalCourseOnlineCombo,
                 PrincipalCourseWeeksBox, PrincipalCourseFromDate, PrincipalCourseToDate,

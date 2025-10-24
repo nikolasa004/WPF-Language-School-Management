@@ -10,11 +10,13 @@ namespace LangLang.Controller.Messages
     {
         private readonly PenaltyReportService penaltyReportService;
         private readonly AverageGradesReportService averageGradesReportService;
+        private readonly LanguageStatisticsReportService languageStatisticsReportService;
 
         public ReportsController(
             StudentsController studentsController,
             ExamResultsController examResultsController,
             CourseController courseController,
+            ExamTermsController examTermsController,
             ProfessorsController professorsController)
         {
             penaltyReportService = new PenaltyReportService(
@@ -27,6 +29,12 @@ namespace LangLang.Controller.Messages
                 courseController,
                 professorsController
             );
+            languageStatisticsReportService = new LanguageStatisticsReportService(
+                courseController,
+                examTermsController,
+                studentsController,
+                examResultsController
+            );
         }
 
         public void GenerateReport(string reportType)
@@ -38,6 +46,9 @@ namespace LangLang.Controller.Messages
                     break;
                 case "average":
                     averageGradesReportService.GenerateReport();
+                    break;
+                case "language":
+                    languageStatisticsReportService.GenerateReport();
                     break;
                 default:
                     throw new ArgumentException($"Unknown report type: {reportType}");
