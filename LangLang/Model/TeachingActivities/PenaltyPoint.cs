@@ -1,4 +1,5 @@
-﻿using LangLang.Storage.Serialization;
+﻿using LangLang.Model.Users;
+using LangLang.Storage.Serialization;
 
 namespace LangLang.Model.TeachingActivities
 {
@@ -7,6 +8,7 @@ namespace LangLang.Model.TeachingActivities
         public int Id { get; set; }
         public string StudentId { get; set; }
         public int CourseId { get; set; }
+
 
         public PenaltyPoint()
         {

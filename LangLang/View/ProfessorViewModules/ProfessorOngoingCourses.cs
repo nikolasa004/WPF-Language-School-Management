@@ -133,6 +133,7 @@ namespace LangLang.View.ProfessorViewModules
 
                     PenaltyPoint penaltyPoint = new PenaltyPoint(-1, student.Email, _currentCourseDTO!.Id);
                     _penaltyPointsController.AddPenaltyPoint(penaltyPoint);
+                    _penaltyPointsController.AddPenaltyPointSQL(penaltyPoint);
 
                     RefreshStudents(_allStudents);
                 }

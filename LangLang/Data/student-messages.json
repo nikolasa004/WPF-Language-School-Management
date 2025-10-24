@@ -16,5 +16,14 @@
     "Body": "aaaa",
     "Date": "2025-10-05",
     "IsRead": false
+  },
+  {
+    "Id": 12,
+    "RecipientId": "student@gmail.com",
+    "SenderId": "profesor@gmail.com",
+    "Title": "You have received a penalty point in Italian A1",
+    "Body": "smiri se",
+    "Date": "2025-10-24",
+    "IsRead": false
   }
 ]
