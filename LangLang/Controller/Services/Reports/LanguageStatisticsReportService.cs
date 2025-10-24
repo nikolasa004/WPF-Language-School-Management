@@ -11,8 +11,9 @@ using LangLang.Model.Enums;
 
 namespace LangLang.Controller.Messages
 {
-    internal class LanguageStatisticsReportService
+    internal class LanguageStatisticsReportService : IReportService
     {
+        public string Key => "language";
         private readonly CourseController courseController;
         private readonly ExamTermsController examController;
         private readonly PenaltyPointsController penaltyPointsController;
