@@ -3,7 +3,6 @@ using LangLang.Controller.TeachingActivities;
 using LangLang.Controller.Users;
 using LangLang.Controller.Services.Reports;
 
-
 namespace LangLang.Controller.Messages
 {
     internal class ReportsController
@@ -11,6 +10,7 @@ namespace LangLang.Controller.Messages
         private readonly PenaltyReportService penaltyReportService;
         private readonly AverageGradesReportService averageGradesReportService;
         private readonly LanguageStatisticsReportService languageStatisticsReportService;
+        private readonly ExamResultsReportService examResultsReportService;
 
         public ReportsController(
             StudentsController studentsController,
@@ -29,11 +29,17 @@ namespace LangLang.Controller.Messages
                 courseController,
                 professorsController
             );
+
             languageStatisticsReportService = new LanguageStatisticsReportService(
                 courseController,
                 examTermsController,
                 studentsController,
                 examResultsController
+            );
+
+            examResultsReportService = new ExamResultsReportService(
+                examResultsController,
+                examTermsController
             );
         }
 
@@ -44,12 +50,19 @@ namespace LangLang.Controller.Messages
                 case "penalty":
                     penaltyReportService.GenerateReport();
                     break;
+
                 case "average":
                     averageGradesReportService.GenerateReport();
                     break;
+
                 case "language":
                     languageStatisticsReportService.GenerateReport();
                     break;
+
+                case "exam-results":
+                    examResultsReportService.GenerateReport();
+                    break;
+
                 default:
                     throw new ArgumentException($"Unknown report type: {reportType}");
             }
