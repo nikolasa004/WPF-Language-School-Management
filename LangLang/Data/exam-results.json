@@ -1,14 +1,14 @@
 [
   {
     "Id": 1,
-    "ExamId": 0,
+    "ExamId": 1,
     "StudentId": "student@gmail.com",
-    "ReadingPoints": 30,
+    "ReadingPoints": 50,
     "WritingPoints": 30,
-    "ListeningPoints": 20,
-    "SpeakingPoints": 25,
-    "TotalPoints": 105,
-    "Passed": false
+    "ListeningPoints": 50,
+    "SpeakingPoints": 35,
+    "TotalPoints": 165,
+    "Passed": true
   },
   {
     "Id": 3,
