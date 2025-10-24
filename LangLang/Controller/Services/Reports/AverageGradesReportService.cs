@@ -7,8 +7,9 @@ using System.Threading.Tasks;
 
 namespace LangLang.Controller.Services.Reports
 {
-    internal class AverageGradesReportService
+    internal class AverageGradesReportService : IReportService
     {
+        public string Key => "average";
         private readonly CourseController courseController;
         private readonly ProfessorsController professorsController;
 

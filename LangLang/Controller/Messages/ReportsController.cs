@@ -1,16 +1,15 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using LangLang.Controller.Services.Reports;
 using LangLang.Controller.TeachingActivities;
 using LangLang.Controller.Users;
-using LangLang.Controller.Services.Reports;
 
 namespace LangLang.Controller.Messages
 {
     internal class ReportsController
     {
-        private readonly PenaltyReportService penaltyReportService;
-        private readonly AverageGradesReportService averageGradesReportService;
-        private readonly LanguageStatisticsReportService languageStatisticsReportService;
-        private readonly ExamResultsReportService examResultsReportService;
+        private readonly Dictionary<string, IReportService> _reportServices;
 
         public ReportsController(
             StudentsController studentsController,
@@ -19,52 +18,30 @@ namespace LangLang.Controller.Messages
             ExamTermsController examTermsController,
             ProfessorsController professorsController)
         {
-            penaltyReportService = new PenaltyReportService(
-                studentsController,
-                examResultsController,
-                courseController
-            );
+            var services = new List<IReportService>
+            {
+                new PenaltyReportService(studentsController, examResultsController, courseController),
+                new AverageGradesReportService(courseController, professorsController),
+                new LanguageStatisticsReportService(courseController, examTermsController, studentsController, examResultsController),
+                new ExamResultsReportService(examResultsController, examTermsController)
+            };
 
-            averageGradesReportService = new AverageGradesReportService(
-                courseController,
-                professorsController
-            );
-
-            languageStatisticsReportService = new LanguageStatisticsReportService(
-                courseController,
-                examTermsController,
-                studentsController,
-                examResultsController
-            );
-
-            examResultsReportService = new ExamResultsReportService(
-                examResultsController,
-                examTermsController
+            _reportServices = services.ToDictionary(
+                reportService => reportService.Key, 
+                reportService => reportService,
+                StringComparer.OrdinalIgnoreCase
             );
         }
 
         public void GenerateReport(string reportType)
         {
-            switch (reportType.ToLower())
+            if (_reportServices.TryGetValue(reportType, out var service))
             {
-                case "penalty":
-                    penaltyReportService.GenerateReport();
-                    break;
-
-                case "average":
-                    averageGradesReportService.GenerateReport();
-                    break;
-
-                case "language":
-                    languageStatisticsReportService.GenerateReport();
-                    break;
-
-                case "exam-results":
-                    examResultsReportService.GenerateReport();
-                    break;
-
-                default:
-                    throw new ArgumentException($"Unknown report type: {reportType}");
+                service.GenerateReport();
+            }
+            else
+            {
+                throw new ArgumentException($"Unknown report type: {reportType}");
             }
         }
     }

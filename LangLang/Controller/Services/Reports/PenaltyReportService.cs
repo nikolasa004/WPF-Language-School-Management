@@ -9,8 +9,9 @@ using System.Threading.Tasks;
 
 namespace LangLang.Controller.Services.Reports
 {
-    internal class PenaltyReportService
+    internal class PenaltyReportService : IReportService
     {
+        public string Key => "penalty";
         private readonly StudentsController studentsController;
         private readonly ExamResultsController examResultsController;
         private readonly PenaltyPointsController penaltyPointsController;
