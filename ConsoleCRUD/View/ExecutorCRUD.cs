@@ -1,10 +1,10 @@
 ﻿using ConsoleCRUD.Services;
 using ConsoleCRUD.Services.Read;
+using ConsoleCRUD.Services.Write;
 using ConsoleCRUD.View.Styling;
 
 namespace ConsoleCRUD.View
 {
-    //Executes chosen CRUD operation on selected entity type.
     internal class ExecutorCRUD
     {
         private readonly IReadOnlyDictionary<string, Type> _typeCatalog;
@@ -39,15 +39,15 @@ namespace ConsoleCRUD.View
                     break;
 
                 case CrudAction.Add:
-                    ConsoleUI.WriteInfo("ADD: (stub) Ovde će ići kreiranje entiteta.", option);
+                    AddMethod.DoAdd(modelType, daoInstance, option);
                     break;
 
                 case CrudAction.Edit:
-                    ConsoleUI.WriteInfo("EDIT: (stub) Ovde će ići ažuriranje entiteta.", option);
+                    EditMethod.DoEdit(modelType, daoInstance, option);
                     break;
 
                 case CrudAction.Delete:
-                    ConsoleUI.WriteInfo("DELETE: (stub) Ovde će ići brisanje entiteta.", option);
+                    DeleteMethod.DoDelete(modelType, daoInstance, option);
                     break;
 
                 default:

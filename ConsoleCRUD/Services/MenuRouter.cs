@@ -1,5 +1,6 @@
 ﻿using ConsoleCRUD.View;
 using ConsoleCRUD.View.Styling;
+using ConsoleCRUD;
 
 namespace ConsoleCRUD.Services
 {
@@ -12,6 +13,10 @@ namespace ConsoleCRUD.Services
         private readonly MenuView _menu;
         private readonly ExecutorCRUD _executor;
         private readonly RenderOptions option;
+        static MenuRouter()
+        {
+            PromptRulesConfig.RegisterDefaults();
+        }
 
         public MenuRouter(IReadOnlyDictionary<string, Type> catalog, IReadOnlyDictionary<Type, object> daoCatalog, RenderOptions option)
         {

@@ -30,11 +30,27 @@ namespace LangLang.Model.DAO.TeachingActivity
             _freeIds = RecalculateFreeIds(_examTerms);
             _maxId = _examTerms.Count == 0 ? 0 : _examTerms.Max(t => t.Id);
         }
-
         public List<ExamTerm> GetAll() => _examTerms;
-
-        private SortedSet<int> RecalculateFreeIds(List<ExamTerm> terms)
-        {
+        public void Add(ExamTerm t) => AddExamTerm(t);
+        public void Update(ExamTerm t) => UpdateExamTerm(t);
+        public void Remove(ExamTerm t) => RemoveExamTerm(t.Id);
+        public bool RemoveById(int id) => RemoveExamTerm(id) != null;
+        public int NextId() => GenerateId();
+        public void SaveChanges() => SaveAllIso();
+        public void Load(){
+            var fresh = _storage.Load();
+            _examTerms.Clear();
+            foreach (var t in fresh)
+            {
+                if (!string.IsNullOrWhiteSpace(t.Date))
+                    t.Date = ToSrOrKeep(t.Date);
+                _examTerms.Add(t);
+            }
+            var free = RecalculateFreeIds(_examTerms);
+            _freeIds.Clear();
+            foreach (var id in free) _freeIds.Add(id);
+            _maxId = _examTerms.Count == 0 ? 0 : _examTerms.Max(x => x.Id);}
+        private SortedSet<int> RecalculateFreeIds(List<ExamTerm> terms){
             var free = new SortedSet<int>();
             if (terms.Count == 0) return free;
             int maxId = terms.Max(t => t.Id);
@@ -43,18 +59,15 @@ namespace LangLang.Model.DAO.TeachingActivity
                 if (!used.Contains(i)) free.Add(i);
             return free;
         }
-        private int GenerateId()
-        {
+        private int GenerateId(){
             if (_freeIds.Count > 0)
             {
                 int id = _freeIds.Min;
                 _freeIds.Remove(id);
                 return id;
             }
-            return ++_maxId;
-        }
-        public ExamTerm AddExamTerm(ExamTerm term)
-        {
+            return ++_maxId;}
+        public ExamTerm AddExamTerm(ExamTerm term){
             if (term.Id == 0)
                 term.Id = GenerateId();
             if (!string.IsNullOrWhiteSpace(term.Date))
@@ -62,10 +75,8 @@ namespace LangLang.Model.DAO.TeachingActivity
             _examTerms.Add(term);
             SaveAllIso(); 
             ExamTermSubject.NotifyObservers();
-            return term;
-        }
-        public ExamTerm? UpdateExamTerm(ExamTerm term)
-        {
+            return term;}
+        public ExamTerm? UpdateExamTerm(ExamTerm term){
             var old = GetExamTermById(term.Id);
             if (old is null) return null;
             old.ProfessorId = term.ProfessorId;
@@ -81,34 +92,27 @@ namespace LangLang.Model.DAO.TeachingActivity
             old.IsArchived = term.IsArchived;
             SaveAllIso(); 
             ExamTermSubject.NotifyObservers();
-            return old;
-        }
-        public ExamTerm? RemoveExamTerm(int id)
-        {
+            return old;}
+        public ExamTerm? RemoveExamTerm(int id){
             var term = GetExamTermById(id);
             if (term is null) return null;
             _examTerms.Remove(term);
             _freeIds.Add(id);
             SaveAllIso();
             ExamTermSubject.NotifyObservers();
-            return term;
-        }
+            return term;}
         public ExamTerm? GetExamTermById(int id)
             => _examTerms.Find(t => t.Id == id);
         public List<ExamTerm> GetAllExamTerms()
             => _examTerms;
         public List<ExamTerm> GetExamTermsByProfessor(string professorId)
             => _examTerms.FindAll(t => t.ProfessorId == professorId);
-        private void SaveAllIso()
-        {
+        private void SaveAllIso(){
             var isoCopy = _examTerms.Select(CloneWithIsoDate).ToList();
-            _storage.Save(isoCopy);
-        }
-        private static ExamTerm CloneWithIsoDate(ExamTerm src)
-        {
+            _storage.Save(isoCopy);}
+        private static ExamTerm CloneWithIsoDate(ExamTerm src){
             return new ExamTerm
-            {
-                Id = src.Id,
+            {   Id = src.Id,
                 ProfessorId = src.ProfessorId,
                 Language = src.Language,
                 Level = src.Level,
@@ -119,12 +123,8 @@ namespace LangLang.Model.DAO.TeachingActivity
                 Duration = src.Duration,
                 RoomId = src.RoomId,
                 IsLocked = src.IsLocked,
-                IsArchived = src.IsArchived
-
-            };
-        }
-        private static string ToIsoOrKeep(string? date)
-        {
+                IsArchived = src.IsArchived};}
+        private static string ToIsoOrKeep(string? date){
             if (string.IsNullOrWhiteSpace(date)) return date ?? string.Empty;
             if (DateTime.TryParseExact(date, IsoDateFmt, CultureInfo.InvariantCulture,DateTimeStyles.None, out var isoParsed))
                 return isoParsed.ToString(IsoDateFmt, CultureInfo.InvariantCulture);
@@ -132,20 +132,14 @@ namespace LangLang.Model.DAO.TeachingActivity
                 return srParsed.ToString(IsoDateFmt, CultureInfo.InvariantCulture);
             if (DateTime.TryParse(date, out var any))
                 return any.ToString(IsoDateFmt, CultureInfo.InvariantCulture);
-            return date;
-        }
-        private static string ToSrOrKeep(string? date)
-        {
+            return date;}
+        private static string ToSrOrKeep(string? date){
             if (string.IsNullOrWhiteSpace(date)) return date ?? string.Empty;
             if (DateTime.TryParseExact(date, IsoDateFmt, CultureInfo.InvariantCulture,
                                        DateTimeStyles.None, out var isoParsed))
                 return isoParsed.ToString(SrDateFmt, Sr);
             if (DateTime.TryParseExact(date, SrDateFmt, Sr,DateTimeStyles.None, out var srParsed))
                 return srParsed.ToString(SrDateFmt, Sr);
-            // fallback: probaj bilo koji format i prikaži kao SR
             if (DateTime.TryParse(date, out var any))
                 return any.ToString(SrDateFmt, Sr);
-            return date;
-        }
-    }
-}
+            return date;}}}
