@@ -2,7 +2,6 @@
 
 namespace ConsoleCRUD.View
 {
-    //Contains helper methods for console UI rendering.
     internal static class ConsoleUI
     {
         public static void ClearWithHeader(string title, RenderOptions options)
@@ -41,6 +40,34 @@ namespace ConsoleCRUD.View
         public static void WriteInfo(string msg, RenderOptions options)
         {
             ThemedConsole.With(options.Theme, options.Theme.Info, () => Console.WriteLine(msg));
+        }
+
+        public static void Write(string text, RenderOptions options)
+        {
+            ThemedConsole.With(options.Theme, options.Theme.Value, () => Console.Write(text));
+        }
+
+        public static void WriteLine(string text, RenderOptions options)
+        {
+            ThemedConsole.With(options.Theme, options.Theme.Value, () => Console.WriteLine(text));
+        }
+
+        public static void WriteHeader(string title, RenderOptions options)
+        {
+            var line = new string('─', Math.Max(10, Math.Min(Console.WindowWidth - 4, 72)));
+            Console.WriteLine($"┌{line}┐");
+            ThemedConsole.With(options.Theme, options.Theme.Header, () => WriteCentered(title, options));
+            Console.WriteLine($"└{line}┘");
+        }
+
+        public static void WriteWarn(string message, RenderOptions options)
+        {
+            Warn(message, options);
+        }
+
+        public static void WriteSuccess(string message, RenderOptions options)
+        {
+            ThemedConsole.With(options.Theme, options.Theme.Info, () => Console.WriteLine(message));
         }
     }
 }
