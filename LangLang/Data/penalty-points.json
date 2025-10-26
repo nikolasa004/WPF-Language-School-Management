@@ -6,12 +6,12 @@
   },
   {
     "Id": 2,
-    "StudentId": "student@gmail.com",
+    "StudentId": "student2@gmail.com",
     "CourseId": 3
   },
   {
     "Id": 3,
-    "StudentId": "student@gmail.com",
+    "StudentId": "student2@gmail.com",
     "CourseId": 4
   }
 ]

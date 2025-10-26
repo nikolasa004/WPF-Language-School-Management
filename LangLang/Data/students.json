@@ -34,8 +34,8 @@
     "DateOfRegistration": "2025-09-21"
   },
   {
-    "PenaltyPoints": 2,
-    "LastPenaltyProcessedAt": "2025-10-05",
+    "PenaltyPoints": 0,
+    "LastPenaltyProcessedAt": "2025-10-24",
     "RequestedCourses": [
       1
     ],
@@ -47,14 +47,14 @@
       }
     ],
     "RequestedExamTerms": [],
-    "ActiveExamTermId": -1,
+    "ActiveExamTermId": 24,
     "FinishedExams": [
       {
         "Item1": 0,
         "Item2": 1
       }
     ],
-    "IsExamApplicationLocked": false,
+    "IsExamApplicationLocked": true,
     "FirstName": "Student",
     "LastName": "Studentic",
     "Gender": 0,

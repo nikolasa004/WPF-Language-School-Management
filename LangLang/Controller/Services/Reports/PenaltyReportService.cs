@@ -31,14 +31,32 @@ namespace LangLang.Controller.Services.Reports
         public void GenerateReport()
         {
             var (pointsSum, studentCount) = CalculateAveragePointsByPenalties();
-            var coursesPenalties = CalculateCoursePenalties();
+            var coursesPenalties = CalculateCoursePenaltiesSQL();
 
             byte[] pdfDocument = CreatePdfDocument(pointsSum, studentCount, coursesPenalties);
             string fileName = $"PenaltyReport({DateTime.Now:yyyy-MM-dd}).pdf";
 
             Task.Run(() => ReportEmailService.SendReportEmail(pdfDocument, fileName));
         }
-
+        private Dictionary<int, int> CalculateCoursePenaltiesSQL()
+        {
+            var coursesPenalties = new Dictionary<int, int>();
+            foreach (var course in courseController.GetAll())
+            {
+                var penaltyPoints = penaltyPointsController.GetByCourseIdSQL(course.Id);
+                coursesPenalties[course.Id] = penaltyPoints.Count;
+            }
+            return coursesPenalties;
+        }
+        private Dictionary<int, int> CalculateCoursePenalties()
+        {
+            var coursesPenalties = new Dictionary<int, int>();
+            foreach (var course in courseController.GetAll())
+            {
+                coursesPenalties[course.Id] = penaltyPointsController.GetByCourseId(course.Id).Count;
+            }
+            return coursesPenalties;
+        }
         private (List<int> pointsSum, List<int> studentCount) CalculateAveragePointsByPenalties()
         {
             List<int> pointsSum = new List<int> { 0, 0, 0, 0 };
@@ -57,17 +75,6 @@ namespace LangLang.Controller.Services.Reports
             return (pointsSum, studentCount);
         }
 
-        private Dictionary<int, int> CalculateCoursePenalties()
-        {
-            var coursesPenalties = new Dictionary<int, int>();
-
-            foreach (var course in courseController.GetAll())
-            {
-                coursesPenalties[course.Id] = penaltyPointsController.GetByCourseId(course.Id).Count;
-            }
-
-            return coursesPenalties;
-        }
 
         private byte[] CreatePdfDocument(
             List<int> pointsSum,
@@ -132,7 +139,6 @@ namespace LangLang.Controller.Services.Reports
                     lines[i] = $"Average points for students with {i} penalty points: N/A";
                 }
             }
-
             return lines;
         }
     }
