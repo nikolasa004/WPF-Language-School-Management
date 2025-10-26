@@ -1,23 +1,26 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using LangLang.Model.Enums;
-using System.Windows;
-using System.Xml.Serialization;
+﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json;
+using System.Text.Json.Serialization;
+using LangLang.Model.Enums;
 using LangLang.Storage.Serialization;
 
 namespace LangLang.Model.TeachingActivities
 {
     public class ExamTerm: ProfessorTeachingActivity, ISerializable
     {
+        [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public new int Id { get; set; }
         public bool IsLocked { get; set; }
         public bool IsArchived { get; set; }
+
+        [JsonIgnore]
+        public ICollection<ExamResult> ExamResults { get; set; }
         public ExamTerm() : base() 
         {
-            
+            Id = -1;
             IsLive = true;
             Duration = 240;
             

@@ -2,52 +2,55 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Windows;
 using LangLang.Model.DAO.TeachingActivity;
 using LangLang.Model.TeachingActivities;
+using LangLang.SQL;
+using LangLang.SQL.Repositories;
 namespace LangLang.Controller.TeachingActivities
 {
     public class ExamTermsController
     {
         private readonly ExamTermsDAO _dao;
+        private readonly ExamTermRepository _sqlRepo;
         private static readonly CultureInfo Sr = new("sr-RS");
 
         public ExamTermsController()
         {
             _dao = new ExamTermsDAO();
+            _sqlRepo = new ExamTermRepository();
+
+            using var context = new LangLangContext();
+            context.Database.EnsureCreated();
+            SyncJsonToSqlIfEmpty();
         }
+        private void SyncJsonToSqlIfEmpty()
+        {
+            try
+            {
+                var sqlTerms = _sqlRepo.GetAll();
+                if (sqlTerms == null || sqlTerms.Count == 0)
+                {
+                    var jsonTerms = _dao.GetAllExamTerms();
+                    if (jsonTerms != null && jsonTerms.Count > 0)
+                    {
+                        foreach (var term in jsonTerms)
+                        {
+                            _sqlRepo.Add(term);
+                        }
+                    }
+                }
+            }
+            catch (System.Exception ex)
+            {
+                MessageBox.Show($"Warning: Could not sync exam terms from JSON to database. Error: {ex.Message}",
+                    "Sync Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
+        }
+
         public List<ExamTerm> GetMyExamTerms(string professorId)
             => _dao.GetExamTermsByProfessor(professorId);
-        public List<ExamTerm> SearchMyExamTerms(
-            string professorId,
-            Model.Enums.Language? language,
-            Model.Enums.LanguageLevel? level,
-            DateTime? fromDate,
-            DateTime? toDate)
-        {
-            var items = _dao.GetExamTermsByProfessor(professorId).AsEnumerable();
-            if (language is not null) items = items.Where(t => t.Language == language);
-            if (level is not null) items = items.Where(t => t.Level == level);
-            if (fromDate.HasValue ^ toDate.HasValue)
-            {
-                var exact = (fromDate ?? toDate)!.Value.Date;
-                fromDate = exact;
-                toDate = exact;
-            }
-            if (fromDate.HasValue && toDate.HasValue)
-            {
-                var from = fromDate.Value.Date;
-                var to = toDate.Value.Date;
-                if (from > to) (from, to) = (to, from); 
-                items = items.Where(t =>
-                {
-                    var start = TryGetStartDateTime(t);
-                    if (!start.HasValue) return false;
-                    var d = start.Value.Date;
-                    return d >= from && d <= to;
-                });
-            }
-            return items.OrderBy(t => TryGetStartDateTime(t)).ToList();
-        }
+        
         public List<ExamTerm> SearchExamTerms(List<ExamTerm> input ,Model.Enums.Language? language,Model.Enums.LanguageLevel? level, DateTime? fromDate, DateTime? toDate)
         {
             var items = input.AsEnumerable();

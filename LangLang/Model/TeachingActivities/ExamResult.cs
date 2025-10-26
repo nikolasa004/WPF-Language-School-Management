@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json;
-using LangLang.Model.Users;
+using System.Text.Json.Serialization;
 using LangLang.Storage.Serialization;
 
 namespace LangLang.Model.TeachingActivities
@@ -27,6 +27,11 @@ namespace LangLang.Model.TeachingActivities
             ListeningPoints >= 20 &&  
             SpeakingPoints >= 25 &&   
             TotalPoints >= 160;
+
+
+        [JsonIgnore]
+        [ForeignKey("ExamId")]
+        public ExamTerm? ExamTerm { get; set; }
 
         public ExamResult() { 
             Id  = -1;
