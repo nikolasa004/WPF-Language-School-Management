@@ -1,19 +1,24 @@
-﻿using LangLang.Storage.Serialization;
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json;
+using LangLang.Model.Users;
+using LangLang.Storage.Serialization;
 
 namespace LangLang.Model.TeachingActivities
 {
     public class ExamResult : ISerializable
     {
+        [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
-        public int ExamId { get; set; }     
+
+        public int ExamId { get; set; }
         public string StudentId { get; set; }
 
         public int ReadingPoints { get; set; }
         public int WritingPoints { get; set; }
         public int ListeningPoints { get; set; }
         public int SpeakingPoints { get; set; }
-
         public int TotalPoints => ReadingPoints + WritingPoints + ListeningPoints + SpeakingPoints;
 
         public bool Passed =>
@@ -23,7 +28,16 @@ namespace LangLang.Model.TeachingActivities
             SpeakingPoints >= 25 &&   
             TotalPoints >= 160;
 
-        public ExamResult() { }
+        public ExamResult() { 
+            Id  = -1;
+            ExamId = -1;
+            StudentId = "";
+            ReadingPoints = -1;
+            WritingPoints = -1;
+            ListeningPoints = -1;
+            SpeakingPoints = -1;
+
+        }
 
         public ExamResult(int examId, string studentId, int reading, int writing, int listening, int speaking)
         {

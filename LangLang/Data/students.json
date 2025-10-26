@@ -47,14 +47,14 @@
       }
     ],
     "RequestedExamTerms": [],
-    "ActiveExamTermId": -1,
+    "ActiveExamTermId": 24,
     "FinishedExams": [
       {
         "Item1": 0,
         "Item2": 1
       }
     ],
-    "IsExamApplicationLocked": false,
+    "IsExamApplicationLocked": true,
     "FirstName": "Student",
     "LastName": "Studentic",
     "Gender": 0,

@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using LangLang.Model.TeachingActivities;
 
 namespace LangLang.SQL
@@ -11,11 +6,19 @@ namespace LangLang.SQL
     public class LangLangContext : DbContext
     {
         public DbSet<PenaltyPoint> PenaltyPoints { get; set; }
+        public DbSet<ExamResult> ExamResults { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder options)
         {
-            // SQLite fajl u root direktorijumu projekta
-            options.UseSqlite("Data Source=langlang.db");
+            var connectionString = "Data Source=langlang.db";
+            options.UseSqlite(connectionString, x => x.CommandTimeout(60));
+
+        }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+
         }
     }
 }
