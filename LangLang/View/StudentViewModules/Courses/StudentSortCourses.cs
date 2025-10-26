@@ -98,8 +98,10 @@ namespace LangLang.View.StudentViewModules.Courses
 
             return isLive;
         }
-        public void ApplyFiltersSortAndPage(bool resetPage = true)
+        public int ApplyFiltersSortAndPage(int currentPage=-1, bool resetPage = true)
         {
+            if(currentPage!=-1)
+                _currentPage = currentPage;
             _filtered.Clear();
             _filtered.AddRange(ApplyCurrentFilters(_availableCourses));
             _sorted.Clear();
@@ -118,6 +120,8 @@ namespace LangLang.View.StudentViewModules.Courses
 
             if (CourseLanguageCombo.FindName("PagerTextCourses") is TextBlock pager)
                 pager.Text = $"Page {_currentPage}/{totalPages}  ·  {(_sorted.Count == 1 ? "1 item" : _sorted.Count + " items")}";
+
+            return _currentPage;
         }
         public void CoursesGridSorting(DataGridSortingEventArgs e)
         {
@@ -138,16 +142,18 @@ namespace LangLang.View.StudentViewModules.Courses
             e.Column.SortDirection = _sortDir;
             ApplyFiltersSortAndPage(resetPage: false);
         }
-        public void PageSizeChanged(object sender)
+        public int PageSizeChanged(object sender)
         {
-            if (CoursesGrid == null || !CoursesGrid.IsLoaded) return;
+            if (CoursesGrid == null || !CoursesGrid.IsLoaded) return -1;
 
             if (sender is ComboBox comboBox && comboBox.SelectedItem is ComboBoxItem item && int.TryParse(item.Content?.ToString(), out var pageSize) && pageSize > 0)
             {
                 _pageSize = pageSize;
                 _currentPage = 1;
                 ApplyFiltersSortAndPage(resetPage: true);
+                return _pageSize;
             }
+            return -1;
         }
     }
 }

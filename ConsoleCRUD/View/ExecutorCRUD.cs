@@ -20,20 +20,17 @@ namespace ConsoleCRUD.View
 
         public void Execute(CrudAction operation, string displayKey)
         {
-            if (!_typeCatalog.TryGetValue(displayKey, out var modelType))
-            {
+            if (!_typeCatalog.TryGetValue(displayKey, out var modelType)){
                 ConsoleUI.WriteError($"Ne poznajem entitet '{displayKey}'. (Nije u katalogu tipova)", option);
                 return;
             }
 
-            if (!_daoMap.TryGetValue(modelType, out var daoInstance))
-            {
+            if (!_daoMap.TryGetValue(modelType, out var daoInstance)){
                 ConsoleUI.WriteError($"Nema mapiranog DAO za tip {modelType.FullName}. (Bootstrap ga nije našao)", option);
                 return;
             }
 
-            switch (operation)
-            {
+            switch (operation){
                 case CrudAction.List:
                     GetAllMethod.DoList(modelType, daoInstance, option);
                     break;

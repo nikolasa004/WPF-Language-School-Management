@@ -10,8 +10,7 @@ namespace ConsoleCRUD.View
         {
             ConsoleUI.ClearWithHeader("CONSOLE CRUD — Izbor entiteta",options);
 
-            if (catalog.Count == 0)
-            {
+            if (catalog.Count == 0){
                 Console.WriteLine("Nema registrovanih modela za CRUD.");
                 Console.WriteLine();
                 ConsoleUI.Prompt("Pritisni Enter za izlaz...", options);
@@ -22,30 +21,23 @@ namespace ConsoleCRUD.View
 
             ThemedConsole.With(options.Theme,options.Theme.Name,() => Console.WriteLine("Odaberi entitet:"));
             Console.WriteLine(new string('-', 60));
-            for (int i = 0; i < keys.Count; i++)
-            {
-                ThemedConsole.With(options.Theme, options.Theme.Value, () =>Console.WriteLine($"{i + 1,2}) {keys[i]}"));
-            }
+            for (int i = 0; i < keys.Count; i++){
+                ThemedConsole.With(options.Theme, options.Theme.Value, () =>Console.WriteLine($"{i + 1,2}) {keys[i]}"));}
             Console.WriteLine(new string('-', 60));
-            Console.WriteLine("X) Izlaz iz aplikacije");
-            Console.WriteLine();
+            Console.WriteLine("X) Izlaz iz aplikacije"); Console.WriteLine();
 
-            while (true)
-            {
+            while (true){
                 Console.Write("Unos: ");
                 var input = Console.ReadLine()?.Trim();
 
                 if (string.IsNullOrEmpty(input)) continue;
 
-                if (input.Equals("x", StringComparison.OrdinalIgnoreCase))
-                    return (true, null, null);
+                if (input.Equals("x", StringComparison.OrdinalIgnoreCase)) return (true, null, null);
 
-                if (int.TryParse(input, out int ix) && ix >= 1 && ix <= keys.Count)
-                {
+                if (int.TryParse(input, out int ix) && ix >= 1 && ix <= keys.Count){
                     var chosenKey = keys[ix - 1];
                     var chosenType = catalog[chosenKey];
-                    return (false, chosenKey, chosenType);
-                }
+                    return (false, chosenKey, chosenType);}
 
                 ConsoleUI.Warn("Nevažeći izbor. Pokušaj ponovo (1..N ili X za izlaz).", options);
             }
@@ -65,15 +57,13 @@ namespace ConsoleCRUD.View
             Console.WriteLine("B) Back (nazad na izbor entiteta)");
             Console.WriteLine();
 
-            while (true)
-            {
+            while (true){
                 Console.Write("Unos: ");
                 var input = Console.ReadLine()?.Trim();
 
                 if (string.IsNullOrEmpty(input)) continue;
 
-                switch (input.ToUpperInvariant())
-                {
+                switch (input.ToUpperInvariant()){
                     case "A": return (false, CrudAction.Add);
                     case "L": return (false, CrudAction.List);
                     case "E": return (false, CrudAction.Edit);

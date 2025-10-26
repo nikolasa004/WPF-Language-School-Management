@@ -98,7 +98,7 @@ namespace LangLang.View.StudentViewModules.Courses
 
         public void ApplyFiltersSortAndPage(bool resetPage = true)
         {
-            studentSortCourses.ApplyFiltersSortAndPage(resetPage);
+            studentSortCourses.ApplyFiltersSortAndPage(_currentPage, resetPage);
         }
         public void CoursesGridSorting(DataGridSortingEventArgs e)
         {
@@ -106,7 +106,9 @@ namespace LangLang.View.StudentViewModules.Courses
         }
         public void PageSizeChanged(object sender)
         {
-            studentSortCourses.PageSizeChanged(sender);
+            int newPage=studentSortCourses.PageSizeChanged(sender);
+            if(newPage!=-1)
+                _pageSize = newPage;
         }
         public void PrevPage()
         {

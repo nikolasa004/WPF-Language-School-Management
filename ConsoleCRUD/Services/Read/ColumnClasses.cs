@@ -27,20 +27,13 @@ namespace ConsoleCRUD.Services.Read
         internal static bool IsPrimitiveLike(Type t)
         {
             t = Underlying(t);
-            return t.IsPrimitive || t.IsEnum || t == typeof(string) || t == typeof(decimal)
-                   || t == typeof(DateTime) || t == typeof(DateTimeOffset)
-                   || t == typeof(Guid) || t == typeof(TimeSpan);
+            return t.IsPrimitive || t.IsEnum || t == typeof(string) || t == typeof(decimal) || t == typeof(DateTime) ;
         }
 
         internal static bool IsNumericLike(Type t)
         {
             t = Underlying(t);
-            return t == typeof(byte) || t == typeof(sbyte) ||
-                   t == typeof(short) || t == typeof(ushort) ||
-                   t == typeof(int) || t == typeof(uint) ||
-                   t == typeof(long) || t == typeof(ulong) ||
-                   t == typeof(float) || t == typeof(double) ||
-                   t == typeof(decimal);
+            return t == typeof(int) || t == typeof(long)|| t == typeof(float) || t == typeof(double);
         }
 
         internal static bool IsEnumerableButNotString(Type t)
@@ -83,9 +76,7 @@ namespace ConsoleCRUD.Services.Read
             var t = obj.GetType();
             if (IsPrimitiveLike(t)) return FormatPrimitive(obj);
             return (t.GetProperty("Email")?.GetValue(obj)
-                 ?? t.GetProperty("Ime")?.GetValue(obj)
                  ?? t.GetProperty("Name")?.GetValue(obj)
-                 ?? t.GetProperty("Naziv")?.GetValue(obj)
                  ?? t.GetProperty("Id")?.GetValue(obj))?.ToString() ?? t.Name;
         }
     }

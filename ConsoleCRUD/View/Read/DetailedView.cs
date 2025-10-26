@@ -22,36 +22,27 @@ namespace ConsoleCRUD.View.Read
             if (obj == null) { ThemedConsole.With(options.Theme, options.Theme.Warn, () => Console.WriteLine(indent + "(null)")); return; }
             if (depth < 0) { Console.WriteLine(indent + obj); return; }
 
-            if (TypeValueHelpers.IsPrimitiveLike(t))
-            {
+            if (TypeValueHelpers.IsPrimitiveLike(t)){
                 ThemedConsole.With(options.Theme, options.Theme.Type, () => Console.Write($"[{t.Name}] "));
                 ThemedConsole.With(options.Theme, options.Theme.Value, () => Console.WriteLine(TypeValueHelpers.FormatPrimitive(obj)));
-                return;
-            }
+                return;}
 
-            if (TypeValueHelpers.IsEnumerableButNotString(t))
-            {
+            if (TypeValueHelpers.IsEnumerableButNotString(t)){
                 int i = 0;
-                foreach (var it in (System.Collections.IEnumerable)obj)
-                {
+                foreach (var it in (System.Collections.IEnumerable)obj){
                     var itType = it?.GetType();
                     ThemedConsole.With(options.Theme, options.Theme.Name, () => Console.Write(indent + $"[{i}] "));
                     ThemedConsole.With(options.Theme, options.Theme.Type, () => Console.WriteLine(itType?.Name ?? "null"));
                     if (it != null) BuildDetail(it, itType!, indent + "  ", depth - 1, seen, options);
-                    i++;
-                }
+                    i++;}
                 if (i == 0) ThemedConsole.With(options.Theme, options.Theme.Info, () => Console.WriteLine(indent + "(prazna kolekcija)"));
-                return;
-            }
+                return;}
 
-            if (!t.IsValueType)
-            {
+            if (!t.IsValueType){
                 if (seen.Contains(obj)) { ThemedConsole.With(options.Theme, options.Theme.Warn, () => Console.WriteLine(indent + "(cycle)")); return; }
-                seen.Add(obj);
-            }
+                seen.Add(obj);}
 
-            foreach (var m in GetMembers(t))
-            {
+            foreach (var m in GetMembers(t)){
                 var val = m.Getter(obj);
                 var pt = TypeValueHelpers.Underlying(m.Type);
 
@@ -59,15 +50,11 @@ namespace ConsoleCRUD.View.Read
                 Console.Write(": ");
                 ThemedConsole.With(options.Theme, options.Theme.Type, () => Console.Write($"[{pt.Name}] "));
 
-                if (TypeValueHelpers.IsPrimitiveLike(pt))
-                {
-                    ThemedConsole.With(options.Theme, options.Theme.Value, () => Console.WriteLine(TypeValueHelpers.FormatPrimitive(val)));
-                }
-                else
-                {
+                if (TypeValueHelpers.IsPrimitiveLike(pt)){
+                    ThemedConsole.With(options.Theme, options.Theme.Value, () => Console.WriteLine(TypeValueHelpers.FormatPrimitive(val)));}
+                else{
                     Console.WriteLine();
-                    BuildDetail(val!, pt, indent + "  ", depth - 1, seen, options);
-                }
+                    BuildDetail(val!, pt, indent + "  ", depth - 1, seen, options);}
             }
 
         }

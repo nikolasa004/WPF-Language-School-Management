@@ -9,31 +9,26 @@ namespace ConsoleCRUD.Services
         {
             var result = new Dictionary<Type, object>();
 
-            foreach (var kv in modelCatalog.OrderBy(k => k.Key, StringComparer.OrdinalIgnoreCase))
-            {
+            foreach (var kv in modelCatalog.OrderBy(k => k.Key, StringComparer.OrdinalIgnoreCase)){
                 var displayName = kv.Key;
                 var modelType = kv.Value;
 
                 var daoType = FindDaoType(modelType);
-                if (daoType == null)
-                {
+                if (daoType == null){
                     modelCatalog.Remove(displayName);
                     continue;
                 }
 
                 object? instance = null;
-                try
-                {
+                try{
                     instance = Activator.CreateInstance(daoType);
                 }
-                catch
-                {
+                catch{
                     modelCatalog.Remove(displayName);
                     continue;
                 }
 
-                if (instance == null)
-                {
+                if (instance == null){
                     modelCatalog.Remove(displayName);
                     continue;
                 }
