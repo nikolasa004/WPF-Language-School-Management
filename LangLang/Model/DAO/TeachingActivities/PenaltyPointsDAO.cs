@@ -8,17 +8,36 @@ namespace LangLang.Model.DAO.TeachingActivities
     {
         private readonly List<PenaltyPoint> _penaltyPointsList;
         private readonly Storage<PenaltyPoint> _storage;
-
         public PenaltyPointsDAO()
         {
             _storage = new Storage<PenaltyPoint>("penalty-points.json");
             _penaltyPointsList = _storage.Load();
         }
-
         public List<PenaltyPoint> GetAll()
         {
             return _penaltyPointsList;
         }
+        public void Add(PenaltyPoint p) => AddPenaltyPoint(p);
+        public void Update(PenaltyPoint p)
+        {
+            var existing = GetById(p.Id);
+            if (existing == null) return;
+
+            existing.StudentId = p.StudentId;
+            existing.CourseId = p.CourseId;
+
+            _storage.Save(_penaltyPointsList);
+        }
+        public void Remove(PenaltyPoint p) => RemovePenaltyPoint(p.Id);
+        public bool RemoveById(int id) => RemovePenaltyPoint(id);
+        public void SaveChanges() => _storage.Save(_penaltyPointsList);
+        public void Load()
+        {
+            var fresh = _storage.Load();
+            _penaltyPointsList.Clear();
+            _penaltyPointsList.AddRange(fresh);
+        }
+        public int NextId() => GetNextId();
         int GetNextId()
         {
             if (_penaltyPointsList.Count == 0) return 1;

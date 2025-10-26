@@ -5,7 +5,6 @@ using LangLang.Model.Users;
 using LangLang.Model.Enums;
 using System;
 using LangLang.Model.DAO.Users.DAOHelpers;
-
 namespace LangLang.Model.DAO.Users
 {
     class StudentsDAO
@@ -16,7 +15,6 @@ namespace LangLang.Model.DAO.Users
         private StudentsExamDAO studentsExamDAO;
         private StudentsPenaltyDAO studentsPenaltyDAO;
         public Subject StudentSubject;
-
         public StudentsDAO()
         {
             _storage = new Storage<Student>("students.json");
@@ -26,9 +24,16 @@ namespace LangLang.Model.DAO.Users
             studentsExamDAO = new StudentsExamDAO(this);
             studentsPenaltyDAO = new StudentsPenaltyDAO(this);
         }
-
         public List<Student> GetAll()=> _students;
+        public void Add(Student s) => AddStudent(s);
+        public void Update(Student s) => UpdateStudent(s);
+        public void Remove(Student s) => RemoveStudent(s.Email);
 
+        public void Load(){
+            var fresh = _storage.Load();
+            _students.Clear();
+            _students.AddRange(fresh);
+        }
         public Student AddStudent(Student student)
         {
             _students.Add(student);
@@ -54,7 +59,6 @@ namespace LangLang.Model.DAO.Users
         {
             Student? student = GetStudentById(email);
             if (student == null) return null;
-
             _students.Remove(student);
             SaveChanges();
             return student;
@@ -66,7 +70,6 @@ namespace LangLang.Model.DAO.Users
             _storage.Save(_students);
             StudentSubject.NotifyObservers();
         }
-
         public List<int> GetRequestedCourses(string email)
         {
             return studentsCourseDAO.GetRequestedCourses(email);
@@ -95,7 +98,6 @@ namespace LangLang.Model.DAO.Users
         {
             studentsCourseDAO.RemoveCourseRequest(studentEmail, courseId);
         }
-
         public int ApplyMonthlyPenaltyDecayForAll(DateTime now) => studentsPenaltyDAO.ApplyMonthlyPenaltyDecayForAll(now);
         public void AddPenaltyPoint(string email) => studentsPenaltyDAO.AddPenaltyPoint(email);
 

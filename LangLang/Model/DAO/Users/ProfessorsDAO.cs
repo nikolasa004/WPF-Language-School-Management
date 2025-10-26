@@ -21,6 +21,16 @@ namespace LangLang.Model.DAO.Users
         }
 
         public List<Professor> GetAll() => _professors;
+        public void Add(Professor p) => AddProfessor(p);
+        public void Update(Professor p) => UpdateProfessor(p);
+        public void Remove(Professor p) => RemoveProfessor(p.Email);
+        public void SaveChanges() => _storage.Save(_professors);
+        public void Load()
+        {
+            var fresh = _storage.Load();
+            _professors.Clear();
+            _professors.AddRange(fresh);
+        }
 
         public Professor AddProfessor(Professor professor)
         {
