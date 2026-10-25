@@ -1,9 +1,109 @@
 [
   {
+    "PenaltyPoints": 1,
+    "LastPenaltyProcessedAt": "2026-10-01",
+    "RequestedCourses": [],
+    "ActiveCourseId": 4,
+    "FinishedCourses": [
+      {
+        "Item1": 0,
+        "Item2": 0
+      },
+      {
+        "Item1": 1,
+        "Item2": 1
+      }
+    ],
+    "RequestedExamTerms": [
+      9
+    ],
+    "ActiveExamTermId": 9,
+    "FinishedExams": [
+      {
+        "Item1": 0,
+        "Item2": 0
+      }
+    ],
+    "IsExamApplicationLocked": true,
+    "FirstName": "Ana",
+    "LastName": "Petrovic",
+    "Gender": 1,
+    "DateOfBirth": "2001-04-13",
+    "PhoneNumber": "0612222001",
+    "Email": "student@gmail.com",
+    "Password": "123",
+    "EducationLevel": 2,
+    "DateOfRegistration": "2026-02-10"
+  },
+  {
+    "PenaltyPoints": 2,
+    "LastPenaltyProcessedAt": "2026-10-01",
+    "RequestedCourses": [],
+    "ActiveCourseId": 5,
+    "FinishedCourses": [
+      {
+        "Item1": 0,
+        "Item2": 0
+      },
+      {
+        "Item1": 1,
+        "Item2": 1
+      }
+    ],
+    "RequestedExamTerms": [
+      20
+    ],
+    "ActiveExamTermId": -1,
+    "FinishedExams": [
+      {
+        "Item1": 0,
+        "Item2": 0
+      }
+    ],
+    "IsExamApplicationLocked": false,
+    "FirstName": "Marko",
+    "LastName": "Simic",
+    "Gender": 0,
+    "DateOfBirth": "1999-09-15",
+    "PhoneNumber": "0612222002",
+    "Email": "student2@gmail.com",
+    "Password": "123",
+    "EducationLevel": 2,
+    "DateOfRegistration": "2026-02-10"
+  },
+  {
     "PenaltyPoints": 0,
-    "LastPenaltyProcessedAt": "2025-10-01",
+    "LastPenaltyProcessedAt": "2026-10-01",
+    "RequestedCourses": [],
+    "ActiveCourseId": 7,
+    "FinishedCourses": [
+      {
+        "Item1": 3,
+        "Item2": 1
+      }
+    ],
+    "RequestedExamTerms": [
+      8
+    ],
+    "ActiveExamTermId": -1,
+    "FinishedExams": [],
+    "IsExamApplicationLocked": false,
+    "FirstName": "Jelena",
+    "LastName": "Jovanovic",
+    "Gender": 1,
+    "DateOfBirth": "2000-02-08",
+    "PhoneNumber": "0612222003",
+    "Email": "student3@example.com",
+    "Password": "123",
+    "EducationLevel": 2,
+    "DateOfRegistration": "2026-02-10"
+  },
+  {
+    "PenaltyPoints": 0,
+    "LastPenaltyProcessedAt": "2026-10-01",
     "RequestedCourses": [
-      1
+      1,
+      3
     ],
     "ActiveCourseId": -1,
     "FinishedCourses": [
@@ -13,56 +113,49 @@
       }
     ],
     "RequestedExamTerms": [
-      31
+      10
     ],
     "ActiveExamTermId": -1,
-    "FinishedExams": [
-      {
-        "Item1": 0,
-        "Item2": 1
-      }
-    ],
+    "FinishedExams": [],
     "IsExamApplicationLocked": false,
-    "FirstName": "Student2",
-    "LastName": "Studentic",
+    "FirstName": "Stefan",
+    "LastName": "Nikolic",
     "Gender": 0,
-    "DateOfBirth": "1990-09-13",
-    "PhoneNumber": "12345",
-    "Email": "student2@gmail.com",
+    "DateOfBirth": "2002-07-21",
+    "PhoneNumber": "0612222004",
+    "Email": "student4@example.com",
     "Password": "123",
-    "EducationLevel": 1,
-    "DateOfRegistration": "2025-09-21"
+    "EducationLevel": 2,
+    "DateOfRegistration": "2026-02-10"
   },
   {
     "PenaltyPoints": 0,
-    "LastPenaltyProcessedAt": "2025-10-24",
+    "LastPenaltyProcessedAt": "2026-10-01",
     "RequestedCourses": [
-      1
+      2,
+      4
     ],
-    "ActiveCourseId": 5,
+    "ActiveCourseId": -1,
     "FinishedCourses": [
       {
         "Item1": 0,
         "Item2": 0
       }
     ],
-    "RequestedExamTerms": [],
-    "ActiveExamTermId": 24,
-    "FinishedExams": [
-      {
-        "Item1": 0,
-        "Item2": 1
-      }
+    "RequestedExamTerms": [
+      17
     ],
-    "IsExamApplicationLocked": true,
-    "FirstName": "Student",
-    "LastName": "Studentic",
-    "Gender": 0,
-    "DateOfBirth": "1990-09-13",
-    "PhoneNumber": "12345",
-    "Email": "student@gmail.com",
+    "ActiveExamTermId": -1,
+    "FinishedExams": [],
+    "IsExamApplicationLocked": false,
+    "FirstName": "Milica",
+    "LastName": "Ilic",
+    "Gender": 1,
+    "DateOfBirth": "2003-11-03",
+    "PhoneNumber": "0612222005",
+    "Email": "student5@example.com",
     "Password": "123",
-    "EducationLevel": 1,
-    "DateOfRegistration": "2025-09-21"
+    "EducationLevel": 2,
+    "DateOfRegistration": "2026-02-10"
   }
 ]

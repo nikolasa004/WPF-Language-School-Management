@@ -5,126 +5,129 @@
       "German": 2
     },
     "AverageRating": {
-      "Item1": 12,
-      "Item2": 2
+      "Item1": 18,
+      "Item2": 4
     },
-    "FirstName": "Profesor",
-    "LastName": "Profesoric",
+    "FirstName": "Petar",
+    "LastName": "Petrovic",
     "Gender": 0,
     "DateOfBirth": "1980-03-15",
-    "PhoneNumber": "987654321",
+    "PhoneNumber": "0601111001",
     "Email": "profesor@gmail.com",
     "Password": "123",
-    "EducationLevel": 4,
+    "EducationLevel": 3,
     "DateOfRegistration": "2025-08-18"
   },
   {
     "Languages": {
-      "English": 3,
-      "German": 2
+      "English": 4,
+      "German": 3
     },
     "AverageRating": {
-      "Item1": 0,
-      "Item2": 0
+      "Item1": 17,
+      "Item2": 4
     },
-    "FirstName": "Profesor",
-    "LastName": "Profesoric",
-    "Gender": 0,
-    "DateOfBirth": "1982-03-15",
-    "PhoneNumber": "987654322",
+    "FirstName": "Ivana",
+    "LastName": "Jovanovic",
+    "Gender": 1,
+    "DateOfBirth": "1982-04-19",
+    "PhoneNumber": "0601111002",
     "Email": "profesor2@gmail.com",
     "Password": "123",
-    "EducationLevel": 4,
-    "DateOfRegistration": "2025-02-18"
+    "EducationLevel": 3,
+    "DateOfRegistration": "2025-08-18"
   },
   {
     "Languages": {
-      "Spanish": 2
+      "Spanish": 2,
+      "French": 1
     },
     "AverageRating": {
-      "Item1": 0,
-      "Item2": 0
+      "Item1": 9,
+      "Item2": 2
     },
     "FirstName": "Mitar",
     "LastName": "Mitrovic",
     "Gender": 0,
-    "DateOfBirth": "2007-08-28",
-    "PhoneNumber": "1231231123",
+    "DateOfBirth": "1992-08-28",
+    "PhoneNumber": "0601111003",
     "Email": "mitar@gmail.com",
     "Password": "123",
-    "EducationLevel": 2,
-    "DateOfRegistration": "2025-08-28"
+    "EducationLevel": 3,
+    "DateOfRegistration": "2025-08-18"
   },
   {
     "Languages": {
-      "Spanish": 2
+      "Spanish": 2,
+      "French": 3
     },
     "AverageRating": {
-      "Item1": 0,
-      "Item2": 0
+      "Item1": 14,
+      "Item2": 3
     },
-    "FirstName": "Mitar",
-    "LastName": "Mitrovic",
+    "FirstName": "Ognjen",
+    "LastName": "Markovic",
     "Gender": 0,
-    "DateOfBirth": "2007-08-28",
-    "PhoneNumber": "1231231123",
+    "DateOfBirth": "1990-09-17",
+    "PhoneNumber": "0601111004",
     "Email": "ognjen@gmail.com",
     "Password": "123",
-    "EducationLevel": 2,
-    "DateOfRegistration": "2025-08-28"
+    "EducationLevel": 3,
+    "DateOfRegistration": "2025-08-18"
   },
   {
     "Languages": {
-      "Italian": 0
+      "Italian": 2
     },
     "AverageRating": {
-      "Item1": 0,
-      "Item2": 0
+      "Item1": 9,
+      "Item2": 2
     },
-    "FirstName": "Nikolica",
+    "FirstName": "Nikola",
     "LastName": "Nikolic",
     "Gender": 0,
-    "DateOfBirth": "2005-08-28",
-    "PhoneNumber": "123123123",
+    "DateOfBirth": "1988-06-11",
+    "PhoneNumber": "0601111005",
     "Email": "nikola@gmail.com",
     "Password": "1234",
-    "EducationLevel": 2,
-    "DateOfRegistration": "2025-08-28"
+    "EducationLevel": 3,
+    "DateOfRegistration": "2025-08-18"
   },
   {
     "Languages": {
-      "Spanish": 3
+      "Spanish": 4
     },
     "AverageRating": {
-      "Item1": 10,
-      "Item2": 2
+      "Item1": 24,
+      "Item2": 5
     },
     "FirstName": "Estrella",
     "LastName": "Lopez",
     "Gender": 1,
     "DateOfBirth": "1989-07-21",
-    "PhoneNumber": "555-1002",
+    "PhoneNumber": "0601111006",
     "Email": "spanish.star@gmail.com",
     "Password": "123",
     "EducationLevel": 3,
-    "DateOfRegistration": "2025-08-20"
+    "DateOfRegistration": "2025-08-18"
   },
   {
     "Languages": {
-      "Spanish": 3
+      "Spanish": 4,
+      "Italian": 3
     },
     "AverageRating": {
-      "Item1": 0,
-      "Item2": 0
+      "Item1": 13,
+      "Item2": 3
     },
     "FirstName": "Marcos",
     "LastName": "Alonso",
     "Gender": 0,
     "DateOfBirth": "1990-11-30",
-    "PhoneNumber": "023-566-566",
+    "PhoneNumber": "0601111007",
     "Email": "spanish.tied@gmail.com",
     "Password": "123",
     "EducationLevel": 3,
-    "DateOfRegistration": "2025-08-20"
+    "DateOfRegistration": "2025-08-18"
   }
 ]

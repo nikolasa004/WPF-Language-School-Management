@@ -1,47 +1,83 @@
 [
   {
-    "Id": 10,
+    "Id": 1,
+    "RecipientId": "student@gmail.com",
+    "SenderId": "profesor@gmail.com",
+    "Title": "Exam results - English A1",
+    "Body": "Cestitamo! Ispit English A1 je polozen sa 165 poena.",
+    "Date": "2026-09-04",
+    "IsRead": true
+  },
+  {
+    "Id": 2,
     "RecipientId": "student2@gmail.com",
-    "SenderId": "principal@gmail.com",
-    "Title": "Results for Exam 4",
-    "Body": "Dear ogi,\n\nHere are your results for exam 4:\n- Reading: 31\n- Writing: 32\n- Listening: 20\n- Speaking: 26\nTotal: 109\n\nStatus: FAILED",
-    "Date": "2025-09-24",
+    "SenderId": "profesor2@gmail.com",
+    "Title": "Exam results - English A1",
+    "Body": "Ostvareno je 118 poena. Ispit English A1 nije polozen.",
+    "Date": "2026-10-04",
+    "IsRead": true
+  },
+  {
+    "Id": 3,
+    "RecipientId": "student3@example.com",
+    "SenderId": "spanish.star@gmail.com",
+    "Title": "Exam results - Spanish A2",
+    "Body": "Rezultat ispita Spanish A2: 136 poena. Ispit nije polozen. Prijava za naredni termin je moguca.",
+    "Date": "2026-09-13",
+    "IsRead": true
+  },
+  {
+    "Id": 4,
+    "RecipientId": "student@gmail.com",
+    "SenderId": "mitar@gmail.com",
+    "Title": "Penalty point - Spanish B1",
+    "Body": "Dodeljen je jedan kazneni poen zbog neopravdanog izostanka.",
+    "Date": "2026-10-22",
     "IsRead": false
   },
   {
-    "Id": 11,
-    "RecipientId": "student@gmail.com",
-    "SenderId": "profesor@gmail.com",
-    "Title": "You have received a penalty point in Italian A1",
-    "Body": "aaaa",
-    "Date": "2025-10-05",
+    "Id": 5,
+    "RecipientId": "student2@gmail.com",
+    "SenderId": "nikola@gmail.com",
+    "Title": "Penalty point - Italian A1",
+    "Body": "Evidentiran je dodatni kazneni poen. Molimo pratite pravila kursa.",
+    "Date": "2026-10-24",
     "IsRead": false
   },
   {
-    "Id": 12,
-    "RecipientId": "student@gmail.com",
+    "Id": 6,
+    "RecipientId": "student4@example.com",
     "SenderId": "profesor@gmail.com",
-    "Title": "You have received a penalty point in Italian A1",
-    "Body": "smiri se",
-    "Date": "2025-10-24",
+    "Title": "German A1 - enrollment request received",
+    "Body": "Primili smo vasu prijavu za kurs koji pocinje 09.11.2026.",
+    "Date": "2026-10-24",
     "IsRead": false
   },
   {
-    "Id": 13,
-    "RecipientId": "student@gmail.com",
-    "SenderId": "profesor@gmail.com",
-    "Title": "You have received a penalty point in Italian A1",
-    "Body": "123",
-    "Date": "2025-10-24",
+    "Id": 7,
+    "RecipientId": "student5@example.com",
+    "SenderId": "profesor2@gmail.com",
+    "Title": "English A1 - enrollment for exam",
+    "Body": "Vasa prijava za ispit English A1 od 21.11.2026. je evidentirana.",
+    "Date": "2026-10-25",
     "IsRead": false
   },
   {
-    "Id": 14,
+    "Id": 8,
     "RecipientId": "student@gmail.com",
     "SenderId": "profesor@gmail.com",
-    "Title": "You have received a penalty point in Italian A1",
-    "Body": "432",
-    "Date": "2025-10-24",
+    "Title": "German A2 - exam awaiting finalization",
+    "Body": "Ispitni termin German A2 od 24.10.2026. je zavrsen. Rezultati ce biti objavljeni nakon zakljucivanja termina.",
+    "Date": "2026-10-25",
+    "IsRead": false
+  },
+  {
+    "Id": 9,
+    "RecipientId": "student2@gmail.com",
+    "SenderId": "profesor2@gmail.com",
+    "Title": "Exam results - English A1",
+    "Body": "Cestitamo! Naknadni ispit English A1 od 20.10.2026. polozen je sa 176 poena.",
+    "Date": "2026-10-21",
     "IsRead": false
   }
 ]

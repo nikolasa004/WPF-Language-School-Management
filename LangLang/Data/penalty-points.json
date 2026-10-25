@@ -2,16 +2,16 @@
   {
     "Id": 1,
     "StudentId": "student@gmail.com",
-    "CourseId": 5
+    "CourseId": 4
   },
   {
     "Id": 2,
     "StudentId": "student2@gmail.com",
-    "CourseId": 3
+    "CourseId": 5
   },
   {
     "Id": 3,
     "StudentId": "student2@gmail.com",
-    "CourseId": 4
+    "CourseId": 5
   }
 ]

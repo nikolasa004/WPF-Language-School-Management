@@ -1,29 +1,29 @@
 [
-    {
-        "Id": 1,
-        "RecipientId": "profesor@gmail.com",
-        "SenderId": "student@gmail.com",
-        "Title": "Unenrollment Request",
-        "Body": "Sibirski plavac me zalio ledenim cajem.",
-        "Date": "2025-09-21",
-        "IsRead": false
-    },
-    {
-        "Id": 3,
-        "RecipientId": "profesor@gmail.com",
-        "SenderId": "student@gmail.com",
-        "Title": "Unenrollment Request",
-        "Body": "Sibirski plavac me zalio ledenim cajem.",
-        "Date": "2025-09-21",
-        "IsRead": false
-    },
-    {
-        "Id": 2,
-        "RecipientId": "profesor@gmail.com",
-        "SenderId": "student@gmail.com",
-        "Title": "Unenrollment Request",
-        "Body": "Sibirski plavac me zalio ledenim cajem.",
-        "Date": "2025-09-21",
-        "IsRead": false
-    }
+  {
+    "Id": 1,
+    "RecipientId": "mitar@gmail.com",
+    "SenderId": "student@gmail.com",
+    "Title": "Unenrollment Request",
+    "Body": "Zbog promenjenog rasporeda obaveza zelim da pitam da li je moguce ispisivanje sa kursa Spanish B1.",
+    "Date": "2026-10-23",
+    "IsRead": false
+  },
+  {
+    "Id": 2,
+    "RecipientId": "nikola@gmail.com",
+    "SenderId": "student2@gmail.com",
+    "Title": "Question about Italian A1",
+    "Body": "Da li mozete da potvrdite termin narednog casa? Hvala unapred.",
+    "Date": "2026-10-24",
+    "IsRead": true
+  },
+  {
+    "Id": 3,
+    "RecipientId": "profesor@gmail.com",
+    "SenderId": "student4@example.com",
+    "Title": "German A1 enrollment",
+    "Body": "Poslao sam prijavu za naredni kurs German A1. Da li je potrebno nesto dodatno?",
+    "Date": "2026-10-25",
+    "IsRead": false
+  }
 ]
