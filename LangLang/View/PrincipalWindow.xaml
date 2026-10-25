@@ -54,14 +54,6 @@
                         <!-- Navigation buttons -->
                         <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="10,0,0,0">
 
-                            <!-- Professors Button -->
-                            <Button x:Name="ProfessorsButton" Content="Professors" Style="{StaticResource FancyButtonStyle}" FontSize="20" Width="100" Height="35" Click="ProfessorsButton_Click">
-                                <Button.Background>
-                                    <ImageBrush ImageSource="/GUIResources/topBarButtonBackground.png"/>
-                                </Button.Background>
-
-                            </Button>
-
                             <!-- Courses Button -->
                             <Button x:Name="CoursesButton" Content="Courses" Style="{StaticResource FancyButtonStyle}" FontSize="20" Width="100" Height="40" Click="DropDown_Click">
                                 <Button.Background>

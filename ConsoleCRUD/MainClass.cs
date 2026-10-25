@@ -35,7 +35,7 @@ namespace ConsoleCRUD
             //Sunset + EightZen
             RenderOptions opt11 = new RenderOptions { Skin = new ZenEightSkin(), Theme = new SunsetTheme() };
 
-            var view = new MenuRouter(typesCatalog, daoCatalog, opt2);
+            var view = new MenuRouter(typesCatalog, daoCatalog, opt7);
             view.Run();
         }
     }

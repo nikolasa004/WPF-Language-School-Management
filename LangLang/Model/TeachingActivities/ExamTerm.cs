@@ -28,6 +28,7 @@ namespace LangLang.Model.TeachingActivities
 
         public ExamTerm(int id,string professorId,Language language,LanguageLevel level,int maxAttendees,string? date,string? startAt,string? roomId): base(id, professorId, language, level, true, maxAttendees, date, startAt, 240, roomId)
         {
+            Id = id;
             IsLocked = false;
             IsArchived = false;
         }
